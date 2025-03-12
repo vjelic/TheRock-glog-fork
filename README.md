@@ -103,3 +103,11 @@ ctest --test-dir build
 
 Testing functionality on an actual GPU is in progress and will be documented
 separately.
+
+## Development Manuals
+
+- [Development Guide](docs/development/development_guide.md): Documentation on how to use TheRock as a daily driver for developing any of its contained ROCm components (i.e. vs interacting with each component build individually).
+- [Build System](docs/development/build_system.md): More detailed information about TheRock's build system relevant to people looking to extend TheRock, add components, etc.
+- [Git Chores](docs/development/git_chores.md): Procedures for managing the codebase, specifically focused on version control, upstream/downstream, etc.
+- [Dependencies](docs/development/dependencies.md): Further specifications on ROCm-wide standards for depending on various components.
+- [Build Containers](docs/development/build_containers.md): Further information about containers used for building TheRock on CI.
