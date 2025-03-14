@@ -1,11 +1,13 @@
 # TheRock
 
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+
 The HIP Environment and ROCm Kit - A lightweight open source build system for HIP and ROCm.
 
 We are currently in an **early preview state** but welcome contributors. Come try us out!
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for more info.
 
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+If you're looking to quickly see how far along we are, check the [Releases Page](RELEASES.md).
 
 # Install Deps
 
@@ -116,3 +118,5 @@ separately.
 - [Dependencies](docs/development/dependencies.md): Further specifications on ROCm-wide standards for depending on various components.
 - [Build Containers](docs/development/build_containers.md): Further information about containers used for building TheRock on CI.
 - [Build Artifacts](docs/development/artifacts.md): Documentation about the outputs of the build system.
+- [Releases Page](RELEASES.md): Documentation for how to leverage our build artifacts.
+- [Roadmap for Support](ROADMAP.md): Documentation for our prioritized roadmap to support AMD GPUs.
