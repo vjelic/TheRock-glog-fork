@@ -18,7 +18,7 @@ requires some additional development tools, which are included below.
 ## Common
 
 ```
-pip install CppHeaderParser==2.7.4 meson==1.7.0 PyYAML==6.0.2
+pip install CppHeaderParser==2.7.4 meson==1.7.0 PyYAML==6.0.2 toml libtoml
 ```
 
 ## On Ubuntu
