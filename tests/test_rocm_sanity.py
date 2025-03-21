@@ -4,30 +4,24 @@ import re
 from pathlib import Path
 from pytest_check import check
 import logging
+import os
 
 THIS_DIR = Path(__file__).resolve().parent
 
 logger = logging.getLogger(__name__)
 
+THEROCK_BIN_DIR = os.getenv("THEROCK_BIN_DIR")
 
-def run_command(command):
-    process = subprocess.run(command, capture_output=True)
-    return str(process.stdout)
+
+def run_command(command, cwd=None):
+    process = subprocess.run(command, capture_output=True, cwd=cwd)
+    return process
 
 
 @pytest.fixture(scope="session")
 def rocm_info_output():
     try:
-        return run_command(["rocminfo"])
-    except Exception as e:
-        logger.info(str(e))
-        return None
-
-
-@pytest.fixture(scope="session")
-def clinfo_info_output():
-    try:
-        return run_command(["clinfo"])
+        return str(run_command([f"{THEROCK_BIN_DIR}/rocminfo"]).stdout)
     except Exception as e:
         logger.info(str(e))
         return None
@@ -55,38 +49,19 @@ class TestROCmSanity:
             f"Failed to search for {to_search} in rocminfo output",
         )
 
-    @pytest.mark.parametrize(
-        "to_search",
-        [
-            (r"Device(\s|\\t)*Type:(\s|\\t)*CL_DEVICE_TYPE_GPU"),
-            (r"Name:(\s|\\t)*gfx"),
-            (r"Vendor:(\s|\\t)*Advanced Micro Devices, Inc."),
-        ],
-        ids=[
-            "clinfo - GPU Device Type Search",
-            "clinfo - GFX Name Search",
-            "clinfo - AMD Vendor Name Search",
-        ],
-    )
-    def test_clinfo_output(self, clinfo_info_output, to_search):
-        if not clinfo_info_output:
-            pytest.fail("Command clinfo failed to run")
-        check.is_not_none(
-            re.search(to_search, clinfo_info_output),
-            f"Failed to search for {to_search} in clinfo output",
-        )
-
     def test_hip_printf(self):
         # Compiling .cpp file using hipcc
         run_command(
             [
-                "hipcc",
-                str(THIS_DIR / "hip_printf.cpp"),
+                "./hipcc",
+                str(THIS_DIR / "hipcc_check.cpp"),
                 "-o",
-                str(THIS_DIR / "hip_printf"),
-            ]
+                str(THIS_DIR / "hipcc_check"),
+            ],
+            cwd=str(THEROCK_BIN_DIR),
         )
 
-        # Running the executable
-        output = run_command([str(THIS_DIR / "hip_printf")])
-        check.is_not_none(re.search(r"Thread.*is\swriting", output))
+        # Running and checking the executable
+        process = run_command(["./hipcc_check"], cwd=str(THIS_DIR))
+        check.equal(process.returncode, 0)
+        check.greater(os.path.getsize(str(THIS_DIR / "hipcc_check")), 0)

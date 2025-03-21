@@ -13,4 +13,5 @@ int main() {
   hipMalloc(&d_buf, size * sizeof(int));
   hipLaunchKernelGGL(squares, gridsize, blocksize, 0, 0, d_buf);
   hipDeviceSynchronize();
+  return 0;
 }
