@@ -26,7 +26,7 @@ jobs:
       BASE_BUILD_DIR_POWERSHELL: D:\mnt\azure\b
       CACHE_DIR: ${{ github.workspace }}/.cache
       CCACHE_DIR: "${{ github.workspace }}/.cache/ccache"
-      CCACHE_MAXSIZE: "700M"
+      CCACHE_MAXSIZE: "1400M"
     steps:
       - name: "Create build dir"
         shell: powershell
