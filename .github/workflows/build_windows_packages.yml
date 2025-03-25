@@ -128,7 +128,7 @@ jobs:
         if: always()
         with:
           path: ${{ env.CACHE_DIR }}
-          key: windows-build-packages-v2-${{ github.sha }}
+          key: windows-build-packages-v2-selfhost-${{ github.sha }}
 
       - name: "Clean up build dir"
         if: always()
