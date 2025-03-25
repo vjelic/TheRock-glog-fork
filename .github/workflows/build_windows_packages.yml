@@ -16,7 +16,7 @@ on:
 jobs:
   build_windows_packages:
     name: Build Windows Packages
-    runs-on: justin_test_runner
+    runs-on: self-hosted
     defaults:
       run:
         shell: bash
