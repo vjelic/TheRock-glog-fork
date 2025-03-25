@@ -16,7 +16,7 @@ on:
 jobs:
   build_windows_packages:
     name: Build Windows Packages
-    runs-on: self-hosted
+    runs-on: azure-hb176
     defaults:
       run:
         shell: bash
@@ -26,7 +26,7 @@ jobs:
       BASE_BUILD_DIR_POWERSHELL: D:\mnt\azure\b
       CACHE_DIR: ${{ github.workspace }}/.cache
       CCACHE_DIR: "${{ github.workspace }}/.cache/ccache"
-      CCACHE_MAXSIZE: "1400M"
+      CCACHE_MAXSIZE: "700M"
     steps:
       - name: "Create build dir"
         shell: powershell
