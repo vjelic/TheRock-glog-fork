@@ -70,9 +70,9 @@ jobs:
         uses: actions/cache/restore@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: ${{ env.CACHE_DIR }}
-          key: windows-build-packages-v2-${{ github.sha }}
+          key: windows-build-packages-v2-selfhost-${{ github.sha }}
           restore-keys: |
-            windows-build-packages-v2-
+            windows-build-packages-v2-selfhost-
 
       - name: Fetch sources
         run: |
