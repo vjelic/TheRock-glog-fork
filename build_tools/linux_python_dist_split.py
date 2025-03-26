@@ -172,14 +172,6 @@ def log(*args, vlog: int = 0, **kwargs):
     file.flush()
 
 
-def get_os_arch() -> str:
-    """Gets the `os_arch` placeholder for the current system.
-
-    Matches the equivalent in the package _dist_info.py file.
-    """
-    return f"{platform.system().lower()}_{platform.machine()}"
-
-
 def run(args: argparse.Namespace):
     artifacts = ArtifactCatalog(args.artifact_dir)
     target_families = artifacts.all_target_families
@@ -256,8 +248,6 @@ def populate_built_artifacts(
     target_families: set[str],
     dist_info_contents: str,
 ):
-    os_arch = get_os_arch()
-
     # Prepare the target neutral package directories.
     meta_path = copy_package_template(
         args.dest_dir,
@@ -279,7 +269,7 @@ def populate_built_artifacts(
     )
 
     core_py_package_name = _legalize_py_package_str(
-        f"_rocm_sdk_core_{os_arch}{args.version_suffix}"
+        f"_rocm_sdk_core{args.version_suffix}"
     )
 
     # Where things go is a waterfall: each package we populate removes files
@@ -296,7 +286,7 @@ def populate_built_artifacts(
     # Emit libraries, one per artifact family that we have
     for target_family in target_families:
         libraries_py_package_name = _legalize_py_package_str(
-            f"_rocm_sdk_libraries_{target_family}_{os_arch}{args.version_suffix}"
+            f"_rocm_sdk_libraries_{target_family}{args.version_suffix}"
         )
         libraries_path = copy_package_template(
             args.dest_dir,
@@ -321,7 +311,7 @@ def populate_built_artifacts(
     populate_devel_package(
         args,
         devel_path / "src" / "rocm_sdk_devel",
-        devel_path / "platform" / f"_rocm_sdk_devel_{os_arch}{args.version_suffix}",
+        devel_path / "platform" / f"_rocm_sdk_devel{args.version_suffix}",
         artifacts,
         materialized_paths,
     )

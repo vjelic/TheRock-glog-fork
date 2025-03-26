@@ -1,8 +1,10 @@
 """Main rocm-sdk-libraries (OS specific)."""
 
 import importlib.util
+import os
 from setuptools import setup, find_packages
 import sys
+import sysconfig
 from pathlib import Path
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -46,6 +48,13 @@ setup(
     },
     zip_safe=False,
     include_package_data=True,
+    options={
+        "bdist_wheel": {
+            "plat_name": os.getenv(
+                "ROCM_SDK_WHEEL_PLATFORM_TAG", sysconfig.get_platform()
+            ),
+        },
+    },
     entry_points={
         "console_scripts": [],
     },

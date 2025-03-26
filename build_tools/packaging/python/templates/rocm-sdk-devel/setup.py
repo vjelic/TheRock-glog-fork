@@ -1,8 +1,10 @@
 """Main rocm-sdk-devel (OS specific)."""
 
 import importlib.util
+import os
 from setuptools import setup, find_packages
 import sys
+import sysconfig
 from pathlib import Path
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -30,7 +32,7 @@ packages = find_packages(where="./src")
 print("Found packages:", packages)
 
 setup(
-    name=f"rocm-sdk-devel-{dist_info.os_arch()}",
+    name=f"rocm-sdk-devel",
     version=dist_info.__version__,
     packages=packages,
     package_dir={
@@ -38,6 +40,13 @@ setup(
     },
     zip_safe=False,
     include_package_data=True,
+    options={
+        "bdist_wheel": {
+            "plat_name": os.getenv(
+                "ROCM_SDK_WHEEL_PLATFORM_TAG", sysconfig.get_platform()
+            ),
+        },
+    },
     entry_points={
         "console_scripts": [],
     },

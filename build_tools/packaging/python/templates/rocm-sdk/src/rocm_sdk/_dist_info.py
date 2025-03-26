@@ -12,11 +12,6 @@ import platform
 CACHED_TARGET_FAMILY: str | None = None
 
 
-def os_arch() -> str:
-    """Gets the `os_arch` placeholder for the current system."""
-    return f"{platform.system().lower()}-{platform.machine()}"
-
-
 class PackageEntry:
     def __init__(
         self, logical_name: str, package_template: str, *, required: bool = False
@@ -32,16 +27,12 @@ class PackageEntry:
     def is_target_specific(self) -> bool:
         return "{target_family}" in self.package_template
 
-    @property
-    def is_host_specific(self) -> bool:
-        return "{os_arch}" in self.package_template
-
     def get_dist_package_name(self, target_family: str | None = None) -> str:
         if self.is_target_specific and target_family is None:
             raise ValueError(
                 f"Package {self.logical_name} is target specific, but no target specified"
             )
-        kwargs = {"os_arch": os_arch()}
+        kwargs = {}
         if target_family is not None:
             kwargs["target_family"] = target_family
         return self.package_template.format(**kwargs)
@@ -98,11 +89,9 @@ def determine_target_family() -> str:
 ALL_PACKAGES: dict[str, PackageEntry] = {}
 
 # Always available packages.
-PackageEntry("core", "rocm-sdk-core-{os_arch}", required=True)
-PackageEntry(
-    "libraries", "rocm-sdk-libraries-{target_family}-{os_arch}", required=False
-)
-PackageEntry("devel", "rocm-sdk-devel-{os_arch}", required=False)
+PackageEntry("core", "rocm-sdk-core", required=True)
+PackageEntry("libraries", "rocm-sdk-libraries-{target_family}", required=False)
+PackageEntry("devel", "rocm-sdk-devel", required=False)
 
 # Overall ROCM package version.
 __version__ = "DEFAULT"
