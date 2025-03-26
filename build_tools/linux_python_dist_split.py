@@ -621,7 +621,7 @@ def materialize_lib_file(
     file_type = get_file_type(src_entry.path)
     if file_type == "so":
         soname = get_soname(src_entry.path)
-        if soname != dest_path.name:
+        if soname and soname != dest_path.name:
             # It is a concrete library like libfoo.so.0.1 where the soname
             # is libfoo.so.0. We don't want to ever write such a thing (the
             # actual soname link will be materialized with the contents in
@@ -735,6 +735,9 @@ def get_file_type(dir_entry: os.DirEntry[str] | Path) -> str:
     path = str(path)
     if path.endswith(".txt") or path.endswith(".h") or path.endswith(".hpp"):
         return "text"
+    elif path.endswith(".hsaco") or path.endswith(".co"):
+        # These read as shared libraries.
+        return "hsaco"
     desc = magic.from_file(path)
     if MAGIC_EXECUTABLE_MATCH.search(desc):
         return "exe"
