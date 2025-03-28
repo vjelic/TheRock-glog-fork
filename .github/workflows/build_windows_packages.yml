@@ -61,7 +61,7 @@ jobs:
           echo "CCACHE_DEBUG=${CCACHE_DEBUG}"
           echo "CCACHE_DEBUGDIR=${CCACHE_DEBUGDIR}"
           echo "CCACHE_BASEDIR=${CCACHE_BASEDIR}"
-          echo "CCACHE_NOCACHEDIR=${CCACHE_NOCACHEDIR}"
+          echo "CCACHE_NOHASHDIR=${CCACHE_NOHASHDIR}"
           df -h
           ccache -z
           mkdir -p $CCACHE_DIR
