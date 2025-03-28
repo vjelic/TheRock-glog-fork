@@ -26,6 +26,7 @@ jobs:
       BASE_BUILD_DIR_POWERSHELL: D:\mnt\azure\b
       CACHE_DIR: ${{ github.workspace }}/.cache
       CCACHE_DIR: "${{ github.workspace }}/.cache/ccache"
+      CCACHE_DEBUG: "1"
       CCACHE_MAXSIZE: "700M"
     steps:
       - name: "Create build dir"
@@ -54,6 +55,7 @@ jobs:
       - name: Runner Health Settings
         run: |
           echo "CCACHE_DIR=${CCACHE_DIR}"
+          echo "CCACHE_DEBUG=${CCACHE_DEBUG}"
           df -h
           ccache -z
           mkdir -p $CCACHE_DIR
@@ -132,5 +134,6 @@ jobs:
 
       - name: "Clean up build dir"
         if: always()
-        run: if (Test-Path -Path "$Env:BUILD_DIR_POWERSHELL") {Remove-Item -Path "$Env:BUILD_DIR_POWERSHELL" -Recurse -Force}
+        #run: if (Test-Path -Path "$Env:BUILD_DIR_POWERSHELL") {Remove-Item -Path "$Env:BUILD_DIR_POWERSHELL" -Recurse -Force}
+        run: echo "Skipping for testing purposes"
         shell: powershell
