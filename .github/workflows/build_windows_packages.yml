@@ -16,7 +16,7 @@ on:
 jobs:
   build_windows_packages:
     name: Build Windows Packages
-    runs-on: azure-hb176
+    runs-on: azure-hb-176
     defaults:
       run:
         shell: bash
