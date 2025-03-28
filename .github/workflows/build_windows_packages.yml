@@ -28,6 +28,7 @@ jobs:
       CCACHE_DIR: "${{ github.workspace }}/.cache/ccache"
       CCACHE_DEBUG: "1"
       CCACHE_MAXSIZE: "4000M"
+      CCACHE_NOHASHDIR: "1"
     steps:
       - name: "Create build dir"
         shell: powershell
@@ -60,6 +61,7 @@ jobs:
           echo "CCACHE_DEBUG=${CCACHE_DEBUG}"
           echo "CCACHE_DEBUGDIR=${CCACHE_DEBUGDIR}"
           echo "CCACHE_BASEDIR=${CCACHE_BASEDIR}"
+          echo "CCACHE_NOCACHEDIR=${CCACHE_NOCACHEDIR}"
           df -h
           ccache -z
           mkdir -p $CCACHE_DIR
