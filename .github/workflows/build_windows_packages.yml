@@ -39,6 +39,7 @@ jobs:
           Write-Host "Generated Build Directory: $buildDir"
           $bashBuildDir = $buildDir -replace '\\', '/' -replace '^D:', '/d'
           echo  "BUILD_DIR_BASH=$bashBuildDir" >> $env:GITHUB_ENV
+          echo  "CCACHE_DEBUGDIR=$bashBuildDir" >> $env:GITHUB_ENV
           Write-Host "Converted Build Directory For Bash: $bashBuildDir"
 
       - name: "Checking out repository"
@@ -56,6 +57,7 @@ jobs:
         run: |
           echo "CCACHE_DIR=${CCACHE_DIR}"
           echo "CCACHE_DEBUG=${CCACHE_DEBUG}"
+          echo "CCACHE_DEBUGDIR=${CCACHE_DEBUGDIR}"
           df -h
           ccache -z
           mkdir -p $CCACHE_DIR
