@@ -34,16 +34,23 @@ jobs:
         shell: powershell
         run: |
           $currentTime = (Get-Date).ToString('HHmmss')
+          $buildDBGDir = "$env:BASE_BUILD_DIR_POWERSHELL\$currentTime"
           $currentTime = "cur"
           $buildDir = "$env:BASE_BUILD_DIR_POWERSHELL\$currentTime"
           echo "BUILD_DIR_POWERSHELL=$buildDir" >> $env:GITHUB_ENV
+          echo "BUILDDBG_DIR_POWERSHELL=$buildDBGDir" >> $env:GITHUB_ENV
           mkdir "$buildDir"
+          mkdir "$buildDBGDir"
           Write-Host "Generated Build Directory: $buildDir"
+          Write-Host "Generated Build Debug Directory: $buildDBGDir"
           $bashBuildDir = $buildDir -replace '\\', '/' -replace '^D:', '/d'
+          $bashBuildDBGDir = $buildDBGDir -replace '\\', '/' -replace '^D:', '/d'
           echo  "BUILD_DIR_BASH=$bashBuildDir" >> $env:GITHUB_ENV
-          echo  "CCACHE_DEBUGDIR=$bashBuildDir" >> $env:GITHUB_ENV
+          echo  "BUILDDBG_DIR_BASH=$bashBuildDBGDir" >> $env:GITHUB_ENV
+          echo  "CCACHE_DEBUGDIR=$bashBuildDBGDir" >> $env:GITHUB_ENV
           echo  "CCACHE_BASEDIR=$bashBuildDir" >> $env:GITHUB_ENV
           Write-Host "Converted Build Directory For Bash: $bashBuildDir"
+          Write-Host "Converted Build Debug Directory For Bash: $bashBuildDBGDir"
 
       - name: "Checking out repository"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
