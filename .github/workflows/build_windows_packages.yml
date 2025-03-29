@@ -103,6 +103,9 @@ jobs:
           package_version="${{ inputs.package_version }}"
           echo "Building package ${package_version}"
 
+          # Clear statistics that are from a previous build
+          ccache -z
+
           # Build.
           cmake -B "${{ env.BUILD_DIR_BASH }}" -GNinja . \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
