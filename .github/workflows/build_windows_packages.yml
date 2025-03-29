@@ -28,7 +28,7 @@ jobs:
       CCACHE_DIR: "${{ github.workspace }}/.cache/ccache"
       CCACHE_DEBUG: "1"
       CCACHE_MAXSIZE: "4000M"
-      CCACHE_NOHASHDIR: "1"
+      # CCACHE_NOHASHDIR: "1"
     steps:
       - name: "Create build dir"
         shell: powershell
@@ -86,9 +86,9 @@ jobs:
         uses: actions/cache/restore@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: ${{ env.CACHE_DIR }}
-          key: windows-build-packages-v4-selfhost-${{ github.sha }}
+          key: windows-build-packages-v5-selfhost-${{ github.sha }}
           restore-keys: |
-            windows-build-packages-v4-selfhost-
+            windows-build-packages-v5-selfhost-
 
       - name: Fetch sources
         run: |
@@ -144,7 +144,7 @@ jobs:
         if: always()
         with:
           path: ${{ env.CACHE_DIR }}
-          key: windows-build-packages-v4-selfhost-${{ github.sha }}
+          key: windows-build-packages-v5-selfhost-${{ github.sha }}
 
       - name: "Clean up build dir"
         if: always()
