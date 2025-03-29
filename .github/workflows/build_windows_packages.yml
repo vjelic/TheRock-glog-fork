@@ -148,6 +148,7 @@ jobs:
 
       - name: "Clean up build dir"
         if: always()
-        #run: if (Test-Path -Path "$Env:BUILD_DIR_POWERSHELL") {Remove-Item -Path "$Env:BUILD_DIR_POWERSHELL" -Recurse -Force}
-        run: echo "Skipping for testing purposes"
+        # run: if (Test-Path -Path "$Env:BUILD_DIR_POWERSHELL") {Remove-Item -Path "$Env:BUILD_DIR_POWERSHELL" -Recurse -Force}
+        run: if (Test-Path -Path "$Env:BUILD_DIR_POWERSHELL") {echo "Renaming to ${Env:BUILDDBG_DIR_POWERSHELL}-build"; ren -Path "$Env:BUILD_DIR_POWERSHELL" -NewName "${Env:BUILDDBG_DIR_POWERSHELL}-build"-Force}
+        #run: echo "Skipping for testing purposes"
         shell: powershell
