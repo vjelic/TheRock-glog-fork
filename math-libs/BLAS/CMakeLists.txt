@@ -66,6 +66,7 @@ therock_cmake_subproject_declare(hipBLASLt
     amd-hip
   BUILD_DEPS
     hipBLAS-common
+    rocm-cmake
     therock-msgpack-cxx
   RUNTIME_DEPS
     hip-clr
@@ -106,13 +107,12 @@ therock_cmake_subproject_declare(rocBLAS
     -DBUILD_CLIENTS_TESTS=${THEROCK_BUILD_TESTING}
     -DBUILD_CLIENTS_BENCHMARKS=${THEROCK_BUILD_TESTING}
     -DLINK_BLIS=OFF
-  IGNORE_PACKAGES
-      ROCM
   COMPILER_TOOLCHAIN
     amd-hip
   BUILD_DEPS
-    therock-msgpack-cxx
     hipBLAS-common
+    rocm-cmake
+    therock-msgpack-cxx
   RUNTIME_DEPS
     hip-clr
     hipBLASLt
@@ -147,6 +147,7 @@ if(THEROCK_ENABLE_SPARSE)
     COMPILER_TOOLCHAIN
       amd-hip
     BUILD_DEPS
+      rocm-cmake
       rocBLAS
       rocPRIM
     RUNTIME_DEPS
@@ -177,6 +178,7 @@ if(THEROCK_ENABLE_SPARSE)
     COMPILER_TOOLCHAIN
       amd-hip
     BUILD_DEPS
+      rocm-cmake
       rocSPARSE
     RUNTIME_DEPS
       hip-clr
@@ -209,6 +211,7 @@ if(THEROCK_ENABLE_SOLVER)
       COMPILER_TOOLCHAIN
         amd-hip
       BUILD_DEPS
+        rocm-cmake
         rocBLAS
         rocPRIM
         therock-fmt
@@ -248,6 +251,8 @@ if(THEROCK_ENABLE_SOLVER)
         -DHIPSOLVER_FIND_PACKAGE_LAPACK_CONFIG=OFF
       COMPILER_TOOLCHAIN
         amd-hip
+      BUILD_DEPS
+        rocm-cmake
       RUNTIME_DEPS
         hip-clr
         rocBLAS
@@ -294,6 +299,7 @@ therock_cmake_subproject_declare(hipBLAS
     amd-hip
   BUILD_DEPS
     hipBLAS-common
+    rocm-cmake
   RUNTIME_DEPS
     hip-clr
     rocBLAS
