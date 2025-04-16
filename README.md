@@ -3,11 +3,13 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 
 ## Description
+
 TheRock (The HIP Environment and ROCm Kit) is a lightweight open source build platform for HIP and ROCm. The project is currently in an **early preview state** but is under active development and welcomes contributors. Come try us out! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for more info.
 
 Currently, the platform offers developers the option to build HIP and ROCm from source. Additionally, a GitHub actions pipeline will offer a nightly build with compiled ROCm/HIP software available in S3 and in the GitHub releases section.
 
 ## Table of Contents
+
 - [Installation From Source](#installation-from-source)
 - [Configuration](#configuration)
 - [Usage](#usage)
@@ -15,7 +17,9 @@ Currently, the platform offers developers the option to build HIP and ROCm from 
 - [Development Manuals](#development-manuals)
 
 ## Installation From Source
+
 ### Ubuntu
+
 ```bash
 # Clone the repository
 git clone https://github.com/ROCm/TheRock.git
@@ -29,6 +33,7 @@ python ./build_tools/fetch_sources.py # Downloads submodules and applies patches
 ```
 
 ### Windows
+
 ```bash
 # Clone the repository
 git clone https://github.com/ROCm/TheRock.git
@@ -39,6 +44,7 @@ python3 -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
+
 > [!WARNING]
 > Windows support is still early in development. Not all subprojects or packages build for Windows yet.
 
@@ -49,13 +55,14 @@ python ./build_tools/fetch_sources.py  # Downloads submodules and applies patche
 ```
 
 ## Configuration
+
 The build can be customized through cmake feature flags.
 
 **Required Flags:**
 
 - `-DTHEROCK_AMDGPU_FAMILIES=`
-  
-  or  
+
+  or
 
 - `-DTHEROCK_AMDGPU_TARGETS=`
 
@@ -96,12 +103,16 @@ A report of enabled/disabled features and flags will be printed on every
 CMake configure.
 
 ## Usage
+
 To build ROCm/HIP:
+
 ```bash
 cmake -B build -GNinja . -DTHEROCK_AMDGPU_FAMILIES=gfx110X-dgpu
 cmake --build build
 ```
+
 To build with cacheing:
+
 ```bash
 cmake -B build -GNinja -DTHEROCK_AMDGPU_FAMILIES=gfx110X-dgpu -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
 cmake --build build
