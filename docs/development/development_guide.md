@@ -106,7 +106,7 @@ In addition, if a component is using the host toolchain, the following are mirro
 - `CMAKE_MSVC_DEBUG_INFORMATION_FORMAT`
 - `CMAKE_INSTALL_LIBDIR`
 
-If building with the in-tree HIP compiler, `CMAKE_C_COMPILER`, `CMAKE_CXX_COMPILER`, `CMAKE_LINKER`, `AMDGPU_TARGETS,
+If building with the in-tree HIP compiler, `CMAKE_C_COMPILER`, `CMAKE_CXX_COMPILER`, `CMAKE_LINKER`, `AMDGPU_TARGETS`,
 `GPU_TARGETS` and `CMAKE_CXX_FLAGS_INIT` will be set accordingly.
 
 ### Additional Developer Ergonomic Flags
