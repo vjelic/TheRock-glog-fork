@@ -36,29 +36,27 @@ list(APPEND _blas_subproject_names hipBLAS-common)
 ##############################################################################
 
 set(hipBLASLt_optional_deps)
+if(NOT WIN32)
+  # hipBLASLt is hard-coded to not expect rocm-smi on Windows.
+  list(APPEND hipBLASLt_optional_deps
+    rocm_smi_lib
+  )
+endif()
 if(THEROCK_BUILD_TESTING)
   list(APPEND hipBLASLt_optional_deps
     therock-host-blas
-    rocm_smi_lib
   )
 endif()
 
 therock_cmake_subproject_declare(hipBLASLt
   EXTERNAL_SOURCE_DIR "hipBLASLt"
   BACKGROUND_BUILD
+  CMAKE_LISTS_RELPATH "next-cmake"
   CMAKE_ARGS
     -DHIP_PLATFORM=amd
-    -DROCM_PATH=
-    -DROCM_DIR=
-    -DTensile_LOGIC=
-    -DTensile_CPU_THREADS=
-    -DTensile_LIBRARY_FORMAT=msgpack
-    # TODO(#55): Enable once roctracer is added
-    -DHIPBLASLT_ENABLE_MARKER=OFF
-    -DBUILD_CLIENTS_TESTS=${THEROCK_BUILD_TESTING}
-    -DBUILD_CLIENTS_BENCHMARKS=${THEROCK_BUILD_TESTING}
-    # TODO(#376): rocRoller is broken
-    -DUSE_ROCROLLER=OFF
+    -DHIPBLASLT_ENABLE_BLIS=OFF  # TODO: Evaluate
+    -DBUILD_TESTING=${THEROCK_BUILD_TESTING}
+    -DHIPBLASLT_BUILD_TESTING=${THEROCK_BUILD_TESTING}
   COMPILER_TOOLCHAIN
     amd-hip
   BUILD_DEPS
@@ -85,7 +83,8 @@ list(APPEND _blas_subproject_names hipBLASLt)
 ##############################################################################
 
 set(rocBLAS_optional_runtime_deps)
-if(THEROCK_BUILD_TESTING)
+if(NOT WIN32)
+  # rocBLAS is hard-coded to not expect rocm-smi on Windows.
   list(APPEND rocBLAS_optional_runtime_deps rocm_smi_lib)
 endif()
 
