@@ -90,11 +90,8 @@ endif()
 
 if(WIN32)
   set(rocBLAS_build_with_tensile "OFF")
-  set(rocBLAS_build_with_hipblaslt "OFF")
 else()
   set(rocBLAS_build_with_tensile "ON")
-  set(rocBLAS_build_with_hipblaslt "ON")
-  list(APPEND rocBLAS_optional_runtime_deps hipBLASLt)
   list(APPEND rocBLAS_optional_runtime_deps roctracer-compat)
 endif()
 
@@ -106,7 +103,7 @@ therock_cmake_subproject_declare(rocBLAS
     -DROCM_PATH=
     -DROCM_DIR=
     -DBUILD_WITH_TENSILE=${rocBLAS_build_with_tensile}
-    -DBUILD_WITH_HIPBLASLT=${rocBLAS_build_with_hipblaslt}
+    -DBUILD_WITH_HIPBLASLT=ON
     # TODO: With `Tensile_TEST_LOCAL_PATH` set, the resulting build path is ${Tensile_TEST_LOCAL_PATH}/build.
     "-DTensile_TEST_LOCAL_PATH=${CMAKE_CURRENT_SOURCE_DIR}/Tensile"
     # Since using a local Tensile vs fetched, unset TENSILE_VERSION to avoid
@@ -124,6 +121,7 @@ therock_cmake_subproject_declare(rocBLAS
     therock-msgpack-cxx
   RUNTIME_DEPS
     hip-clr
+    hipBLASLt
     ${rocBLAS_optional_runtime_deps}
 )
 therock_cmake_subproject_glob_c_sources(rocBLAS
