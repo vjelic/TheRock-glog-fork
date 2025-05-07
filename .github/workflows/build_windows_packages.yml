@@ -66,7 +66,9 @@ jobs:
           choco install ccache --yes
           choco install ninja --yes
           choco install strawberryperl --yes
+
           choco install mingw --yes
+          echo "$PATH;C:\ProgramData\mingw64\mingw64\bin" >> $GITHUB_PATH
 
       # After other installs, so MSVC get priority in the PATH.
       - name: Configure MSVC
