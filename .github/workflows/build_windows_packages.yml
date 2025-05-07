@@ -118,6 +118,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Configure Projects
+        env:
+          CC: ${{ env.VCToolsInstallDir }}/bin/Hostx64/x64/cl.exe   # Set to MSVC explicitly
+          CXX: ${{ env.VCToolsInstallDir }}/bin/Hostx64/x64/cl.exe  # Set to MSVC explicitly
         run: |
           # clear cache before build and after download
           ccache -z
