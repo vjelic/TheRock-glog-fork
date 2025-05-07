@@ -65,19 +65,9 @@ jobs:
         run: |
           choco install ccache --yes
           choco install ninja --yes
-
-      # Note: this has side effects we may not want, such as setting the C/C++
-      # compiler to gcc! We could instead install Strawberry Perl
-      # (including gfortran.exe) directly.
-      - name: Set up perl
-        uses: shogo82148/actions-setup-perl@22423f01bde48fb88785c007e3166fbbbd8e892a # v1.34.0
-        with:
-          perl-version: "5.40"
-          distribution: strawberry
+          choco install strawberryperl --yes
 
       # After other installs, so MSVC get priority in the PATH.
-      # Ordering may still matter even if we install Strawberry Perl directly
-      # and drop the explicit CC/CXX env vars below.
       - name: Configure MSVC
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
@@ -123,9 +113,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Configure Projects
-        env:
-          CC: ${{ env.VCToolsInstallDir }}/bin/Hostx64/x64/cl.exe   # Set to MSVC explicitly
-          CXX: ${{ env.VCToolsInstallDir }}/bin/Hostx64/x64/cl.exe  # Set to MSVC explicitly
         run: |
           # clear cache before build and after download
           ccache -z
