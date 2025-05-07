@@ -66,6 +66,17 @@ jobs:
           choco install ccache --yes
           choco install ninja --yes
 
+      # The next few steps install Strawberry Perl, which includes gfortran.
+      # Perl is used for a few utilities in sub-project CMake files.
+      # Fortran is used by some sub-projects.
+      # Eventually we could at least drop the Perl requirement, then maybe
+      # install Fortran from some other source.
+
+      # Note: this action is deprecated, we could instead install winget on our
+      # self-hosted runners ahead of time.
+      - name: Install winget
+        uses: Cyberboss/install-winget@d1b590c5dd8bf4f814102464129f281a64566065 # untagged
+
       - name: Download Strawberry Perl
         shell: cmd
         run: |
