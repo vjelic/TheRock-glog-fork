@@ -62,11 +62,12 @@ jobs:
           python-version: "3.12"
 
       - name: Install requirements
+        shell: cmd
         run: |
-          choco install ccache --yes
-          choco install ninja --yes
-          choco install strawberryperl --yes
-          echo $PATH >> $GITHUB_PATH
+          choco install --no-progress -y ccache
+          choco install --no-progress -y ninja
+          choco install --no-progress -y strawberryperl
+          refreshenv
 
       # After other installs, so MSVC get priority in the PATH.
       - name: Configure MSVC
