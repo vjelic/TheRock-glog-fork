@@ -65,14 +65,11 @@ jobs:
         run: |
           choco install ccache --yes
           choco install ninja --yes
-          choco install strawberryperl --yes
 
-      # Note: this sets the CC and CXX environment variables to gcc, so we set
-      # them back to MSVC (cl.exe) below.
-      - uses: fortran-lang/setup-fortran@2bbdcb313d2b7e72d1d07caf87f3ef9f376d9224 # v1.6.3
-        with:
-          compiler: gcc
-          version: 13
+      - name: Download Strawberry Perl
+        shell: cmd
+        run: |
+          winget install -e --id StrawberryPerl.StrawberryPerl
 
       # After other installs, so MSVC get priority in the PATH.
       - name: Configure MSVC
@@ -120,9 +117,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Configure Projects
-        env:
-          CC: ${{ env.VCToolsInstallDir }}/bin/Hostx64/x64/cl.exe   # Set to MSVC explicitly
-          CXX: ${{ env.VCToolsInstallDir }}/bin/Hostx64/x64/cl.exe  # Set to MSVC explicitly
         run: |
           # clear cache before build and after download
           ccache -z
