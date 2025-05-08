@@ -144,7 +144,9 @@ jobs:
         env:
           CC: ${{ env.VCToolsInstallDir }}/bin/Hostx64/x64/cl.exe   # Set to MSVC explicitly
           CXX: ${{ env.VCToolsInstallDir }}/bin/Hostx64/x64/cl.exe  # Set to MSVC explicitly
-        run: cmake --build "${{ env.BUILD_DIR_BASH }}" -j $(nproc --all)
+        run: |
+          echo Running: cmake --build \"${{ env.BUILD_DIR_BASH }}\" $(nproc --all)
+          cmake --build "${{ env.BUILD_DIR_BASH }}" -j $(nproc --all)
 
       - name: Report
         if: ${{ !cancelled() }}
