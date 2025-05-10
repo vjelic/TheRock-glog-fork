@@ -8,6 +8,7 @@ on:
         default: ADHOCBUILD
       amdgpu_families:
         type: string
+        description: "(etc. gfx110X-dgpu)"
       project_name:
         type: string
         description: "Insert name of subproject (etc. hipBLASLt) to configure remote url and branch to fetch. Blank to disable."
@@ -26,6 +27,7 @@ on:
         default: ADHOCBUILD
       amdgpu_families:
         type: string
+        description: "(etc. gfx110X-dgpu)"
       project_name:
         type: string
         description: "Insert name of subproject (etc. hipBLASLt) to configure remote url and branch to fetch. Blank to disable."
