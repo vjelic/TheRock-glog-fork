@@ -99,12 +99,7 @@ jobs:
 
             echo [*] Fetching latest submodule commit from remote
             git submodule update --init --remote --force -- $proj_submodule_path
-                # python ./build_tools/fetch_sources.py \
-                #   --remote \
-                #   --no-apply-patches \
-                #   --projects $proj_name \
-                #   --no-include-math-libs \
-                #   --no-include-ml-frameworks 
+
             echo "[*] Bump submodule [$proj_name]:$(git submodule status -- $proj_submodule_path)"
               git \
                 -c user.name=therockbot \
