@@ -157,7 +157,10 @@ jobs:
                   --no-include-math-libs \
                   --no-include-ml-frameworks 
             echo "[*] Bump submodule [$proj_name]:$(git submodule status -- $proj_submodule_path)"
-            git commit -a -m "Bump submodule $proj_name with its remote in superproject" 
+              git commit \
+                -c user.name=therockbot \
+                -c user.email=therockbot@amd.com \
+                -a -m "Bump submodule $proj_name with its remote in superproject" 
           fi
 
           #Continue with normal fetching of sources
