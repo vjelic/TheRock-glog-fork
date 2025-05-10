@@ -8,6 +8,16 @@ on:
         default: ADHOCBUILD
       amdgpu_families:
         type: string
+      project_name:
+        type: string
+        description: "Insert name of subproject (etc. hipBLASLt) to configure remote url and branch to fetch. Blank to disable."
+      project_seturl:
+        type: string
+        description: "Insert url of subproject (etc. https://github.com/ROCm/hipBLASLt) "
+      project_branch:
+        type: string
+        description: "Insert name of branch (etc. develop) to configure remote url and branch to fetch"
+
 
   workflow_call:
     inputs:
@@ -16,6 +26,16 @@ on:
         default: ADHOCBUILD
       amdgpu_families:
         type: string
+      project_name:
+        type: string
+        description: "Insert name of subproject (etc. hipBLASLt) to configure remote url and branch to fetch. Blank to disable."
+      project_seturl:
+        type: string
+        description: "Insert url of subproject (etc. https://github.com/ROCm/hipBLASLt) "
+      project_branch:
+        type: string
+        description: "Insert name of branch (etc. develop) to configure remote url and branch to fetch"
+
 
 jobs:
   build_linux_packages:
@@ -61,6 +81,32 @@ jobs:
 
       - name: Fetch sources
         run: |
+          proj_name="${{ inputs.project_name }}"
+          proj_branch="${{ inputs.project_branch }}"
+          proj_seturl="${{ inputs.project_seturl }}"
+
+          #Only update submodule if set in github action inputs
+          if [ -n "$proj_name" ]; then
+            proj_submodule_path=$(git config --file .gitmodules --get submodule.$proj_name.path)
+            echo "[*] Setting remote url and branch for submodule [$proj_name]:"
+            echo "     path: $proj_submodule_path"
+            echo "     url: $proj_seturl"
+            echo "     branch: $proj_branch"
+            git submodule set-url -- $proj_submodule_path $proj_seturl
+            git submodule set-branch --branch $proj_branch -- $proj_submodule_path
+
+            echo [*] Fetching latest submodule commit from remote
+                python ./build_tools/fetch_sources.py \
+                  --remote \
+                  --no-apply-patches \
+                  --projects $proj_name \
+                  --no-include-math-libs \
+                  --no-include-ml-frameworks 
+            echo "[*] Bump submodule [$proj_name]:$(git submodule status -- $proj_submodule_path)"
+            git commit -a -m "Bump submodule $proj_name with its remote in superproject" 
+          fi
+
+          #Continue with normal fetching of sources
           ./build_tools/fetch_sources.py --jobs 12
 
       - name: Install python deps
