@@ -146,7 +146,7 @@ jobs:
 
           #Only update submodule if set in github action inputs
           if [ "$proj_name" ] || [ "$proj_seturl" ]; then
-            if [ ! "$proj_name" ]; then 
+            if [ ! "$proj_name" ]; then
               proj_name=$(basename "$proj_seturl")
               echo "[*] proj_name GHA Input not set, deriving from proj_seturl: [$proj_name]"
             else
@@ -170,7 +170,7 @@ jobs:
               git config --file .gitmodules --get-regexp ^submodule.$proj_name\.
 
 
-              echo "[*] Fetching latest submodule commit from remote"              
+              echo "[*] Fetching latest submodule commit from remote"
               git submodule sync -- $proj_submodule_path
               git submodule update --init --remote --force -- $proj_submodule_path
               if [ $? -gt 0 ]; then
