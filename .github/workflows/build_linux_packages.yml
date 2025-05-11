@@ -85,7 +85,7 @@ jobs:
           proj_branch="${{ inputs.project_branch }}"
           proj_seturl="${{ inputs.project_seturl }}"
 
-                    echo "[*] Fetch submodule from remote using GHA inputs:"
+          echo "[*] Fetch submodule from remote using GHA inputs:"
           echo "     proj_name: [$proj_name]"
           echo "     proj_path: [$proj_submodule_path]"
           echo "     proj_seturl: [$proj_seturl]"
@@ -98,7 +98,7 @@ jobs:
               echo "[*] proj_name GHA Input not set, deriving from proj_seturl: [$proj_name]"
             else
               echo "[*] proj_name GHA Input set to: [$proj_name]"
-            fi 
+            fi
 
             proj_submodule_path=$(git config --file .gitmodules --get submodule.$proj_name.path)
             
@@ -109,7 +109,7 @@ jobs:
               echo "[*] Submodule status [$proj_name]:$(git submodule status -- $proj_submodule_path)"
 
               echo "[*] Setting remote url and branch for submodule [$proj_name]"
-              
+
               [ "$proj_seturl" ] && git submodule set-url -- $proj_submodule_path $proj_seturl
               [ "$proj_branch" ] && git submodule set-branch --branch $proj_branch -- $proj_submodule_path
 
