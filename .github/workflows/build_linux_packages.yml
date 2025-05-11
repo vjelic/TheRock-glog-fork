@@ -101,7 +101,7 @@ jobs:
             fi
 
             proj_submodule_path=$(git config --file .gitmodules --get submodule.$proj_name.path)
-            
+
             if [ "$proj_submodule_path" ]; then
               echo "[*] Existing submodule config for [$proj_name]:"
               git config --file .gitmodules --get-regexp ^submodule.$proj_name\.
