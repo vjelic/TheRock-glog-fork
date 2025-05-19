@@ -1,6 +1,6 @@
 # Releases
 
-This is a quick overview of how to consume our current build and release [artifacts](docs/development/artifacts.md).
+This is a quick overview of how to consume our current build, release [artifacts](docs/development/artifacts.md), and Python packages.
 
 ## Current state
 
@@ -24,7 +24,7 @@ popd
 
 ### From per-commit CI builds
 
-Our CI builds artifacts need to be flattened to be used. Leverage the `build_tools/fileset_tool.py artifact-flatten` command. You will need to have a [checkout](README.md#Checkout-Sources) in ${SOURCE_DIR} to leverage this tool and a Python environment.
+Our CI builds artifacts which need to be "flattened" by the `build_tools/fileset_tool.py artifact-flatten` command before they can be used. You will need to have a checkout (see for example [Clone and fetch sources](https://github.com/ROCm/TheRock/blob/main/docs/development/windows_support.md#clone-and-fetch-sources)) in `${SOURCE_DIR}` to use this tool and a Python environment.
 
 ```bash
 echo "Unpacking artifacts"
@@ -80,3 +80,61 @@ popd
 - [Packages](https://github.com/orgs/ROCm/packages?repo_name=TheRock): We currently publish docker images for LLVM targets we support (as well as a container for our build machines)
 
 - [Per-commit CI builds](https://github.com/ROCm/TheRock/actions/workflows/ci.yml?query=branch%3Amain+is%3Asuccess): Each of our latest passing CI builds has its own artifacts you can leverage. This is the latest and greatest! We will eventually support a nightly release that is at a higher quality bar than CI. Note a quick recipe for getting all of these from the s3 bucket is to use this quick command `aws s3 cp s3://therock-artifacts . --recursive --exclude "*" --include "${RUN_ID}-${OPERATING_SYSTEM}/*.tar.xz" --no-sign-request` where ${RUN_ID} is the runner id you selected (see the URL). Check the [AWS docs](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to get the aws cli.
+
+## Installing TheRock using pip
+
+We leverage `pip` as a convient way to install pre-build libraries and tools. The Python packages do not provide Python APIs for import or usage.
+
+### Support status
+
+|         | Python packages |
+| ------- | --------------- |
+| Linux   | ✅ Supported    |
+| Windows | ⚪Planned       |
+
+### Installing Python packages
+
+> [!TIP]
+> We highly recommend working within a [Python virtual environment](https://docs.python.org/3/library/venv.html)
+>
+> ```bash
+> python -m venv .venv
+> source .venv/bin/activate
+> ```
+>
+> Multiple virtual environments can be present on a system at a time, allowing you to switch between them at will.
+
+> [!WARNING]
+> If you _really_ want a system-wide install, you can pass `--break-system-packages` to `pip` outside a virtual enivornment.
+> In this case, commandline interface shims for executables are installed to `/usr/local/bin`, which normally has precedence over `/usr/bin` and might therefore conflict with a previous installation of ROCm.
+
+To install TheRock from pip, you must provide a link to the index page for your desired GPU architecture.
+One of the following commands can be used to install `rocm-sdk[libraries,devel]`.
+
+### gfx942-dcgpu
+
+```bash
+python -m pip install --find-links https://therock-nightly-python.s3.us-east-2.amazonaws.com/gfx94X-dcgpu/index.html \
+  rocm-sdk[libraries,devel]
+```
+
+### gfx110X-dcgpu
+
+```bash
+python -m pip install --find-links https://therock-nightly-python.s3.us-east-2.amazonaws.com/gfx110X-dcgpu/index.html \
+  rocm-sdk[libraries,devel]
+```
+
+### gfx110X-dcgpu
+
+```bash
+python -m pip install --find-links https://therock-nightly-python.s3.us-east-2.amazonaws.com/gfx1151/index.html \
+  rocm-sdk[libraries,devel]
+```
+
+### gfx110X-dcgpu
+
+```bash
+python -m pip install --find-links https://therock-nightly-python.s3.us-east-2.amazonaws.com/gfx120X-all/index.html \
+  rocm-sdk[libraries,devel]
+```
