@@ -3,6 +3,14 @@
 TheRock aims to support as many subprojects as possible on "native" Windows
 (as opposed to WSL 1 or WSL 2) using standard build tools like MSVC.
 
+> [!WARNING]
+> While Windows source builds of TheRock (including PyTorch!) are working for
+> some expert developers, this support is relatively new and is not yet mature.
+> There are several [known issues](#build-troubleshooting-and-known-issues) and
+> active development areas on the
+> [Windows platform support bringup](https://github.com/ROCm/TheRock/issues/36).
+> If you encounter any issues not yet represented there, please file an issue.
+
 ## Supported subprojects
 
 ROCm is composed of many subprojects, some of which are supported on Windows:
@@ -80,6 +88,11 @@ These instructions mostly mirror the instructions in the root
 - Long path support is required. As needed, enable long paths for your system:
 
   - https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry#registry-setting-to-enable-long-paths
+
+- There are some [known issues](https://github.com/ROCm/TheRock/issues/651)
+  with preexisting HIP SDK / ROCm installs causing errors during the build
+  process. Until these are resolved, we recommend uninstalling the HIP SDK
+  before trying to build TheRock.
 
 - A Dev Drive is recommended, due to how many source and build files are used.
   See the
