@@ -24,9 +24,18 @@ patches locally until they can be upstreamed. See the `patches` directory.
 It is highly recommended to use a virtual environment unless if in a throw-away
 container/CI environment.
 
+On Linux:
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+```
+
+On Windows:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate.bat
 ```
 
 ### Step 1: Preparing sources
@@ -34,7 +43,7 @@ source .venv/bin/activate
 ```bash
 # Checks out the most recent stable release branch of PyTorch, hipifies and
 # applies patches.
-./ptbuild.py checkout
+python pytorch_torch_repo.py checkout
 ```
 
 ### Step 2: Install Deps
@@ -42,7 +51,7 @@ source .venv/bin/activate
 Python deps:
 
 ```bash
-pip install -r src/requirements.txt
+pip install -r pytorch/requirements.txt
 pip install mkl-static mkl-include
 ```
 
