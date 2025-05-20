@@ -11,6 +11,8 @@ on:
       expect_failure:
         type: boolean
         default: false
+      extra_cmake_options:
+        type: string
 
   workflow_call:
     inputs:
@@ -21,6 +23,8 @@ on:
         type: string
       expect_failure:
         type: boolean
+      extra_cmake_options:
+        type: string
 
 # See the details regarding permissions from the link:
 # https://github.com/aws-actions/configure-aws-credentials?tab=readme-ov-file#oidc
@@ -85,6 +89,7 @@ jobs:
         run: |
           # Generate a new build id.
           package_version="${{ inputs.package_version }}"
+          extra_cmake_options="${{ inputs.extra_cmake_options }}"
           echo "Building package ${package_version}"
 
           # Build.
@@ -93,7 +98,9 @@ jobs:
             -DTHEROCK_AMDGPU_FAMILIES=${{env.AMDGPU_FAMILIES}} \
             -DTHEROCK_PACKAGE_VERSION="${package_version}" \
             -DTHEROCK_VERBOSE=ON \
-            -DBUILD_TESTING=ON
+            -DBUILD_TESTING=ON \
+            ${extra_cmake_options}
+
           cmake --build build --target therock-archives therock-dist
 
       - name: Test Packaging

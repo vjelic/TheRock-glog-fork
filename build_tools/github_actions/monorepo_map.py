@@ -3,7 +3,7 @@ This dictionary is used to map specific file directory changes to the correspond
 """
 monorepo_map = {
     "projects/hipcub": {
-        "flag": "-DTHEROCK_ENABLE_PRIM=ON",
+        "flag": "-DTHEROCK_ENABLE_PRIM=ON -DTHEROCK_ENABLE_ALL=OFF",
         "test": "test_hipcub"
     },
     "projects/rocprim": {
