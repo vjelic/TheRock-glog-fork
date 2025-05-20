@@ -20,6 +20,7 @@
 1. After drivers have been installed, run:
 
    ```bash
+   sudo modprobe amdgpu
    sudo usermod -a -G render,video $LOGNAME
    ```
 
