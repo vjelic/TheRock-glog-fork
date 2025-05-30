@@ -6,37 +6,42 @@ import sys
 from lib_python.repo_management import RockProjectRepo
 from pathlib import Path, PurePosixPath
 
-
 class RockProjectBuilder(configparser.ConfigParser):
     def __init__(self, rock_builder_root_dir, project_name):
         super(RockProjectBuilder, self).__init__(allow_no_value=True)
 
-        self.project_name = project_name
-        self.cfg_file_path = (
-            Path(rock_builder_root_dir) / "projects" / f"{project_name}.cfg"
-        )
+        self.is_posix = not any(platform.win32_ver())
+        self.project_name  = project_name
+        self.cfg_file_path = Path(rock_builder_root_dir) / "projects" / f"{project_name}.cfg"
         if self.cfg_file_path.exists():
             self.read(self.cfg_file_path)
         else:
-            raise ValueError(
-                "Could not find the configuration file: " + str(self.cfg_file_path)
-            )
-        self.repo_url = self.get("project_info", "repo_url")
-        self.project_version = self.get("project_info", "version")
+            raise ValueError("Could not find the configuration file: " + str(self.cfg_file_path))
+        self.repo_url = self.get('project_info', 'repo_url')
+        self.project_version = self.get('project_info', 'version')
         try:
-            self.clean_cmd = self.get("project_info", "clean_cmd")
+            if self.is_posix:
+                value = self.get('project_info', 'env_linux')
+                self.env_setup_cmd = list(filter(None, (x.strip() for x in value.splitlines())))
+            else:
+                value = self.get('project_info', 'env_dos')
+                self.env_setup_cmd = list(filter(None, (x.strip() for x in value.splitlines())))
+        except:
+            self.env_setup_cmd = None
+        try:
+            self.clean_cmd = self.get('project_info', 'clean_cmd')
         except:
             self.clean_cmd = None
         try:
-            self.configure_cmd = self.get("project_info", "configure_cmd")
+            self.configure_cmd = self.get('project_info', 'configure_cmd')
         except:
             self.configure_cmd = None
         try:
             is_dos = any(platform.win32_ver())
-            if is_dos and self.has_option("project_info", "build_cmd_dos"):
-                self.build_cmd = self.get("project_info", "build_cmd_dos")
+            if is_dos and self.has_option('project_info', 'build_cmd_dos'):
+                self.build_cmd = self.get('project_info', 'build_cmd_dos')
             else:
-                self.build_cmd = self.get("project_info", "build_cmd")
+                self.build_cmd = self.get('project_info', 'build_cmd')
             print("Build_cmd: ------------")
             print(self.build_cmd)
             print("------------------------")
@@ -44,19 +49,25 @@ class RockProjectBuilder(configparser.ConfigParser):
             print(ex1)
             self.build_cmd = None
         try:
-            self.install_cmd = self.get("project_info", "install_cmd")
+            self.install_cmd = self.get('project_info', 'install_cmd')
         except:
             self.install_cmd = None
         self.project_root_dir_path = Path(rock_builder_root_dir)
-        self.project_src_dir_path = (
-            Path(rock_builder_root_dir) / "src_projects" / self.project_name
-        )
-        self.project_build_dir_path = (
-            Path(rock_builder_root_dir) / "builddir" / self.project_name
-        )
-        self.patch_dir_path = (
-            Path(rock_builder_root_dir) / "patches" / self.project_name
-        )
+        self.project_src_dir_path = Path(rock_builder_root_dir) / "src_projects" / self.project_name
+        self.project_build_dir_path = Path(rock_builder_root_dir) / "builddir" / self.project_name
+        try:
+            self.cmd_execution_dir = self.get('project_info', 'cmd_exec_dir')
+        except:
+			# default value if not specified in the config-file
+            self.cmd_execution_dir = self.project_src_dir_path
+        self.patch_dir_path = Path(rock_builder_root_dir) / "patches" / self.project_name
+        self.project_repo = RockProjectRepo(self.project_name,
+                                       self.project_root_dir_path,
+                                       self.project_src_dir_path,
+                                       self.project_build_dir_path,
+                                       self.cmd_execution_dir,
+                                       self.repo_url,
+                                       self.project_version)
 
     # printout project builder specific info for logging and debug purposes
     def printout(self):
@@ -69,66 +80,32 @@ class RockProjectBuilder(configparser.ConfigParser):
         print("    Build dir:   " + self.project_version)
         print("------------------------")
 
-    def checkout(self):
-        project_repo = RockProjectRepo(
-            self.project_name,
-            self.project_root_dir_path,
-            self.project_src_dir_path,
-            self.project_build_dir_path,
-            self.repo_url,
-            self.project_version,
-        )
-        project_repo.do_checkout()
+    def do_env_setup(self):
+        self.project_repo.do_env_setup(self.env_setup_cmd)
+
+    def undo_env_setup(self):
+        self.project_repo.undo_env_setup(self.env_setup_cmd)
 
     def clean(self):
-        project_repo = RockProjectRepo(
-            self.project_name,
-            self.project_root_dir_path,
-            self.project_src_dir_path,
-            self.project_build_dir_path,
-            self.repo_url,
-            self.project_version,
-        )
-        project_repo.do_clean(self.clean_cmd)
+        self.project_repo.do_clean(self.clean_cmd)
+
+    def checkout(self):
+        self.project_repo.do_checkout()
 
     def configure(self):
-        project_repo = RockProjectRepo(
-            self.project_name,
-            self.project_root_dir_path,
-            self.project_src_dir_path,
-            self.project_build_dir_path,
-            self.repo_url,
-            self.project_version,
-        )
-        project_repo.do_configure(self.configure_cmd)
+        self.project_repo.do_configure(self.configure_cmd)
 
     def build(self):
         if self.build_cmd is not None:
-            project_repo = RockProjectRepo(
-                self.project_name,
-                self.project_root_dir_path,
-                self.project_src_dir_path,
-                self.project_build_dir_path,
-                self.repo_url,
-                self.project_version,
-            )
-            project_repo.do_build(self.build_cmd)
+            self.project_repo.do_build(self.build_cmd)
 
     def install(self):
-        project_repo = RockProjectRepo(
-            self.project_name,
-            self.project_root_dir_path,
-            self.project_src_dir_path,
-            self.project_build_dir_path,
-            self.repo_url,
-            self.project_version,
-        )
-        project_repo.do_install(self.install_cmd)
+        self.project_repo.do_install(self.install_cmd)
 
 
 class RockExternalProjectListManager(configparser.ConfigParser):
     def __init__(self, rock_builder_root_dir):
-        # default application list to builds
+		# default application list to builds
         self.cfg_file_path = Path(rock_builder_root_dir) / "projects" / "core_apps.pcfg"
         self.rock_builder_root_dir = rock_builder_root_dir
         super(RockExternalProjectListManager, self).__init__(allow_no_value=True)
@@ -136,12 +113,12 @@ class RockExternalProjectListManager(configparser.ConfigParser):
             self.read(self.cfg_file_path)
 
     def get_external_project_list(self):
-        value = self.get("projects", "project_list")
+        value = self.get('projects', 'project_list')
         # convert to list of project string names
         return list(filter(None, (x.strip() for x in value.splitlines())))
 
     def get_rock_project_builder(self, project_name):
-        ret = None
+        ret = None;
         try:
             ret = RockProjectBuilder(self.rock_builder_root_dir, project_name)
         except ValueError as e:
