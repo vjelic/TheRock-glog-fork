@@ -1,17 +1,17 @@
-From d3b8afe9cf5a8aee4a8151fd723e261d9e7163c0 Mon Sep 17 00:00:00 2001
+From d4766226a97bda7ac74acd938404f771702399c3 Mon Sep 17 00:00:00 2001
 From: Stella Laurenzo <stellaraccident@gmail.com>
 Date: Tue, 1 Apr 2025 18:49:42 -0700
-Subject: [PATCH 5/7] Preload rocm-sdk binaries if available.
+Subject: [PATCH 15/15] Preload rocm-sdk binaries if available.
 
 ---
- torch/__init__.py | 27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ torch/__init__.py | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/torch/__init__.py b/torch/__init__.py
-index f361c6b6cd..ec8c49e8eb 100644
+index a531f80bae..5eea9a4c79 100644
 --- a/torch/__init__.py
 +++ b/torch/__init__.py
-@@ -305,6 +305,29 @@ def _preload_cuda_deps(lib_folder: str, lib_name: str) -> None:
+@@ -299,6 +299,30 @@ def _preload_cuda_deps(lib_folder: str, lib_name: str) -> None:
  
  # See Note [Global dependencies]
  def _load_global_deps() -> None:
@@ -27,7 +27,8 @@ index f361c6b6cd..ec8c49e8eb 100644
 +        import rocm_sdk
 +        rocm_sdk.preload_libraries(
 +            "amdhip64",
-+            "rocprofiler-sdk-roctx",
++            # Enable once aqlprofiler is available.
++            #"rocprofiler-sdk-roctx",
 +            "hiprtc",
 +            "hipblas",
 +            "hipfft",
@@ -41,7 +42,7 @@ index f361c6b6cd..ec8c49e8eb 100644
      if _running_with_deploy() or platform.system() == "Windows":
          return
  
-@@ -2567,7 +2590,9 @@ def compile(
+@@ -2574,7 +2598,9 @@ def compile(
          nopython=fullgraph,
          dynamic=dynamic,
          disable=disable,
