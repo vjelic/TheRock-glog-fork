@@ -246,7 +246,7 @@ class RockProjectRepo():
             [
                 "git",
                 "am",
-                "--whitespace=nowarn",
+                "--ignore-whitespace",
                 "--committer-date-is-author-date"
             ] + patch_files,
             cwd=repo_path)
