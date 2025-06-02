@@ -42,9 +42,20 @@ def do_therock(prj_builder):
         if (args.checkout):
             prj_builder.printout()
             prj_builder.checkout()
-        if (args.configure):
+            # enable hipify always when doing checkout even if it is not requested explicitly as it's own command
+            args.hipify = True
+        if (args.hipify):
             prj_builder.printout()
-            prj_builder.configure()
+            prj_builder.hipify()
+        if (args.pre_config):
+            prj_builder.printout()
+            prj_builder.pre_config()
+        if (args.config):
+            prj_builder.printout()
+            prj_builder.config()
+        if (args.post_config):
+            prj_builder.printout()
+            prj_builder.post_config()
         if (args.build):
             prj_builder.printout()
             prj_builder.build()
@@ -146,31 +157,41 @@ parser = argparse.ArgumentParser(description='ROCK Project Builders')
 parser.add_argument('--project', type=str, help='select target for the action. Can be either one project or all projects in core_apps.pcfg.', default='all')
 parser.add_argument('--clean',  action='store_true', help='clean build files', default=False)
 parser.add_argument('--checkout',  action='store_true', help='checkout source code for the project', default=False)
-parser.add_argument('--configure',  action='store_true', help='configure project for build', default=False)
+parser.add_argument('--hipify',  action='store_true', help='hipify command for project', default=False)
+parser.add_argument('--pre_config',  action='store_true', help='pre-config command for project', default=False)
+parser.add_argument('--config',  action='store_true', help='config command for project', default=False)
+parser.add_argument('--post_config',  action='store_true', help='post-config command for project', default=False)
 parser.add_argument('--build',  action='store_true', help='build project', default=False)
 parser.add_argument('--install',  action='store_true', help='install build project', default=False)
 
 # Parse the arguments
 args = parser.parse_args()
 
-if ("--checkout" in sys.argv) or ("--clean" in sys.argv) or ("--configure" in sys.argv) or\
+if ("--checkout" in sys.argv) or ("--clean" in sys.argv) or ("--hipify" in sys.argv) or\
+   ("--pre_config" in sys.argv) or ("--config" in sys.argv) or ("--post_config" in sys.argv) or\
    ("--build" in sys.argv) or ("--install" in sys.argv):
-    print("checkout/clean/configure/build or install argument specified")
+    print("checkout/clean/hipify/pre_config/config/post_config/build or install argument specified")
 else:
-    #print("Action not specified.(checkout/clean/configure/build or install)")
+    #print("Action not specified.(checkout/hipify/clean/pre_config/config/post_config/build or install)")
     #print("Using default values")
     args.checkout=True
-    args.configure=True
+    args.hipify=True
+    args.pre_config=True
+    args.config=True
+    args.post_config=True
     args.build=True
     args.install=True
 
 # Access the arguments
 print("Actions Enabled:")
-print('    Checkout: ', args.checkout)
-print('    Clean:    ', args.clean)
-print('    Configure:', args.configure)
-print('    Build:    ', args.build)
-print('    Install:  ', args.install)
+print('    checkout: ', args.checkout)
+print('    clean:    ', args.clean)
+print('    hipify:    ', args.hipify)
+print('    pre_config:', args.pre_config)
+print('    config:', args.config)
+print('    post_config:', args.post_config)
+print('    build:    ', args.build)
+print('    install:  ', args.install)
 print('Projects:', args.project)
 
 project_manager = project_builder.RockExternalProjectListManager(rock_builder_home_dir)

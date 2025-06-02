@@ -33,10 +33,28 @@ class RockProjectBuilder(configparser.ConfigParser):
         except:
             self.clean_cmd = None
         try:
-            self.configure_cmd = self.get('project_info', 'configure_cmd')
+            self.hipify_cmd = self.get('project_info', 'hipify_cmd')
         except:
-            self.configure_cmd = None
+            self.hipify_cmd = None
         try:
+            self.pre_config_cmd = self.get('project_info', 'pre_config_cmd')
+        except:
+            self.pre_config_cmd = None
+        try:
+            if is_dos and self.has_option('project_info', 'configure_cmd'):
+                # old command
+                self.config_cmd = self.get('project_info', 'configure_cmd')
+            else:
+		        # new shorter version
+                self.config_cmd = self.get('project_info', 'config_cmd')
+        except:
+                self.config_cmd = None
+        try:
+            self.post_config_cmd = self.get('project_info', 'post_config_cmd')
+        except:
+            self.post_config_cmd = None
+        try:
+            build_cmd = None
             is_dos = any(platform.win32_ver())
             if is_dos and self.has_option('project_info', 'build_cmd_dos'):
                 self.build_cmd = self.get('project_info', 'build_cmd_dos')
@@ -92,8 +110,17 @@ class RockProjectBuilder(configparser.ConfigParser):
     def checkout(self):
         self.project_repo.do_checkout()
 
-    def configure(self):
-        self.project_repo.do_configure(self.configure_cmd)
+    def hipify(self):
+        self.project_repo.do_hipify(self.hipify_cmd)
+
+    def pre_config(self):
+        self.project_repo.do_pre_config(self.pre_config_cmd)
+
+    def config(self):
+        self.project_repo.do_config(self.config_cmd)
+
+    def post_config(self):
+        self.project_repo.do_post_config(self.post_config_cmd)
 
     def build(self):
         if self.build_cmd is not None:

@@ -316,6 +316,7 @@ class RockProjectRepo():
                     apply_patches_enabled=1,
                     hipify_enabled=1,
                     repo_remote_name="origin"):
+        print("do_checkout started")
         dot_git_subdir = self.project_src_dir / ".git"
         if dot_git_subdir.exists():
             #print(f"Not cloning repository ({dot_git_subdir} exists)")
@@ -333,8 +334,15 @@ class RockProjectRepo():
             fetch_args.extend(["--depth", str(repo_fetch_depth)])
         if repo_fetch_job_cnt:
             fetch_args.extend(["-j", str(repo_fetch_job_cnt)])
-        self.exec(["git", "fetch"] + fetch_args + ["origin", self.project_version_hashtag], cwd=self.project_src_dir)
-        self.exec(["git", "checkout", "FETCH_HEAD"], cwd=self.project_src_dir)
+        self.exec(["git", "reset", "--hard"], cwd=self.project_src_dir)
+        try:
+            self.exec(["git", "fetch"] + fetch_args + ["origin", "tag", self.project_version_hashtag], cwd=self.project_src_dir)
+            self.exec(["git", "checkout", self.project_version_hashtag], cwd=self.project_src_dir)
+        except:
+            # no git tag available, fetch and checkout other way
+            self.exec(["git", "fetch"] + fetch_args + ["origin", self.project_version_hashtag], cwd=self.project_src_dir)
+            self.exec(["git", "checkout", "FETCH_HEAD"], cwd=self.project_src_dir)
+        # add our own git tag to help with the create patches command
         self.exec(["git", "tag", "-f", TAG_UPSTREAM_DIFFBASE], cwd=self.project_src_dir)
         try:
             self.exec(["git", "submodule", "update", "--init", "--recursive"] + fetch_args, cwd=self.project_src_dir)
@@ -351,9 +359,10 @@ class RockProjectRepo():
             ],
             cwd=self.project_src_dir,
             stdout_devnull=True)
+
         self.git_config_ignore_submodules(self.project_src_dir)
 
-        # base patches
+        # apply base patches
         if apply_patches_enabled:
             self.apply_all_patches(self.project_src_dir,
                 self.project_patch_dir_base / self.repo_hashtag_to_patches_dir_name(self.project_version_hashtag),
@@ -361,44 +370,40 @@ class RockProjectRepo():
                 "base",
             )
 
-        # TODO: do_hipify execution and do_hipify patch execution after that needs to be handled via config
-        # files in future (do_hipify could be an operation done on config phase but then applying patches again
-        # does not suit well for traditional workflow. One solution would be to execute two specify in project config file
-        # two different actions:
-        # - execution of random code from the project (build_amd.py in pytorch)
-        # - apply_patches after that requesting to pick patches from the hipify dir
-        if hipify_enabled:
-            self.do_hipify()
+    def do_hipify(self, hipify_cmd):
+        print("do_hipify started")
+        if hipify_cmd:
+            ret = self.__exec_subprocess_cmd(hipify_cmd, self.project_exec_dir)
+            # Iterate over the base repository and all submodules. Because we process
+            # the root repo first, it will not add submodule changes.
+            repo_dir: Path = self.project_src_dir
+            all_paths = self.get_all_repositories(repo_dir)
+            for module_path in all_paths:
+                status = self.list_status(module_path)
+                if not status:
+                    # if no changes in repo, do not try to add and commit
+                    continue
+                print(f"HIPIFY made changes to {module_path}: Committing")
+                self.exec(["git", "add", "-A"], cwd=module_path)
+                self.exec(["git", "commit", "-m", HIPIFY_COMMIT_MESSAGE], cwd=module_path)
+                self.exec(["git", "tag", "-f", TAG_HIPIFY_DIFFBASE], cwd=module_path)
+            print("do_hipify, hipified files committed")
+        # always apply the patches from hipified directory. (even if hipify_cmd was not specified in config file for project)
+        self.apply_all_patches(self.project_src_dir,
+            self.project_patch_dir_base / self.repo_hashtag_to_patches_dir_name(self.project_version_hashtag),
+            self.project_name,
+            "hipified",
+        )
+        print("do_hipify, hipified patches applied")
 
-        # hipified patches
-        if apply_patches_enabled:
-            self.apply_all_patches(self.project_src_dir,
-                self.project_patch_dir_base / self.repo_hashtag_to_patches_dir_name(self.project_version_hashtag),
-                self.project_name,
-                "hipified",
-            )
+    def do_pre_config(self, pre_config_cmd):
+        return self.__exec_subprocess_cmd(pre_config_cmd, self.project_exec_dir)
 
-    #TODO: This needs to be refactored to be configurable via project specific cfg files in rockbuilder
-    def do_hipify(self):
-        repo_dir: Path = self.project_src_dir
-        print(f"Hipifying {repo_dir}")
-        build_amd_path = repo_dir / "tools" / "amd_build" / "build_amd.py"
-        if build_amd_path.exists():
-            self.exec([sys.executable, build_amd_path], cwd=repo_dir)
-        # Iterate over the base repository and all submodules. Because we process
-        # the root repo first, it will not add submodule changes.
-        all_paths = self.get_all_repositories(repo_dir)
-        for module_path in all_paths:
-            status = self.list_status(module_path)
-            if not status:
-                continue
-            print(f"HIPIFY made changes to {module_path}: Committing")
-            self.exec(["git", "add", "-A"], cwd=module_path)
-            self.exec(["git", "commit", "-m", HIPIFY_COMMIT_MESSAGE], cwd=module_path)
-            self.exec(["git", "tag", "-f", TAG_HIPIFY_DIFFBASE], cwd=module_path)
+    def do_config(self, config_cmd):
+        return self.__exec_subprocess_cmd(config_cmd, self.project_exec_dir)
 
-    def do_configure(self, configure_cmd):
-        return self.__exec_subprocess_cmd(configure_cmd, self.project_exec_dir)
+    def do_post_config(self, post_config_cmd):
+        return self.__exec_subprocess_cmd(post_config_cmd, self.project_exec_dir)
 
     def do_build(self, build_cmd):
        """
