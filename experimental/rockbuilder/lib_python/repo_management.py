@@ -275,25 +275,31 @@ class RockProjectRepo():
         return version_ref
 
     def do_env_setup(self, env_setup_cmd_list):
-        print(env_setup_cmd_list)
-        for key_value_str in env_setup_cmd_list:
-            print(key_value_str)
-            key_value_arr = key_value_str.split('=', 1)
-            if len(key_value_arr) == 2:
-                env_var_key   = key_value_arr[0].strip()
-                env_var_new_value = key_value_arr[1].strip()
-                env_var_old_value = os.environ.get(env_var_key)
-                if env_var_new_value:
-                    # replace ${ENV_SYNTAX} with it's real values on string
-                    expanded_new_value = os.path.expandvars(env_var_new_value)
-                    #print("new key: " + env_var_key)
-                    #print("new value: " + expanded_new_value)
-                    os.environ[env_var_key] = expanded_new_value
-                self.orig_env_variables_hashtable[env_var_key] = env_var_old_value
-            else:
-                print("Error, Invalid environment variable key-value pair in project: " + self.project_name)
-                print("Key: " + key_value_str)
-                sys.exit(1)
+        if env_setup_cmd_list:
+            print(env_setup_cmd_list)
+            for key_value_str in env_setup_cmd_list:
+                print(key_value_str)
+                key_value_arr = key_value_str.split('=', 1)
+                if len(key_value_arr) == 2:
+                    env_var_key   = key_value_arr[0].strip()
+                    env_var_new_value = key_value_arr[1].strip()
+                    env_var_old_value = os.environ.get(env_var_key)
+                    if env_var_new_value:
+                        # replace ${ENV_SYNTAX} with it's real values on string
+                        expanded_new_value = os.path.expandvars(env_var_new_value)
+                        #print("new key: " + env_var_key)
+                        #print("new value: " + expanded_new_value)
+                        os.environ[env_var_key] = expanded_new_value
+                    self.orig_env_variables_hashtable[env_var_key] = env_var_old_value
+                else:
+                    print("Error, Invalid environment variable key-value pair in project: " + self.project_name)
+                    print("Key: " + key_value_str)
+                    sys.exit(1)
+        else:
+            print("No environment settings specified")
+        print("------ env-settings start ----------")
+        self.__exec_subprocess_cmd("env", ".")
+        print("------ env-settings end ----------")
 
     def undo_env_setup(self, env_setup_cmd_list):
         print("undo_env_setup")

@@ -19,15 +19,26 @@ class RockProjectBuilder(configparser.ConfigParser):
             raise ValueError("Could not find the configuration file: " + str(self.cfg_file_path))
         self.repo_url = self.get('project_info', 'repo_url')
         self.project_version = self.get('project_info', 'version')
+        # environment setup can have common and os-specific sections that needs to be appended together
+        self.env_setup_cmd = None
+        try:
+            value = self.get('project_info', 'env_common')
+            self.env_setup_cmd = list(filter(None, (x.strip() for x in value.splitlines())))
+        except:
+            pass
         try:
             if self.is_posix:
                 value = self.get('project_info', 'env_linux')
-                self.env_setup_cmd = list(filter(None, (x.strip() for x in value.splitlines())))
+                temp_env_list = list(filter(None, (x.strip() for x in value.splitlines())))
             else:
                 value = self.get('project_info', 'env_dos')
-                self.env_setup_cmd = list(filter(None, (x.strip() for x in value.splitlines())))
+                temp_env_list = list(filter(None, (x.strip() for x in value.splitlines())))
+            if self.env_setup_cmd:
+                self.env_setup_cmd.extend(temp_env_list)
+            else:
+                self.env_setup_cmd = temp_env_list
         except:
-            self.env_setup_cmd = None
+            pass
         try:
             self.clean_cmd = self.get('project_info', 'clean_cmd')
         except:
