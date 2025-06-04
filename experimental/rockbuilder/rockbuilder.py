@@ -30,42 +30,45 @@ def do_therock(prj_builder):
     ret = False
     if (prj_builder is not None):
         # setup first the project specific environment variables
-        prj_builder.printout()
+        prj_builder.printout("start")
         prj_builder.do_env_setup()
-        print("do_env_setup done")
+        #print("do_env_setup done")
 
         # then do all possible commands requested for the project
         # multiple steps possible, so do not use else's here
+        if (args.init):
+            prj_builder.printout("init")
+            prj_builder.init()
         if (args.clean):
-            prj_builder.printout()
+            prj_builder.printout("clean")
             prj_builder.clean()
         if (args.checkout):
-            prj_builder.printout()
+            prj_builder.printout("checkout")
             prj_builder.checkout()
             # enable hipify always when doing checkout even if it is not requested explicitly as it's own command
             args.hipify = True
         if (args.hipify):
-            prj_builder.printout()
+            prj_builder.printout("hipify")
             prj_builder.hipify()
         if (args.pre_config):
-            prj_builder.printout()
+            prj_builder.printout("pre_config")
             prj_builder.pre_config()
         if (args.config):
-            prj_builder.printout()
+            prj_builder.printout("config")
             prj_builder.config()
         if (args.post_config):
-            prj_builder.printout()
+            prj_builder.printout("post_config")
             prj_builder.post_config()
         if (args.build):
-            prj_builder.printout()
+            prj_builder.printout("build")
             prj_builder.build()
         if (args.install):
-            prj_builder.printout()
+            prj_builder.printout("install")
             prj_builder.install()
         # in the end restore original environment variables
         # so that they do not cause problem for next possible project handled
-        prj_builder.printout()
         prj_builder.undo_env_setup()
+        prj_builder.printout("done")
         ret = True
     return ret;
 
@@ -85,25 +88,34 @@ os.environ["ROCK_BUILDER_BUILD_DIR"] = os.environ["ROCK_BUILDER_HOME_DIR"] + "/b
 
 if "ROCM_HOME" not in os.environ:
     rocm_home_root_path = Path(rock_builder_home_dir) / "../../build/dist/rocm"
+    rocm_home_root_path = rocm_home_root_path.resolve()
+    print("p: " + rocm_home_root_path.as_posix())
     #print("ROCM_HOME: " + rocm_home_root_path)
     if rocm_home_root_path.exists():
-        os.environ["ROCM_HOME"] = str(rocm_home_root_path)
+        os.environ["ROCM_HOME"] = rocm_home_root_path.as_posix()
         rocm_home_bin_path = rocm_home_root_path / "bin"
         rocm_home_lib_path = rocm_home_root_path / "lib"
+        rocm_home_bin_path = rocm_home_bin_path.resolve()
+        rocm_home_lib_path = rocm_home_lib_path.resolve()
+        rocm_home_llvm_path = rocm_home_root_path / "lib" / "llvm" / "bin"
+        rocm_home_llvm_path = rocm_home_llvm_path.resolve()
         if rocm_home_bin_path.exists():
             if rocm_home_lib_path.exists():
-                if not is_directory_in_path_env_variable("PATH", str(rocm_home_bin_path)):
-                    #print("Adding " + str(rocm_home_bin_path) + " to PATH")
-                    os.environ["PATH"] = str(rocm_home_bin_path) + os.pathsep + os.environ.get("PATH", "")
-                if not is_directory_in_path_env_variable(ENV_VARIABLE_NAME__LIB, str(rocm_home_lib_path)):
-                    #print("Adding " + str(rocm_home_lib_path) + " to " + ENV_VARIABLE_NAME__LIB)
-                    os.environ[ENV_VARIABLE_NAME__LIB] = str(rocm_home_lib_path) + os.pathsep + os.environ.get(ENV_VARIABLE_NAME__LIB, "")
+                if not is_directory_in_path_env_variable("PATH", rocm_home_bin_path.as_posix()):
+                    #print("Adding " + rocm_home_bin_path.as_posix() + " to PATH")
+                    os.environ["PATH"] = rocm_home_bin_path.as_posix() + os.pathsep + os.environ.get("PATH", "")
+                if not is_directory_in_path_env_variable("PATH", rocm_home_llvm_path.as_posix()):
+                    #print("Adding " + rocm_home_bin_path.as_posix() + " to PATH")
+                    os.environ["PATH"] = rocm_home_llvm_path.as_posix() + os.pathsep + os.environ.get("PATH", "")
+                if not is_directory_in_path_env_variable(ENV_VARIABLE_NAME__LIB, rocm_home_lib_path.as_posix()):
+                    #print("Adding " + rocm_home_lib_path.as_posix() + " to " + ENV_VARIABLE_NAME__LIB)
+                    os.environ[ENV_VARIABLE_NAME__LIB] = rocm_home_lib_path.as_posix() + os.pathsep + os.environ.get(ENV_VARIABLE_NAME__LIB, "")
             else:
-                print("Error, could not find directory " + str(rocm_home_lib_path))
+                print("Error, could not find directory " + rocm_home_lib_path.as_posix())
         else:
-            print("Error, could not find directory " + str(rocm_home_bin_path))
+            print("Error, could not find directory " + rocm_home_bin_path.as_posix())
     else:
-        print("Error, ROCM_HOME was not defined and ROCM build could not be found from the expected location: " + str(rocm_home_root_path))
+        print("Error, ROCM_HOME was not defined and ROCM build could not be found from the expected location: " + rocm_home_root_path.as_posix())
         sys.exit(1)
 
 python_home_dir = os.path.dirname(sys.executable)
@@ -155,6 +167,7 @@ parser = argparse.ArgumentParser(description='ROCK Project Builders')
 
 # Add arguments
 parser.add_argument('--project', type=str, help='select target for the action. Can be either one project or all projects in core_apps.pcfg.', default='all')
+parser.add_argument('--init',  action='store_true', help='init build environment by installing dependencies', default=False)
 parser.add_argument('--clean',  action='store_true', help='clean build files', default=False)
 parser.add_argument('--checkout',  action='store_true', help='checkout source code for the project', default=False)
 parser.add_argument('--hipify',  action='store_true', help='hipify command for project', default=False)
@@ -167,14 +180,15 @@ parser.add_argument('--install',  action='store_true', help='install build proje
 # Parse the arguments
 args = parser.parse_args()
 
-if ("--checkout" in sys.argv) or ("--clean" in sys.argv) or ("--hipify" in sys.argv) or\
+if ("--checkout" in sys.argv) or ("--clean" in sys.argv) or ("--init" in sys.argv) or ("--hipify" in sys.argv) or\
    ("--pre_config" in sys.argv) or ("--config" in sys.argv) or ("--post_config" in sys.argv) or\
    ("--build" in sys.argv) or ("--install" in sys.argv):
-    print("checkout/clean/hipify/pre_config/config/post_config/build or install argument specified")
+    print("checkout/init/clean/hipify/pre_config/config/post_config/build or install argument specified")
 else:
-    #print("Action not specified.(checkout/hipify/clean/pre_config/config/post_config/build or install)")
+    #print("Action not specified.(checkout/init/clean/hipify/pre_config/config/post_config/build or install)")
     #print("Using default values")
     args.checkout=True
+    args.init=True
     args.hipify=True
     args.pre_config=True
     args.config=True
@@ -185,6 +199,7 @@ else:
 # Access the arguments
 print("Actions Enabled:")
 print('    checkout: ', args.checkout)
+print('    init:    ', args.init)
 print('    clean:    ', args.clean)
 print('    hipify:    ', args.hipify)
 print('    pre_config:', args.pre_config)

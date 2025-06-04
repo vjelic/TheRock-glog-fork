@@ -33,7 +33,7 @@ class RockProjectRepo():
         self.project_version_hashtag = project_version_hashtag
         self.project_patch_dir_base = Path(project_root_dir) / "patches" / project_name
         self.orig_env_variables_hashtable = dict()
-        os.environ["ROCK_BUILDER_APP_SRC_DIR"] = str(project_src_dir)
+        os.environ["ROCK_BUILDER_APP_SRC_DIR"] = project_src_dir.as_posix()
 
     # private methods
     def __exec_subprocess_cmd(self, exec_cmd, exec_dir):
@@ -46,9 +46,10 @@ class RockProjectRepo():
             #result = subprocess.run(exec_cmd, shell=True, capture_output=True, text=True)
             result = subprocess.run(exec_cmd, cwd=exec_dir, shell=True, capture_output=False, text=True)
             if result.returncode == 0:
-                print(result.stdout)
-                ret = False
+                if result.stdout:
+                    print(result.stdout)
             else:
+                ret = False
                 print(result.stdout)
                 print(f"Error: {result.stderr}")
         return ret
@@ -275,6 +276,7 @@ class RockProjectRepo():
         return version_ref
 
     def do_env_setup(self, env_setup_cmd_list):
+        ret = True
         if env_setup_cmd_list:
             print(env_setup_cmd_list)
             for key_value_str in env_setup_cmd_list:
@@ -294,14 +296,16 @@ class RockProjectRepo():
                 else:
                     print("Error, Invalid environment variable key-value pair in project: " + self.project_name)
                     print("Key: " + key_value_str)
-                    sys.exit(1)
+                    ret = False
         else:
             print("No environment settings specified")
         print("------ env-settings start ----------")
         self.__exec_subprocess_cmd("env", ".")
         print("------ env-settings end ----------")
+        return ret
 
     def undo_env_setup(self, env_setup_cmd_list):
+        ret = True
         print("undo_env_setup")
         for env_var_key, orig_env_var_value in self.orig_env_variables_hashtable.items():
             #print("stored restore key: " + env_var_key)
@@ -312,6 +316,10 @@ class RockProjectRepo():
                 #print("restore: " + env_var_key)
                 #print("value: " + orig_env_var_value)
                 os.environ[env_var_key] = orig_env_var_value
+        return ret
+
+    def do_init(self, init_cmd):
+        return self.__exec_subprocess_cmd(init_cmd, self.project_exec_dir)
 
     def do_clean(self, clean_cmd):
         return self.__exec_subprocess_cmd(clean_cmd, self.project_exec_dir)
@@ -322,6 +330,7 @@ class RockProjectRepo():
                     apply_patches_enabled=1,
                     hipify_enabled=1,
                     repo_remote_name="origin"):
+        ret = True
         print("do_checkout started")
         dot_git_subdir = self.project_src_dir / ".git"
         if dot_git_subdir.exists():
@@ -375,8 +384,10 @@ class RockProjectRepo():
                 self.project_name,
                 "base",
             )
+        return ret
 
     def do_hipify(self, hipify_cmd):
+        ret = True
         print("do_hipify started")
         if hipify_cmd:
             ret = self.__exec_subprocess_cmd(hipify_cmd, self.project_exec_dir)
@@ -401,6 +412,7 @@ class RockProjectRepo():
             "hipified",
         )
         print("do_hipify, hipified patches applied")
+        return ret
 
     def do_pre_config(self, pre_config_cmd):
         return self.__exec_subprocess_cmd(pre_config_cmd, self.project_exec_dir)
@@ -453,14 +465,17 @@ class RockProjectRepo():
                     ret = self.__exec_subprocess_cmd(inst_cmd, self.project_exec_dir)
                     if not ret:
                         print("Install failed for " + self.project_name)
+                        print("Failed command: " + inst_cmd)
                         ret = False
             else:
                 ret = self.__exec_subprocess_cmd(build_cmd, self.project_exec_dir)
         return ret
 
     def do_save_patches(self):
+        ret = True
         patches_dir = self.project_patch_dir_base / self.repo_hashtag_to_patches_dir_name(self.project_version_hashtag)
         self.save_repo_patches(self.project_src_dir, patches_dir / self.project_name)
         relative_sm_paths = self.list_submodules(self.project_src_dir, relative=True)
         for relative_sm_path in relative_sm_paths:
             self.save_repo_patches(self.project_src_dir / relative_sm_path, patches_dir / relative_sm_path)
+        return ret

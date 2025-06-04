@@ -16,7 +16,7 @@ class RockProjectBuilder(configparser.ConfigParser):
         if self.cfg_file_path.exists():
             self.read(self.cfg_file_path)
         else:
-            raise ValueError("Could not find the configuration file: " + str(self.cfg_file_path))
+            raise ValueError("Could not find the configuration file: " + self.cfg_file_path.as_posix())
         self.repo_url = self.get('project_info', 'repo_url')
         self.project_version = self.get('project_info', 'version')
         # environment setup can have common and os-specific sections that needs to be appended together
@@ -31,7 +31,7 @@ class RockProjectBuilder(configparser.ConfigParser):
                 value = self.get('project_info', 'env_linux')
                 temp_env_list = list(filter(None, (x.strip() for x in value.splitlines())))
             else:
-                value = self.get('project_info', 'env_dos')
+                value = self.get('project_info', 'env_windows')
                 temp_env_list = list(filter(None, (x.strip() for x in value.splitlines())))
             if self.env_setup_cmd:
                 self.env_setup_cmd.extend(temp_env_list)
@@ -39,6 +39,10 @@ class RockProjectBuilder(configparser.ConfigParser):
                 self.env_setup_cmd = temp_env_list
         except:
             pass
+        try:
+            self.init_cmd = self.get('project_info', 'init_cmd')
+        except:
+            self.init_cmd = None
         try:
             self.clean_cmd = self.get('project_info', 'clean_cmd')
         except:
@@ -52,14 +56,9 @@ class RockProjectBuilder(configparser.ConfigParser):
         except:
             self.pre_config_cmd = None
         try:
-            if is_dos and self.has_option('project_info', 'configure_cmd'):
-                # old command
-                self.config_cmd = self.get('project_info', 'configure_cmd')
-            else:
-		        # new shorter version
-                self.config_cmd = self.get('project_info', 'config_cmd')
+            self.config_cmd = self.get('project_info', 'config_cmd')
         except:
-                self.config_cmd = None
+            self.config_cmd = None
         try:
             self.post_config_cmd = self.get('project_info', 'post_config_cmd')
         except:
@@ -67,8 +66,8 @@ class RockProjectBuilder(configparser.ConfigParser):
         try:
             build_cmd = None
             is_dos = any(platform.win32_ver())
-            if is_dos and self.has_option('project_info', 'build_cmd_dos'):
-                self.build_cmd = self.get('project_info', 'build_cmd_dos')
+            if is_dos and self.has_option('project_info', 'build_cmd_windows'):
+                self.build_cmd = self.get('project_info', 'build_cmd_windows')
             else:
                 self.build_cmd = self.get('project_info', 'build_cmd')
             print("Build_cmd: ------------")
@@ -99,47 +98,75 @@ class RockProjectBuilder(configparser.ConfigParser):
                                        self.project_version)
 
     # printout project builder specific info for logging and debug purposes
-    def printout(self):
-        print("Project: ---------------")
+    def printout(self, phase):
+        print("Project build phase " + phase + ": -----")
         print("    Name: " + self.project_name)
-        print("    Config path: " + str(self.cfg_file_path))
+        print("    Config path: " + self.cfg_file_path.as_posix())
         print("    Version:     " + self.project_version)
-        print("    Source_dir:  " + str(self.project_build_dir_path))
-        print("    Patch_dir:   " + str(self.patch_dir_path))
+        print("    Source_dir:  " + self.project_build_dir_path.as_posix())
+        print("    Patch_dir:   " + self.patch_dir_path.as_posix())
         print("    Build dir:   " + self.project_version)
         print("------------------------")
 
+    def printout_error_and_terminate(self, phase):
+        self.printout(phase)
+        print(phase + " failed")
+        sys.exit(1)
+
     def do_env_setup(self):
-        self.project_repo.do_env_setup(self.env_setup_cmd)
+        res = self.project_repo.do_env_setup(self.env_setup_cmd)
+        if not res:
+            self.printout_error_and_terminate("env_setup")
 
     def undo_env_setup(self):
-        self.project_repo.undo_env_setup(self.env_setup_cmd)
+        res = self.project_repo.undo_env_setup(self.env_setup_cmd)
+        if not res:
+            self.printout_error_and_terminate("undo_env_setup")
+
+    def init(self):
+        res = self.project_repo.do_clean(self.init_cmd)
+        if not res:
+            self.printout_error_and_terminate("init")
 
     def clean(self):
-        self.project_repo.do_clean(self.clean_cmd)
+        res = self.project_repo.do_clean(self.clean_cmd)
+        if not res:
+            self.printout_error_and_terminate("clean")
 
     def checkout(self):
-        self.project_repo.do_checkout()
+        res = self.project_repo.do_checkout()
+        if not res:
+            self.printout_error_and_terminate("checkout")
 
     def hipify(self):
-        self.project_repo.do_hipify(self.hipify_cmd)
+        res = self.project_repo.do_hipify(self.hipify_cmd)
+        if not res:
+            self.printout_error_and_terminate("hipify")
 
     def pre_config(self):
-        self.project_repo.do_pre_config(self.pre_config_cmd)
+        res = self.project_repo.do_pre_config(self.pre_config_cmd)
+        if not res:
+            self.printout_error_and_terminate("pre_config")
 
     def config(self):
-        self.project_repo.do_config(self.config_cmd)
+        res = self.project_repo.do_config(self.config_cmd)
+        if not res:
+            self.printout_error_and_terminate("config")
 
     def post_config(self):
-        self.project_repo.do_post_config(self.post_config_cmd)
+        res = self.project_repo.do_post_config(self.post_config_cmd)
+        if not res:
+            self.printout_error_and_terminate("post_config")
 
     def build(self):
-        if self.build_cmd is not None:
-            self.project_repo.do_build(self.build_cmd)
+        res = self.project_repo.do_build(self.build_cmd)
+        if not res:
+            self.printout_error_and_terminate("build")
 
     def install(self):
-        self.project_repo.do_install(self.install_cmd)
-
+        res = self.project_repo.do_install(self.install_cmd)
+        if not res:
+            self.printout_error_and_terminate("install")
 
 class RockExternalProjectListManager(configparser.ConfigParser):
     def __init__(self, rock_builder_root_dir):
