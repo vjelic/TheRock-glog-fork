@@ -72,7 +72,8 @@ class RockProjectRepo():
 
     def __replace_env_variables(self, cmd_str):
         ret = os.path.expandvars(cmd_str)
-        #print(ret)
+        #print("orig: " + cmd_str)
+        #print("new: " + ret)
         return ret
 
     def __get_latest_file(self, path, extension=None):
@@ -289,8 +290,9 @@ class RockProjectRepo():
                     if env_var_new_value:
                         # replace ${ENV_SYNTAX} with it's real values on string
                         expanded_new_value = os.path.expandvars(env_var_new_value)
-                        #print("new key: " + env_var_key)
-                        #print("new value: " + expanded_new_value)
+                        #print("key: " + env_var_key)
+                        #print("new value: " + env_var_new_value)
+                        #print("new expanded value: " + expanded_new_value)
                         os.environ[env_var_key] = expanded_new_value
                     self.orig_env_variables_hashtable[env_var_key] = env_var_old_value
                 else:

@@ -19,7 +19,16 @@ class RockProjectBuilder(configparser.ConfigParser):
             raise ValueError("Could not find the configuration file: " + self.cfg_file_path.as_posix())
         self.repo_url = self.get('project_info', 'repo_url')
         self.project_version = self.get('project_info', 'version')
+
         # environment setup can have common and os-specific sections that needs to be appended together
+        self.skip_on_os = None
+        try:
+            if self.is_posix:
+                self.skip_on_os = self.get('project_info', 'skip_linux')
+            else:
+                self.skip_on_os = self.get('project_info', 'skip_windows')
+        except Exception as ex1:
+            pass
         self.env_setup_cmd = None
         try:
             value = self.get('project_info', 'env_common')
@@ -100,18 +109,29 @@ class RockProjectBuilder(configparser.ConfigParser):
     # printout project builder specific info for logging and debug purposes
     def printout(self, phase):
         print("Project build phase " + phase + ": -----")
-        print("    Name: " + self.project_name)
-        print("    Config path: " + self.cfg_file_path.as_posix())
+        print("    Project_name: " + self.project_name)
+        print("    Config_path: " + self.cfg_file_path.as_posix())
         print("    Version:     " + self.project_version)
         print("    Source_dir:  " + self.project_build_dir_path.as_posix())
         print("    Patch_dir:   " + self.patch_dir_path.as_posix())
-        print("    Build dir:   " + self.project_version)
+        print("    Build_dir:   " + self.project_version)
         print("------------------------")
 
     def printout_error_and_terminate(self, phase):
         self.printout(phase)
         print(phase + " failed")
         sys.exit(1)
+
+    # check whether operations should be skipped on current operating system
+    def check_skip_on_os(self):
+        ret = True
+        if ((self.skip_on_os is None) or\
+            ((self.skip_on_os != "1") and\
+             (str(self.skip_on_os).casefold() != str("y").casefold()) and\
+             (str(self.skip_on_os).casefold() != str("yes").casefold()) and\
+             (str(self.skip_on_os).casefold() != str("on").casefold()))):
+            ret = False;
+        return ret
 
     def do_env_setup(self):
         res = self.project_repo.do_env_setup(self.env_setup_cmd)

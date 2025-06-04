@@ -9,7 +9,19 @@ import time
 import platform
 from pathlib import Path, PurePosixPath
 
-ROCK_BUILDER_VERSION = "2025-05-27_01"
+ROCK_BUILDER_VERSION = "2025-06-03_01"
+
+is_posix = not any(platform.win32_ver())
+if is_posix:
+    ENV_VARIABLE_NAME__LIB="LD_LIBRARY_PATH"
+else:
+    ENV_VARIABLE_NAME__LIB="LIBPATH"
+    if not "PYTORCH_ROCM_ARCH" in os.environ:
+        print("Error, PYTORCH_ROCM_ARCH must be set on Windows to select the target GPU")
+        print("Target GPU must match with the GPU selected on TheRock core build")
+        print("Example for building for AMD Strix Halo and RX 9070:")
+        print("  set PYTORCH_ROCM_ARCH=gfx1151;gfx1201")
+        sys.exit(1)
 
 def is_directory_in_path_env_variable(env_variable, directory):
   """
@@ -29,55 +41,53 @@ def is_directory_in_path_env_variable(env_variable, directory):
 def do_therock(prj_builder):
     ret = False
     if (prj_builder is not None):
-        # setup first the project specific environment variables
-        prj_builder.printout("start")
-        prj_builder.do_env_setup()
-        #print("do_env_setup done")
+        if (prj_builder.check_skip_on_os() == False):
+            # setup first the project specific environment variables
+            prj_builder.printout("start")
+            prj_builder.do_env_setup()
+            #print("do_env_setup done")
 
-        # then do all possible commands requested for the project
-        # multiple steps possible, so do not use else's here
-        if (args.init):
-            prj_builder.printout("init")
-            prj_builder.init()
-        if (args.clean):
-            prj_builder.printout("clean")
-            prj_builder.clean()
-        if (args.checkout):
-            prj_builder.printout("checkout")
-            prj_builder.checkout()
-            # enable hipify always when doing checkout even if it is not requested explicitly as it's own command
-            args.hipify = True
-        if (args.hipify):
-            prj_builder.printout("hipify")
-            prj_builder.hipify()
-        if (args.pre_config):
-            prj_builder.printout("pre_config")
-            prj_builder.pre_config()
-        if (args.config):
-            prj_builder.printout("config")
-            prj_builder.config()
-        if (args.post_config):
-            prj_builder.printout("post_config")
-            prj_builder.post_config()
-        if (args.build):
-            prj_builder.printout("build")
-            prj_builder.build()
-        if (args.install):
-            prj_builder.printout("install")
-            prj_builder.install()
-        # in the end restore original environment variables
-        # so that they do not cause problem for next possible project handled
-        prj_builder.undo_env_setup()
-        prj_builder.printout("done")
-        ret = True
+            # then do all possible commands requested for the project
+            # multiple steps possible, so do not use else's here
+            if (args.init):
+                prj_builder.printout("init")
+                prj_builder.init()
+            if (args.clean):
+                prj_builder.printout("clean")
+                prj_builder.clean()
+            if (args.checkout):
+                prj_builder.printout("checkout")
+                prj_builder.checkout()
+                # enable hipify always when doing checkout even if it is not requested explicitly as it's own command
+                args.hipify = True
+            if (args.hipify):
+                prj_builder.printout("hipify")
+                prj_builder.hipify()
+            if (args.pre_config):
+                prj_builder.printout("pre_config")
+                prj_builder.pre_config()
+            if (args.config):
+                prj_builder.printout("config")
+                prj_builder.config()
+            if (args.post_config):
+                prj_builder.printout("post_config")
+                prj_builder.post_config()
+            if (args.build):
+                prj_builder.printout("build")
+                prj_builder.build()
+            if (args.install):
+                prj_builder.printout("install")
+                prj_builder.install()
+            # in the end restore original environment variables
+            # so that they do not cause problem for next possible project handled
+            prj_builder.undo_env_setup()
+            prj_builder.printout("done")
+            ret = True
+        else:
+            print("skip_windows or skip_linux enabled for project")
+            prj_builder.printout("skip")
+            ret = True
     return ret;
-
-is_posix = not any(platform.win32_ver())
-
-if is_posix:
-    ENV_VARIABLE_NAME__LIB="LD_LIBRARY_PATH"
-else:
-    ENV_VARIABLE_NAME__LIB="LIBPATH"
 
 #os.environ["ROCK_BUILDER_HOME_DIR"] = os.getcwd()
 current_file_path = os.path.abspath(__file__)
