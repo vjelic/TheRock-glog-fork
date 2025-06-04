@@ -49,9 +49,6 @@ def do_therock(prj_builder):
 
             # then do all possible commands requested for the project
             # multiple steps possible, so do not use else's here
-            if (args.init):
-                prj_builder.printout("init")
-                prj_builder.init()
             if (args.clean):
                 prj_builder.printout("clean")
                 prj_builder.clean()
@@ -60,6 +57,9 @@ def do_therock(prj_builder):
                 prj_builder.checkout()
                 # enable hipify always when doing checkout even if it is not requested explicitly as it's own command
                 args.hipify = True
+            if (args.init):
+                prj_builder.printout("init")
+                prj_builder.init()
             if (args.hipify):
                 prj_builder.printout("hipify")
                 prj_builder.hipify()
