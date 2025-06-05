@@ -34,6 +34,7 @@ class RockProjectRepo():
         self.project_patch_dir_base = Path(project_root_dir) / "patches" / project_name
         self.orig_env_variables_hashtable = dict()
         os.environ["ROCK_BUILDER_APP_SRC_DIR"] = project_src_dir.as_posix()
+        os.environ["ROCK_BUILDER_APP_BUILD_DIR"] = project_build_dir.as_posix()
 
     # private methods
     def __exec_subprocess_cmd(self, exec_cmd, exec_dir):
@@ -118,8 +119,9 @@ class RockProjectRepo():
         cmd_exec_dir = Path(os.path.expandvars(str(cmd_exec_dir)))
         if exec_cmd:
             exec_cmd = os.path.expandvars(exec_cmd)
-        print("cmd_exec_dir: " + str(cmd_exec_dir))
-        ret = cmd_exec_dir.is_dir()
+        if cmd_exec_dir:
+            cmd_exec_dir = os.path.expandvars(cmd_exec_dir)
+        ret = Path(cmd_exec_dir).is_dir()
         # handle first special command or commands in multi-command array. (They must be the first commands)
         while ((ret == True) and \
                (exec_cmd is not None) and \
@@ -390,7 +392,12 @@ class RockProjectRepo():
         return (len(exec_cmd.splitlines()) > 1)
 
     def do_init(self, init_cmd):
-        return self.__handle_command_exec("init", init_cmd, self.project_exec_dir)
+        cur_p = Path(self.project_build_dir)
+        cur_p.mkdir(parents=True, exist_ok=True)
+        ret = cur_p.is_dir()
+        if ret:
+            ret = self.__handle_command_exec("init", init_cmd, self.project_exec_dir)
+        return ret
 
     def do_clean(self, clean_cmd):
         ret = True
@@ -495,14 +502,37 @@ class RockProjectRepo():
     def do_config(self, config_cmd):
         return self.__handle_command_exec("config", config_cmd, self.project_exec_dir)
 
+    def do_cmake_config(self, cmake_config):
+        ret = True
+        if cmake_config:
+            cmake_config = os.path.expandvars(str(cmake_config))
+            cmake_config = "cmake " + cmake_config
+            ret = self.__handle_command_exec("cmake_config", cmake_config, self.project_build_dir)
+        return ret
+
     def do_post_config(self, post_config_cmd):
         return self.__handle_command_exec("post_config", post_config_cmd, self.project_exec_dir)
+
+    def do_cmake_build(self, cmake_config):
+        ret = True
+        if cmake_config:
+            cpu_count = os.cpu_count()
+            build_cmd = "make -j" + str(cpu_count)
+            ret = self.__handle_command_exec("make", build_cmd, self.project_build_dir)
+        return ret
 
     def do_build(self, build_cmd):
         return self.__handle_command_exec("build", build_cmd, self.project_exec_dir)
 
     def do_install(self, install_cmd):
         return self.__handle_command_exec("install", install_cmd, self.project_exec_dir)
+
+    def do_cmake_install(self, cmake_config):
+        ret = True
+        if cmake_config:
+            install_cmd = "make install"
+            ret = self.__handle_command_exec("make install", install_cmd, self.project_build_dir)
+        return ret
 
     def do_post_install(self, post_install_cmd):
         return self.__exec_subprocess_cmd(post_install_cmd, self.project_exec_dir)

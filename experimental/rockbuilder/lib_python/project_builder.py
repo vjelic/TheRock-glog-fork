@@ -86,6 +86,10 @@ class RockProjectBuilder(configparser.ConfigParser):
             print(ex1)
             self.build_cmd = None
         try:
+            self.cmake_config = self.get('project_info', 'cmake_config')
+        except:
+            self.cmake_config = None
+        try:
             self.install_cmd = self.get('project_info', 'install_cmd')
         except:
             self.install_cmd = None
@@ -148,7 +152,7 @@ class RockProjectBuilder(configparser.ConfigParser):
             self.printout_error_and_terminate("undo_env_setup")
 
     def init(self):
-        res = self.project_repo.do_clean(self.init_cmd)
+        res = self.project_repo.do_init(self.init_cmd)
         if not res:
             self.printout_error_and_terminate("init")
 
@@ -173,7 +177,11 @@ class RockProjectBuilder(configparser.ConfigParser):
             self.printout_error_and_terminate("pre_config")
 
     def config(self):
-        res = self.project_repo.do_config(self.config_cmd)
+        res = True
+        if self.cmake_config:
+            res = self.project_repo.do_cmake_config(self.cmake_config)
+        if res:
+            res = self.project_repo.do_config(self.config_cmd)
         if not res:
             self.printout_error_and_terminate("config")
 
@@ -183,12 +191,20 @@ class RockProjectBuilder(configparser.ConfigParser):
             self.printout_error_and_terminate("post_config")
 
     def build(self):
-        res = self.project_repo.do_build(self.build_cmd)
+        res = True
+        if self.cmake_config:
+            res = self.project_repo.do_cmake_build(self.cmake_config)
+        if res:
+            res = self.project_repo.do_build(self.build_cmd)
         if not res:
             self.printout_error_and_terminate("build")
 
     def install(self):
-        res = self.project_repo.do_install(self.install_cmd)
+        res = True
+        if self.cmake_config:
+            res = self.project_repo.do_cmake_install(self.cmake_config)
+        if res:
+            res = self.project_repo.do_install(self.install_cmd)
         if not res:
             self.printout_error_and_terminate("install")
 
