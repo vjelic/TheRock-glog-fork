@@ -89,6 +89,10 @@ class RockProjectBuilder(configparser.ConfigParser):
             self.install_cmd = self.get('project_info', 'install_cmd')
         except:
             self.install_cmd = None
+        try:
+            self.post_install_cmd = self.get('project_info', 'post_install_cmd')
+        except:
+            self.post_install_cmd = None
         self.project_root_dir_path = Path(rock_builder_root_dir)
         self.project_src_dir_path = Path(rock_builder_root_dir) / "src_projects" / self.project_name
         self.project_build_dir_path = Path(rock_builder_root_dir) / "builddir" / self.project_name
@@ -187,6 +191,12 @@ class RockProjectBuilder(configparser.ConfigParser):
         res = self.project_repo.do_install(self.install_cmd)
         if not res:
             self.printout_error_and_terminate("install")
+
+    def post_install(self):
+        res = self.project_repo.do_post_install(self.post_install_cmd)
+        if not res:
+            self.printout_error_and_terminate("post_install")
+
 
 class RockExternalProjectListManager(configparser.ConfigParser):
     def __init__(self, rock_builder_root_dir):

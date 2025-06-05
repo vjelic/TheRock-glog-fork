@@ -92,6 +92,70 @@ class RockProjectRepo():
         print(ret)
         return ret
 
+    def __handle_FIND_AND_HANDLE_LATEST_PYTHON_WHEEL_CMD(self, install_cmd):
+        ret = True
+        install_cmd_arr = install_cmd.split()
+        print("len(install_cmd_arr): " + str(len(install_cmd_arr)))
+        if len(install_cmd_arr) == 2:
+            wheel_search_path = install_cmd_arr[1]
+            wheel_search_path = self.__replace_env_variables(wheel_search_path)
+            print("wheel_search_path: " + wheel_search_path)
+            latest_whl = self.__get_latest_file(wheel_search_path, "*.whl")
+            print("latest_whl: " + latest_whl)
+            os.environ['PIP_BREAK_SYSTEM_PACKAGES'] = '1'
+            #res = subprocess.call([ "pip", "install", latest_whl])
+            inst_cmd = "pip uninstall -y " + latest_whl
+            self.__exec_subprocess_cmd(inst_cmd, self.project_exec_dir)
+            inst_cmd = "pip install " + latest_whl
+            ret = self.__exec_subprocess_cmd(inst_cmd, self.project_exec_dir)
+            if not ret:
+                print("Install failed for " + self.project_name)
+                print("Failed command: " + install_cmd)
+                ret = False
+        return ret
+
+    def __handle_command_exec(self, exec_phase, exec_cmd, cmd_exec_dir):
+        ret = True
+        # handle first special command or commands in multi-command array. (They must be the first commands)
+        while ((ret == True) and \
+               (exec_cmd is not None) and \
+               (exec_cmd.startswith("ROCK_CONFIG_CMD__FIND_AND_INSTALL_LATEST_PYTHON_WHEEL"))):
+            line_arr = exec_cmd.splitlines(True)
+            special_cmd = line_arr[0]
+            # then concat rest of the lines for next command to be executed
+            if (len(line_arr) > 1):
+                exec_cmd = "".join(line_arr[1:])
+            else:
+                exec_cmd = None
+            ret = self.__handle_FIND_AND_HANDLE_LATEST_PYTHON_WHEEL_CMD(special_cmd)
+        # then handle regular command or commands
+        if (exec_cmd is not None):
+            is_multiline = self.is_multiline_text(exec_cmd)
+            if is_multiline:
+                is_dos = any(platform.win32_ver())
+                if is_dos:
+                    # pythons supprocess.run does not handle the execution of multiple
+                    # directly in dos-prompt based shell. It needs to be written to bat-file
+                    # that can then be executed 
+                    os.makedirs(self.project_build_dir, exist_ok=True)
+                    build_cmd_file = os.path.join(self.project_build_dir, exec_phase + ".bat")
+                    with open(build_cmd_file, "w") as file:
+                        file.write(exec_cmd)
+                    ret = self.__exec_subprocess_batch_file(str(build_cmd_file))
+                else:
+                    print("------ " + exec_phase + " start ----------")
+                    self.__exec_subprocess_cmd("env", cmd_exec_dir)
+                    print("------ " + exec_phase + " end ----------")
+                    time.sleep(1)
+                    ret = self.__exec_subprocess_cmd(exec_cmd, cmd_exec_dir)
+            else:
+                print("------ " + exec_phase + " start ----------")
+                self.__exec_subprocess_cmd("env", cmd_exec_dir)
+                print("------ " + exec_phase + " end ----------")
+                time.sleep(1)
+                ret = self.__exec_subprocess_cmd(exec_cmd, cmd_exec_dir)
+        return ret
+
     #public methods
     def exec(self,
             args: list[str | Path],
@@ -200,7 +264,6 @@ class RockProjectRepo():
                 # pytorch audio has empty .gitmodules file which can cause exception
                 pass
 
-
     def save_repo_patches(self,
                           repo_path: Path,
                           patches_path: Path):
@@ -267,7 +330,6 @@ class RockProjectRepo():
                 patches_path / relative_sm_path / patchset_name,
             )
 
-
     # repo_hashtag_to_patches_dir_name('2.7.0-rc9') -> '2.7.0'
     def repo_hashtag_to_patches_dir_name(self,
                                          version_ref: str) -> str:
@@ -320,11 +382,14 @@ class RockProjectRepo():
                 os.environ[env_var_key] = orig_env_var_value
         return ret
 
+    def is_multiline_text(self, exec_cmd):
+        return (len(exec_cmd.splitlines()) > 1)
+
     def do_init(self, init_cmd):
-        return self.__exec_subprocess_cmd(init_cmd, self.project_exec_dir)
+        return self.__handle_command_exec("init", init_cmd, self.project_exec_dir)
 
     def do_clean(self, clean_cmd):
-        return self.__exec_subprocess_cmd(clean_cmd, self.project_exec_dir)
+        return self.__handle_command_exec("clean", clean_cmd, self.project_exec_dir)
 
     def do_checkout(self,
 					repo_fetch_depth=1,
@@ -417,61 +482,22 @@ class RockProjectRepo():
         return ret
 
     def do_pre_config(self, pre_config_cmd):
-        return self.__exec_subprocess_cmd(pre_config_cmd, self.project_exec_dir)
+        return self.__handle_command_exec("pre_config", pre_config_cmd, self.project_exec_dir)
 
     def do_config(self, config_cmd):
-        return self.__exec_subprocess_cmd(config_cmd, self.project_exec_dir)
+        return self.__handle_command_exec("config", config_cmd, self.project_exec_dir)
 
     def do_post_config(self, post_config_cmd):
-        return self.__exec_subprocess_cmd(post_config_cmd, self.project_exec_dir)
+        return self.__handle_command_exec("post_config", post_config_cmd, self.project_exec_dir)
 
     def do_build(self, build_cmd):
-       """
-        is_dos = any(platform.win32_ver())
-        if is_dos:
-            os.makedirs(self.project_build_dir, exist_ok=True)
-            build_cmd_file = os.path.join(self.project_build_dir, "build_cmd.bat")
-            with open(build_cmd_file, "w") as file:
-                file.write(build_cmd)
-            ret = self.__exec_subprocess_batch_file(str(build_cmd_file))
-        else:
-            print("------ buildtime env ----------")
-            self.__exec_subprocess_cmd("env", self.project_exec_dir)
-            print("------ buildtime env ----------")
-            time.sleep(1)
-            ret = self.__exec_subprocess_cmd(build_cmd, self.project_exec_dir)
-       """
-       print("------ buildtime env ----------")
-       self.__exec_subprocess_cmd("env", self.project_exec_dir)
-       print("------ buildtime env ----------")
-       time.sleep(1)
-       ret = self.__exec_subprocess_cmd(build_cmd, self.project_exec_dir)
-       return ret
+        return self.__handle_command_exec("build", build_cmd, self.project_exec_dir)
 
     def do_install(self, install_cmd):
-        ret = True
-        if install_cmd is not None:
-            if "ROCK_CONFIG_CMD__FIND_AND_INSTALL_LATEST_PYTHON_WHEEL" in install_cmd:
-                install_cmd_arr = install_cmd.split()
-                if len(install_cmd_arr) == 2:
-                    wheel_search_path = install_cmd_arr[1]
-                    wheel_search_path = self.__replace_env_variables(wheel_search_path)
-                    print("wheel_search_path: " + wheel_search_path)
-                    latest_whl = self.__get_latest_file(wheel_search_path, "*.whl")
-                    print("latest_whl: " + latest_whl)
-                    os.environ['PIP_BREAK_SYSTEM_PACKAGES'] = '1'
-                    #res = subprocess.call([ "pip", "install", latest_whl])
-                    inst_cmd = "pip uninstall -y " + latest_whl
-                    self.__exec_subprocess_cmd(inst_cmd, self.project_exec_dir)
-                    inst_cmd = "pip install " + latest_whl
-                    ret = self.__exec_subprocess_cmd(inst_cmd, self.project_exec_dir)
-                    if not ret:
-                        print("Install failed for " + self.project_name)
-                        print("Failed command: " + inst_cmd)
-                        ret = False
-            else:
-                ret = self.__exec_subprocess_cmd(build_cmd, self.project_exec_dir)
-        return ret
+        return self.__handle_command_exec("install", install_cmd, self.project_exec_dir)
+
+    def do_post_install(self, post_install_cmd):
+        return self.__exec_subprocess_cmd(post_install_cmd, self.project_exec_dir)
 
     def do_save_patches(self):
         ret = True

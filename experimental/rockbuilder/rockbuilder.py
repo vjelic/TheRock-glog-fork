@@ -78,6 +78,9 @@ def do_therock(prj_builder):
             if (args.install):
                 prj_builder.printout("install")
                 prj_builder.install()
+            if (args.post_install):
+                prj_builder.printout("post_install")
+                prj_builder.post_install()
             # in the end restore original environment variables
             # so that they do not cause problem for next possible project handled
             prj_builder.undo_env_setup()
@@ -186,16 +189,18 @@ parser.add_argument('--config',  action='store_true', help='config command for p
 parser.add_argument('--post_config',  action='store_true', help='post-config command for project', default=False)
 parser.add_argument('--build',  action='store_true', help='build project', default=False)
 parser.add_argument('--install',  action='store_true', help='install build project', default=False)
+parser.add_argument('--post_install',  action='store_true', help='post-install command for project', default=False)
+
 
 # Parse the arguments
 args = parser.parse_args()
 
 if ("--checkout" in sys.argv) or ("--clean" in sys.argv) or ("--init" in sys.argv) or ("--hipify" in sys.argv) or\
    ("--pre_config" in sys.argv) or ("--config" in sys.argv) or ("--post_config" in sys.argv) or\
-   ("--build" in sys.argv) or ("--install" in sys.argv):
-    print("checkout/init/clean/hipify/pre_config/config/post_config/build or install argument specified")
+   ("--build" in sys.argv) or ("--install" in sys.argv) or ("--post_install" in sys.argv):
+    print("checkout/init/clean/hipify/pre_config/config/post_config/build/install/post_install argument specified")
 else:
-    #print("Action not specified.(checkout/init/clean/hipify/pre_config/config/post_config/build or install)")
+    #print("Action not specified.(checkout/init/clean/hipify/pre_config/config/post_config/build/install/post_install)")
     #print("Using default values")
     args.checkout=True
     args.init=True
@@ -205,6 +210,7 @@ else:
     args.post_config=True
     args.build=True
     args.install=True
+    args.post_install=True
 
 # Access the arguments
 print("Actions Enabled:")
@@ -217,6 +223,7 @@ print('    config:', args.config)
 print('    post_config:', args.post_config)
 print('    build:    ', args.build)
 print('    install:  ', args.install)
+print('    post_install:  ', args.post_install)
 print('Projects:', args.project)
 
 project_manager = project_builder.RockExternalProjectListManager(rock_builder_home_dir)
