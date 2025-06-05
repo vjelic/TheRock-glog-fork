@@ -115,7 +115,11 @@ class RockProjectRepo():
         return ret
 
     def __handle_command_exec(self, exec_phase, exec_cmd, cmd_exec_dir):
-        ret = True
+        cmd_exec_dir = Path(os.path.expandvars(str(cmd_exec_dir)))
+        if exec_cmd:
+            exec_cmd = os.path.expandvars(exec_cmd)
+        print("cmd_exec_dir: " + str(cmd_exec_dir))
+        ret = cmd_exec_dir.is_dir()
         # handle first special command or commands in multi-command array. (They must be the first commands)
         while ((ret == True) and \
                (exec_cmd is not None) and \
@@ -129,7 +133,7 @@ class RockProjectRepo():
                 exec_cmd = None
             ret = self.__handle_FIND_AND_HANDLE_LATEST_PYTHON_WHEEL_CMD(special_cmd)
         # then handle regular command or commands
-        if (exec_cmd is not None):
+        if ((ret == True) and (exec_cmd is not None)):
             is_multiline = self.is_multiline_text(exec_cmd)
             if is_multiline:
                 is_dos = any(platform.win32_ver())
@@ -389,7 +393,11 @@ class RockProjectRepo():
         return self.__handle_command_exec("init", init_cmd, self.project_exec_dir)
 
     def do_clean(self, clean_cmd):
-        return self.__handle_command_exec("clean", clean_cmd, self.project_exec_dir)
+        ret = True
+        # we want to return true for clean command even if the project has not been checked out yet
+        if (self.project_src_dir.is_dir() == True):
+            ret = self.__handle_command_exec("clean", clean_cmd, self.project_exec_dir)
+        return ret
 
     def do_checkout(self,
 					repo_fetch_depth=1,

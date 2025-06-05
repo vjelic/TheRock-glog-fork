@@ -116,9 +116,9 @@ class RockProjectBuilder(configparser.ConfigParser):
         print("    Project_name: " + self.project_name)
         print("    Config_path: " + self.cfg_file_path.as_posix())
         print("    Version:     " + self.project_version)
-        print("    Source_dir:  " + self.project_build_dir_path.as_posix())
+        print("    Source_dir:  " + self.project_src_dir_path.as_posix())
         print("    Patch_dir:   " + self.patch_dir_path.as_posix())
-        print("    Build_dir:   " + self.project_version)
+        print("    Build_dir:   " + self.project_build_dir_path.as_posix())
         print("------------------------")
 
     def printout_error_and_terminate(self, phase):
