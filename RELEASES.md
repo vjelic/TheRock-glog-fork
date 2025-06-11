@@ -23,9 +23,10 @@ Table of contents:
   - [Using PyTorch Python packages](#using-pytorch-python-packages)
 - [Installing from tarballs](#installing-from-tarballs)
   - [Installing release tarballs](#installing-release-tarballs)
-  - [Installing per-commit CI build tarballs](#installing-per-commit-ci-build-tarballs)
+  - [Installing per-commit CI build tarballs manually](#installing-per-commit-ci-build-tarballs-manually)
   - [Installing tarballs using `install_rocm_from_artifacts.py`](#installing-tarballs-using-install_rocm_from_artifactspy)
   - [Using installed tarballs](#using-installed-tarballs)
+- [Using Dockerfiles](#using-dockerfiles)
 
 ## Installing releases using pip
 
@@ -231,35 +232,92 @@ instructions in the AMD ROCm documentation.
 
 ## Installing from tarballs
 
-<!-- TODO: clean up these sections and confirm the instructions work -->
-
-Here's a quick way assuming you copied all the tar files into `${BUILD_ARTIFACTS_DIR}` to "install" TheRock into `${BUILD_ARTIFACTS_DIR}/output_dir`
+Standalone "ROCm SDK tarballs" are assembled from the same
+[artifacts](docs/development/artifacts.md) as the Python packages which can be
+[installed using pip](#installing-releases-using-pip), without the additional
+wrapper Python wheels or utility scripts.
 
 ### Installing release tarballs
 
-Release tarballs are already flattened and simply need untarring, follow the below instructions.
+Release tarballs are automatically uploaded to both
+[GitHub releases](https://github.com/ROCm/TheRock/releases) and AWS S3 buckets.
+The S3 buckets do not yet have index pages.
+
+| Release page                                                                      | S3 bucket                                                                    | Description                                       |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------- |
+| [`nightly-tarball`](https://github.com/ROCm/TheRock/releases/tag/nightly-tarball) | [therock-nightly-tarball](https://therock-nightly-tarball.s3.amazonaws.com/) | Nightly builds from the `main` branch             |
+| [`dev-tarball`](https://github.com/ROCm/TheRock/releases/tag/dev-tarball)         | [therock-dev-tarball](https://therock-dev-tarball.s3.amazonaws.com/)         | ⚠️ Development builds from project maintainers ⚠️ |
+
+After downloading, simply extract the release tarball into place:
 
 ```bash
-echo "Unpacking artifacts"
-pushd "${BUILD_ARTIFACTS_DIR}"
-mkdir output_dir
-tar -xf *.tar.gz -C output_dir
-popd
+mkdir therock-tarball && cd therock-tarball
+# For example...
+wget https://github.com/ROCm/TheRock/releases/download/nightly-tarball/therock-dist-linux-gfx110X-dgpu-6.5.0rc20250610.tar.gz
+
+mkdir install
+tar -xf *.tar.gz -C install
 ```
 
-### Installing per-commit CI build tarballs
+### Installing per-commit CI build tarballs manually
 
-Our CI builds artifacts which need to be "flattened" by the `build_tools/fileset_tool.py artifact-flatten` command before they can be used. You will need to have a checkout (see for example [Clone and fetch sources](https://github.com/ROCm/TheRock/blob/main/docs/development/windows_support.md#clone-and-fetch-sources)) in `${SOURCE_DIR}` to use this tool and a Python environment.
+<!-- TODO: Hide this section by default?
+           Maybe move into artifacts.md or another developer page. -->
 
-```bash
-echo "Unpacking artifacts"
-pushd "${BUILD_ARTIFACTS_DIR}"
-mkdir output_dir
-python "${SOURCE_DIR}/build_tools/fileset_tool.py artifact-flatten *.tar.xz -o output_dir --verbose
-popd
-```
+Our CI builds artifacts at every commit. These can be installed by "flattening"
+them from the expanded artifacts down to a ROCm SDK "dist folder" using the
+`artifact-flatten` command from
+[`build_tools/fileset_tool.py`](https://github.com/ROCm/TheRock/blob/main/build_tools/fileset_tool.py).
+
+1. Download TheRock's source code and setup your Python environment:
+
+   ```bash
+   # Clone the repository
+   git clone https://github.com/ROCm/TheRock.git
+   cd TheRock
+
+   # Init python virtual environment and install python dependencies
+   python3 -m venv .venv && source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+1. Find the CI workflow run that you want to install from. For example, search
+   through recent successful runs of the `ci.yml` workflow for `push` events on
+   the `main` branch
+   [using this page](https://github.com/ROCm/TheRock/actions/workflows/ci.yml?query=branch%3Amain+is%3Asuccess+event%3Apush)
+   (choosing a build that took more than a few minutes - documentation only
+   changes skip building and uploading).
+
+1. Download the artifacts for that workflow run from S3 using either the
+   [AWS CLI](https://aws.amazon.com/cli/) or
+   [AWS SDK for Python (Boto3)](https://aws.amazon.com/sdk-for-python/):
+
+   <!-- TODO: replace URLs with cloudfront / some other CDN instead of raw S3 -->
+
+   ```bash
+   export LOCAL_ARTIFACTS_DIR=~/therock-artifacts
+   export LOCAL_INSTALL_DIR=${LOCAL_ARTIFACTS_DIR}/install
+   mkdir -p ${LOCAL_ARTIFACTS_DIR}
+   mkdir -p ${LOCAL_INSTALL_DIR}
+
+   # Example: https://github.com/ROCm/TheRock/actions/runs/15575624591
+   export RUN_ID=15575624591
+   export OPERATING_SYSTEM=linux # or 'windows'
+   aws s3 cp s3://therock-artifacts/${RUN_ID}-${OPERATING_SYSTEM}/ \
+     ${LOCAL_ARTIFACTS_DIR} \
+     --no-sign-request --recursive --exclude "*" --include "*.tar.xz"
+   ```
+
+1. Flatten the artifacts:
+
+   ```bash
+   python build_tools/fileset_tool.py artifact-flatten \
+     ${LOCAL_ARTIFACTS_DIR}/*.tar.xz -o ${LOCAL_INSTALL_DIR}
+   ```
 
 ### Installing tarballs using `install_rocm_from_artifacts.py`
+
+<!-- TODO: move this above the manual `tar -xf` commands? -->
 
 This script installs ROCm community builds produced by TheRock from either a developer/nightly tarball, a specific CI runner build or an already existing installation of TheRock. This script is used by CI and can be used locally.
 
@@ -289,19 +347,33 @@ By default for CI workflow retrieval, all artifacts (excluding test artifacts) w
 
 ### Using installed tarballs
 
-The quickest way is to run `rocminfo`
+After installing (downloading and extracting) a tarball, you can test it by
+running programs from the `bin/` directory:
 
 ```bash
-echo "Running rocminfo"
-pushd "${BUILD_ARTIFACTS_DIR}"
-./output_dir/bin/rocminfo
-popd
+ls install
+# bin  include  lib  libexec  llvm  share
+
+# Now test some of the installed tools:
+./install/bin/rocminfo
+./install/bin/test_hip_api
 ```
 
-## Where to get artifacts
+You may also want to add the install directory to your `PATH` or set other
+environment variables like `ROCM_HOME`.
 
-- [Releases](https://github.com/ROCm/TheRock/releases): Our releases page has the latest "developer" release of our tarball artifacts and source code.
+## Using Dockerfiles
 
-- [Packages](https://github.com/orgs/ROCm/packages?repo_name=TheRock): We currently publish docker images for LLVM targets we support (as well as a container for our build machines)
+We publish [Dockerfiles](https://www.docker.com/) with packages preinstalled
+for your convenience. See
+https://github.com/orgs/ROCm/packages?repo_name=TheRock for the full list.
 
-- [Per-commit CI builds](https://github.com/ROCm/TheRock/actions/workflows/ci.yml?query=branch%3Amain+is%3Asuccess): Each of our latest passing CI builds has its own artifacts you can leverage. This is the latest and greatest! We will eventually support a nightly release that is at a higher quality bar than CI. Note a quick recipe for getting all of these from the s3 bucket is to use this quick command `aws s3 cp s3://therock-artifacts . --recursive --exclude "*" --include "${RUN_ID}-${OPERATING_SYSTEM}/*.tar.xz" --no-sign-request` where ${RUN_ID} is the runner id you selected (see the URL). Check the [AWS docs](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to get the aws cli.
+| Package                                                                                                                               | Description                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| [`therock_build_manylinux_x86_64`](https://github.com/ROCm/TheRock/pkgs/container/therock_build_manylinux_x86_64)                     | Container for our CI/CD pipelines<br>(This does _not_ include ROCm or PyTorch but can be used to build them) |
+| [`therock_pytorch_dev_ubuntu_24_04_gfx942`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx942)   | Ubuntu with PyTorch for ROCm gfx942                                                                          |
+| [`therock_pytorch_dev_ubuntu_24_04_gfx1100`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1100) | Ubuntu with PyTorch for ROCm gfx1100                                                                         |
+| [`therock_pytorch_dev_ubuntu_24_04_gfx1151`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1151) | Ubuntu with PyTorch for ROCm gfx1151                                                                         |
+| [`therock_pytorch_dev_ubuntu_24_04_gfx1201`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1201) | Ubuntu with PyTorch for ROCm gfx1201                                                                         |
+
+<!-- TODO: how-to's for using the dockerfiles -->
