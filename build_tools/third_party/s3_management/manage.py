@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: Facebook, Inc. and its affiliates.
+# SPDX-FileCopyrightText: Advanced Micro Devices, Inc.
 # SPDX-License-Identifier: BSD-3-Clause
 
 #!/usr/bin/env python
@@ -25,25 +26,22 @@ import botocore
 S3 = boto3.resource('s3')
 CLIENT = boto3.client('s3')
 
-# bucket for download.pytorch.org
-BUCKET = S3.Bucket('pytorch')
-# bucket mirror just to hold index used with META CDN
-BUCKET_META_CDN = S3.Bucket('pytorch-test')
-INDEX_BUCKETS = {BUCKET, BUCKET_META_CDN}
+# bucket for TheRock
+BUCKET = S3.Bucket('therock-nightly-python')
+# TODO: bucket mirror just to hold index used with CDN
+# BUCKET_CDN = S3.Bucket('therock-nightly-python-testing')
+INDEX_BUCKETS = {BUCKET} #, BUCKET_CDN}
 
 ACCEPTED_FILE_EXTENSIONS = ("whl", "zip", "tar.gz")
 ACCEPTED_SUBDIR_PATTERNS = [
-    r"cu[0-9]+",            # for cuda
-    r"rocm[0-9]+\.[0-9]+",  # for rocm
-    "cpu",
-    "xpu",
+    "gfx110X-dgpu",
+    "gfx1151",
+    "gfx120X-all",
+    "gfx94X-dcgpu",
+    "gfx950-dcgpu",
 ]
 PREFIXES = [
-    "whl",
-    "whl/nightly",
-    "whl/test",
-    "libtorch",
-    "libtorch/nightly",
+    "v2",
 ]
 
 # NOTE: This refers to the name on the wheels themselves and not the name of
@@ -51,42 +49,14 @@ PREFIXES = [
 # names you need to convert them to "_" (underscores) in order for them to be
 # allowed here since the name of the wheels is compared here
 PACKAGE_ALLOW_LIST = {x.lower() for x in [
-    # ---- torchtune additional packages ----
-    "aiohttp",
-    "aiosignal",
-    "aiohappyeyeballs",
-    "antlr4_python3_runtime",
-    "antlr4-python3-runtime",
-    "async_timeout",
-    "attrs",
-    "blobfile",
-    "datasets",
-    "dill",
-    "frozenlist",
-    "huggingface_hub",
-    "llnl_hatchet",
-    "lxml",
-    "multidict",
-    "multiprocess",
-    "omegaconf",
-    "pandas",
-    "psutil",
-    "pyarrow",
-    "pyarrow_hotfix",
-    "pycryptodomex",
-    "python_dateutil",
-    "pytz",
-    "PyYAML",
-    "regex",
-    "safetensors",
-    "sentencepiece",
-    "six",
-    "tiktoken",
-    "torchao",
-    "torchao_nightly",
-    "tzdata",
-    "xxhash",
-    "yarl",
+    # ---- ROCm ----
+    "rocm",
+    "rocm_sdk",
+    "rocm_sdk_core",
+    "rocm_sdk_devel",
+    "rocm_sdk_libraries_gfx110X_dgpu",
+    "rocm_sdk_libraries_gfx120X_all",
+    "rocm_sdk_libraries_gfx94X_dcgpu",
     # ---- triton additional packages ----
     "Arpeggio",
     "caliper_reader",
@@ -106,25 +76,6 @@ PACKAGE_ALLOW_LIST = {x.lower() for x in [
     "importlib_metadata",
     "importlib_resources",
     "zipp",
-    # ---- torch xpu additional packages ----
-    "dpcpp_cpp_rt",
-    "intel_cmplr_lib_rt",
-    "intel_cmplr_lib_ur",
-    "intel_cmplr_lic_rt",
-    "intel_opencl_rt",
-    "intel_sycl_rt",
-    "intel_openmp",
-    "tcmlib",
-    "umf",
-    "intel_pti",
-    "oneccl_devel",
-    "oneccl",
-    "impi_rt",
-    "onemkl_sycl_blas",
-    "onemkl_sycl_dft",
-    "onemkl_sycl_lapack",
-    "onemkl_sycl_sparse",
-    "onemkl_sycl_rng",
     # ----
     "Pillow",
     "certifi",
@@ -148,44 +99,13 @@ PACKAGE_ALLOW_LIST = {x.lower() for x in [
     "nestedtensor",
     "networkx",
     "numpy",
-    "nvidia_cublas_cu11",
-    "nvidia_cuda_cupti_cu11",
-    "nvidia_cuda_nvrtc_cu11",
-    "nvidia_cuda_runtime_cu11",
-    "nvidia_cudnn_cu11",
-    "nvidia_cufft_cu11",
-    "nvidia_curand_cu11",
-    "nvidia_cusolver_cu11",
-    "nvidia_cusparse_cu11",
-    "nvidia_nccl_cu11",
-    "nvidia_nvtx_cu11",
-    "nvidia_cublas_cu12",
-    "nvidia_cuda_cupti_cu12",
-    "nvidia_cuda_nvrtc_cu12",
-    "nvidia_cuda_runtime_cu12",
-    "nvidia_cudnn_cu12",
-    "nvidia_cufft_cu12",
-    "nvidia_cufile_cu12",
-    "nvidia_nvshmem_cu12",
-    "nvidia_curand_cu12",
-    "nvidia_cusolver_cu12",
-    "nvidia_cusparse_cu12",
-    "nvidia_cusparselt_cu12",
-    "nvidia_nccl_cu12",
-    "nvidia_nvtx_cu12",
-    "nvidia_nvjitlink_cu12",
     "packaging",
     "portalocker",
     "pyre_extensions",
-    "pytorch_triton",
-    "pytorch_triton_rocm",
-    "pytorch_triton_xpu",
     "requests",
     "sympy",
     "tbb",
-    "torch_no_python",
     "torch",
-    "torch_tensorrt",
     "torcharrow",
     "torchaudio",
     "torchcodec",
@@ -459,7 +379,7 @@ class S3Index:
                 bucket.Object(
                     key=f"{subdir}/index.html"
                 ).put(
-                    ACL='public-read',
+                    # ACL='public-read',
                     CacheControl='no-cache,no-store,must-revalidate',
                     ContentType='text/html',
                     Body=index_html
@@ -472,7 +392,7 @@ class S3Index:
                     bucket.Object(
                         key=f"{subdir}/{compat_pkg_name}/index.html"
                     ).put(
-                        ACL='public-read',
+                        # ACL='public-read',
                         CacheControl='no-cache,no-store,must-revalidate',
                         ContentType='text/html',
                         Body=index_html
@@ -607,8 +527,7 @@ class S3Index:
                            checksum=None,
                            size=None,
                            pep658=None) for key in obj_names], prefix)
-        if prefix == "whl/nightly":
-            rc.objects = rc.nightly_packages_to_show()
+        rc.objects = rc.nightly_packages_to_show()
         if with_metadata:
             rc.fetch_metadata()
             rc.fetch_pep658()
@@ -648,7 +567,7 @@ def main() -> None:
 
     prefixes = PREFIXES if args.prefix == 'all' else [args.prefix]
     for prefix in prefixes:
-        generate_pep503 = prefix.startswith("whl")
+        generate_pep503 = prefix
         print(f"INFO: {action} for '{prefix}'")
         stime = time.time()
         idx = S3Index.from_S3(prefix=prefix, with_metadata=generate_pep503 or args.compute_sha256)
