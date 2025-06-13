@@ -17,7 +17,7 @@ ATTEMPT = os.getenv("ATTEMPT")
 
 def run():
     # TODO: Remove hardcoding for ATTEMPT once github variables fetch is fixed
-    github_release_url = f"https://api.github.com/repos/RoCm/TheRock/actions/runs/{RUN_ID}/attempts/1/jobs"
+    github_workflow_jobs_url = f"https://api.github.com/repos/RoCm/TheRock/actions/runs/{RUN_ID}/attempts/1/jobs"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -27,7 +27,7 @@ def run():
     if gh_token:
         headers["Authentication"] = f"Bearer {gh_token}"
 
-    request = Request(github_release_url, headers=headers)
+    request = Request(github_workflow_jobs_url, headers=headers)
     with urlopen(request) as response:
         if response.status == 403:
             raise Exception(
@@ -39,8 +39,8 @@ def run():
             )
 
         job_data = json.loads(response.read().decode("utf-8"))
-        if job_data["jobs"].keys() >= 0:
-            # Determine is number of jobs run in the workflow is atleast 1
+        # Check if API output shows number of jobs run in the workflow to be atleast 1
+        if len(job_data["jobs"]) > 0:
             set_github_output({"append": json.dumps(job_data)})
 
 
