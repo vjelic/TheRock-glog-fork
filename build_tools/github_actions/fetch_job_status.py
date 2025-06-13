@@ -1,5 +1,5 @@
 """
-This script determines the job status for different jobs run 
+This script determines the job status for different jobs run
 as part of GitHub workflow based on RUN_ID and ATTEMPT
 
 Required environment variables:
@@ -16,10 +16,8 @@ RUN_ID = os.getenv("RUN_ID")
 ATTEMPT = os.getenv("ATTEMPT")
 
 def run():
-    # TODO: Remove hardcoding for ATTEMPT once github variables fetch is fixed    
-    github_release_url = (
-        f"https://api.github.com/repos/RoCm/TheRock/actions/runs/{RUN_ID}/attempts/1/jobs"
-    )
+    # TODO: Remove hardcoding for ATTEMPT once github variables fetch is fixed
+    github_release_url = f"https://api.github.com/repos/RoCm/TheRock/actions/runs/{RUN_ID}/attempts/1/jobs"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -41,9 +39,10 @@ def run():
             )
 
         job_data = json.loads(response.read().decode("utf-8"))
-        if job_data['jobs'].keys() >= 0:
+        if job_data["jobs"].keys() >= 0:
             # Determine is number of jobs run in the workflow is atleast 1
             set_github_output({"append": json.dumps(job_data)})
+
 
 if __name__ == "__main__":
     run()
