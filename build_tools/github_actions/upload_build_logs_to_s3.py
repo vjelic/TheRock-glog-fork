@@ -52,7 +52,7 @@ def upload_logs_to_s3(run_id: str, amdgpu_family: str, build_dir: Path):
 
     if not log_dir.is_dir():
         log(f"[INFO] Log directory {log_dir} not found. Skipping upload.")
-        return
+        #return
     if not job_status_dir.is_dir():
         log(f"[INFO] Log directory {job_status_dir} not found. Skipping upload.")
         return
