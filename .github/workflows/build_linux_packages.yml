@@ -125,7 +125,7 @@ jobs:
           python3 build_tools/github_actions/upload_build_logs_to_s3.py \
             --build-dir=build \
             --run-id ${{ github.run_id }} \
-            --jobs-output-dir=job_status_dir \
+            --jobs_output_dir=job_status_dir \
             --amdgpu-family ${{ env.AMDGPU_FAMILIES }}
 
       # - name: Configure Projects
