@@ -107,7 +107,8 @@ jobs:
         if: '!cancelled()'
         run: |
           mkdir job_status_dir
-          echo ${{ steps.job-status-step.outputs }} >> job_status_dir/job_status.json
+          echo ${{ env.GITHUB_OUTPUT }}
+          echo ${{ env.GITHUB_OUTPUT }} >> job_status_dir/job_status.json
           cat job_status_dir/job_status.json
 
       - name: Configure AWS Credentials
