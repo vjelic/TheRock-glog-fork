@@ -99,8 +99,8 @@ jobs:
         if: '!cancelled()'
         id: job-status-step
         env:
-          run_id: ${{ github.RUN_ID }}
-          attempt: ${{ github.ATTEMPT }}
+          run_id: ${{ github.run_id }}
+          attempt: ${{ github.attempt }}
         run: python build_tools/github_actions/fetch_job_status.py
 
       - name: Create job status JSON file for S3 upload
