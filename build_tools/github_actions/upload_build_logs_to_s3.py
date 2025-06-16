@@ -42,22 +42,21 @@ def run_aws_cp(source_path: Path, s3_destination: str, content_type: str = None)
         log(f"[ERROR] Failed to upload {source_path} to {s3_destination}: {e}")
 
 
-def upload_logs_to_s3(run_id: str, amdgpu_family: str, build_dir: Path):
+def upload_logs_to_s3(run_id: str, amdgpu_family: str, build_dir: Path, jobs-output-dir: Path):
     external_repo_path, bucket = retrieve_bucket_info()
     bucket_uri = f"s3://{bucket}/{external_repo_path}{run_id}-{PLATFORM}"
     s3_base_path = f"{bucket_uri}/logs/{amdgpu_family}"
-    job_status_dir = "job_status_dir"
 
-    job_dir = job_status_dir + "/logs"
+    job_dir = job-output-dir + "/logs"
 
     log_dir = build_dir / "logs"
 
     if not log_dir.is_dir():
         log(f"[INFO] Log directory {log_dir} not found. Skipping upload.")
         #return
-    # if not job_dir.is_dir():
-    #     log(f"[INFO] Log directory {job_dir} not found. Skipping upload.")
-    #     return
+    if not job_dir.is_dir():
+        log(f"[INFO] Log directory {job_dir} not found. Skipping upload.")
+        return
     
     # Upload .json files
     json_files = list(job_dir.glob("*.json"))
@@ -95,6 +94,11 @@ def main():
         type=Path,
         default=default_build_dir,
         help="Path to the build directory (default: <repo_root>/build)",
+    )
+    parser.add_argument(
+        "--jobs-output-dir",
+        type=Path,
+        help="Path to the jobs status output directory",
     )
     parser.add_argument(
         "--run-id", type=str, required=True, help="GitHub run ID of this workflow run"
