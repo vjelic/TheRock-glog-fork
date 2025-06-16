@@ -47,7 +47,7 @@ def upload_logs_to_s3(run_id: str, amdgpu_family: str, build_dir: Path, jobs_out
     bucket_uri = f"s3://{bucket}/{external_repo_path}{run_id}-{PLATFORM}"
     s3_base_path = f"{bucket_uri}/logs/{amdgpu_family}"
 
-    job_dir = jobs_output_dir + "/logs"
+    job_dir = jobs_output_dir / "logs"
 
     log_dir = build_dir / "logs"
 
