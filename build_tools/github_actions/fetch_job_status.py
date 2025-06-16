@@ -20,6 +20,7 @@ def run():
     github_workflow_jobs_url = (
         f"https://api.github.com/repos/RoCm/TheRock/actions/runs/{RUN_ID}/attempts/1/jobs"
     )
+    echo $github_workflow_jobs_url
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
