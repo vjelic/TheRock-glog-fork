@@ -41,7 +41,7 @@ def run():
         job_data = json.loads(response.read().decode("utf-8"))
         # Check if API output shows number of jobs run in the workflow to be atleast 1
         if len(job_data["jobs"]) > 0:
-            set_github_output({"append": json.dumps(job_data)})
+            set_github_output({"job_summary": json.dumps(job_data)})
 
 
 if __name__ == "__main__":
