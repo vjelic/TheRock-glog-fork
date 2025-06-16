@@ -42,12 +42,12 @@ def run_aws_cp(source_path: Path, s3_destination: str, content_type: str = None)
         log(f"[ERROR] Failed to upload {source_path} to {s3_destination}: {e}")
 
 
-def upload_logs_to_s3(run_id: str, amdgpu_family: str, build_dir: Path, jobs-output-dir: Path):
+def upload_logs_to_s3(run_id: str, amdgpu_family: str, build_dir: Path, jobs_output_dir: Path):
     external_repo_path, bucket = retrieve_bucket_info()
     bucket_uri = f"s3://{bucket}/{external_repo_path}{run_id}-{PLATFORM}"
     s3_base_path = f"{bucket_uri}/logs/{amdgpu_family}"
 
-    job_dir = job-output-dir + "/logs"
+    job_dir = jobs_output_dir + "/logs"
 
     log_dir = build_dir / "logs"
 
@@ -96,7 +96,7 @@ def main():
         help="Path to the build directory (default: <repo_root>/build)",
     )
     parser.add_argument(
-        "--jobs-output-dir",
+        "--jobs_output_dir",
         type=Path,
         help="Path to the jobs status output directory",
     )
@@ -109,7 +109,7 @@ def main():
     )
     args = parser.parse_args()
 
-    upload_logs_to_s3(args.run_id, args.amdgpu_family, args.build_dir)
+    upload_logs_to_s3(args.run_id, args.amdgpu_family, args.build_dir, args.jobs_output_dir)
 
 
 if __name__ == "__main__":
