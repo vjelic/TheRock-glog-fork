@@ -110,7 +110,7 @@ jobs:
           mkdir job_status_dir/logs
           echo ${{ steps.job-status-step.outputs.job_summary }}
           echo ${{ steps.job-status-step.outputs.job_summary }} >> job_status_dir/logs/job_status.json
-          cat job_status_dir/job_status.json
+          cat job_status_dir/logs/job_status.json
 
       - name: Configure AWS Credentials
         if: always()
