@@ -11,11 +11,6 @@ import shutil
 import json
 import subprocess
 
-def check_aws_cli_available():
-    if not shutil.which("aws"):
-        log("[ERROR] AWS CLI not found in PATH.")
-        sys.exit(1)
-
 
 def covert_to_JSON(input_string: str):
   
@@ -30,7 +25,10 @@ def main():
     )
     args = parser.parse_args()
 
-    return covert_to_JSON(args.input_string)
+    output_json = covert_to_JSON(args.input_string)
+
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+        print(f'my_output_variable={output_json}', file=fh)
 
 
 if __name__ == "__main__":
