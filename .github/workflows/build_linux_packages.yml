@@ -201,18 +201,14 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           ATTEMPT: ${{ github.attempt }}
         run: python build_tools/github_actions/fetch_job_status.py
-
-      # - name: Run Python script and set output
-      #   run: python build_tools/github_actions/convert_dict_to_json.py --input_string ${{ steps.job-status-step.outputs.job_summary }}
-      #   id: python_step_to_convert_json 
         
       - name: Create job status JSON file for S3 upload
         if: '!cancelled()'
         run: |
           mkdir job_status_dir
           mkdir job_status_dir/logs
-          echo ${{ steps.job-status-step.outputs.job_summary }}
-          python build_tools/github_actions/write_json_to_file.py --input_dict "${{ steps.job-status-step.outputs.job_summary }}"
+          echo ${{ toJSON(steps.job-status-step.outputs.job_summary) }}
+          echo ${{ toJSON(steps.job-status-step.outputs.job_summary) }} >> job_status_dir/logs/job_status.json
           cat job_status_dir/logs/job_status.json
 
       - name: Upload Logs
