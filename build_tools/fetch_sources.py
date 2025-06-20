@@ -274,6 +274,7 @@ def main(argv):
         type=str,
         default=[
             "MIOpen",
+            "composable_kernel",
         ],
     )
     args = parser.parse_args(argv)
