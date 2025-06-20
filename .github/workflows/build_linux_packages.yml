@@ -219,6 +219,32 @@ jobs:
             --run-id ${{ github.run_id }} \
             --jobs_output_dir=job_status_dir \
             --amdgpu-family ${{ env.AMDGPU_FAMILIES }}
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get install postgresql-client -y
+
+
+      # - name: Create Redshift database and table
+      #   run: |
+      #     PGPASSWORD=$REDSHIFT_PASSWORD psql \
+      #       -h $REDSHIFT_HOST -p $REDSHIFT_PORT \
+      #       -U $REDSHIFT_USER -d $REDSHIFT_DB \
+      #       -c "CREATE DATABASE workflow_db;"
+
+      #     PGPASSWORD=$REDSHIFT_PASSWORD psql \
+      #       -h $REDSHIFT_HOST -p $REDSHIFT_PORT \
+      #       -U $REDSHIFT_USER -d awsuser \
+      #       -c "CREATE TABLE workflow_run_details (id int, build_id: INT, run_url: varchar(80), workflow_name: varchar(30), project: varchar(30), started_at: date);"
+
+      - name: Load JSON into Redshift
+        run: |
+          PGPASSWORD=$REDSHIFT_PASSWORD psql \
+            -h $REDSHIFT_HOST -p $REDSHIFT_PORT \
+            -U $REDSHIFT_USER -d my_new_db \
+            -c "COPY users FROM 's3://$BUCKET/job_status.json'
+                IAM_ROLE '$IAM_ROLE_ARN'
+                JSON 'auto'
+                REGION 'us-east-2';"
             
       # - name: Add Links to Job Summary
       #   if: always()
