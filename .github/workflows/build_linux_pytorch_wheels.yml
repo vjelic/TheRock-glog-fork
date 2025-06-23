@@ -115,8 +115,8 @@ jobs:
                 build \
                 --install-rocm \
                 --clean \
-                --output-dir output/packages/dist && \
-              python -m pip install output/packages/dist/torch-*.whl && \
+                --output-dir ${{ env.PACKAGE_DIST_DIR }} && \
+              python -m pip install ${{ env.PACKAGE_DIST_DIR }}/torch-*.whl && \
               rocm-smi && \
               cd external-builds/pytorch/pytorch && \
               python -m pip install pytest pytest-xdist && \
