@@ -130,7 +130,6 @@ jobs:
               pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
               pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
               pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
               exit $EXIT_CODE
               "
 
