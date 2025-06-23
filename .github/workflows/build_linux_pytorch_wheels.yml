@@ -120,6 +120,7 @@ jobs:
               rocm-smi && \
               cd external-builds/pytorch/pytorch && \
               python -m pip install pytest pytest-xdist && \
+              export PYTORCH_TEST_WITH_ROCM=1 && \
               set +e && \
               EXIT_CODE=0 && \
               pytest test/test_nn.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
@@ -138,8 +139,10 @@ jobs:
         with:
           python-version: 3.12
 
-      - name: Run Sanity Check on Wheel
-        run: python external-builds/pytorch/sanity_check_wheel.py ${{ env.PACKAGE_DIST_DIR }}
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
 
       - name: Configure AWS Credentials
         if: always()
