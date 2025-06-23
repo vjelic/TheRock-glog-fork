@@ -25,15 +25,48 @@ jobs:
           THEROCK_PACKAGE_PLATFORM: "linux"
         run: python ./build_tools/github_actions/fetch_package_targets.py
 
+  set-runner:
+    runs-on: ubuntu-24.04
+    needs: setup_metadata
+    outputs:
+      targets: ${{ steps.set.outputs.filtered_targets }}
+    steps:
+      - name: Set filtered targets
+        id: set
+        run: |
+          import json
+          import os
+
+          raw_targets = json.loads(os.environ['PACKAGE_TARGETS'])
+          filtered = []
+
+          for entry in raw_targets:
+              family = entry["amdgpu_family"]
+              if family in ("gfx942", "gfx1201", "gfx1100"):
+                  entry["runner"] = {
+                      "gfx942": "linux-mi300-1gpu-ossci-rocm",
+                      "gfx1201": "linux-rx9070-gpu-rocm",
+                      "gfx1100": "linux-rx7900-gpu-rocm"
+                  }[family]
+                  filtered.append(entry)
+              else:
+                  print(f"Skipping {family}, no runner assigned.")
+
+          print("Filtered targets:", filtered)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"filtered_targets={json.dumps(filtered)}\n")
+        env:
+          PACKAGE_TARGETS: ${{ needs.setup_metadata.outputs.package_targets }}
+
   build-and-push-image:
+    needs: [setup_metadata, set-runner]  # ADD set-runner as dependency
     strategy:
       fail-fast: false
       matrix:
-        targets: ${{ fromJSON(needs.setup_metadata.outputs.package_targets) }}
+        targets: ${{ fromJSON(needs.set-runner.outputs.targets) }}
 
     name: ${{ matrix.targets.amdgpu_family }}::Build
-    runs-on: azure-linux-scale-rocm
-    needs: [setup_metadata]
+    runs-on: ${{ matrix.targets.runner }}
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ROCm/therock_pytorch_dev_ubuntu_24_04_${{ matrix.targets.amdgpu_family }}
@@ -75,10 +108,10 @@ jobs:
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.9
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
+
       - name: Build and push Docker image
         id: build_push
         uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
@@ -92,7 +125,7 @@ jobs:
           labels: |
             ${{ steps.meta.outputs.labels }}
             org.opencontainers.image.title="PyTorch ROCm Dev Image"
-            org.opencontainers.image.description="Nightly ROCm PyTorch Dev Docker for target ${{ matrix.targets.amdgpu_family }}""
+            org.opencontainers.image.description="Nightly ROCm PyTorch Dev Docker for target ${{ matrix.targets.amdgpu_family }}"
             org.opencontainers.image.version=${{ env.VERSION }}
             org.opencontainers.image.created=${{ steps.meta.outputs.created }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -100,6 +133,7 @@ jobs:
       - name: Log digest
         run: |
           echo "Built image with digest: ${{ steps.build_push.outputs.digest }}"
+
       - name: Trigger verification workflow
         uses: benc-uk/workflow-dispatch@e2e5e9a103e331dad343f381a29e654aea3cf8fc #1.2.4
         with:
@@ -108,11 +142,6 @@ jobs:
             {
               "amdgpu_target": "${{ matrix.targets.amdgpu_family }}",
               "image_digest": "${{ steps.build_push.outputs.digest }}",
-              "runner_type": "${{
-                matrix.targets.amdgpu_family == 'gfx942' && 'linux-mi300-1gpu-ossci-rocm' ||
-                (matrix.targets.amdgpu_family == 'gfx1201' && 'linux-rx9070-gpu-rocm') ||
-                (matrix.targets.amdgpu_family == 'gfx1100' && 'linux-rx7900-gpu-rocm') ||
-                'linux-mi300-1gpu-ossci-rocm'
-              }}",
+              "runner_type": "${{ matrix.targets.runner }}",
               "version": "${{ env.VERSION }}"
             }
