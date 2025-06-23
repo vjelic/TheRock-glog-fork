@@ -31,32 +31,33 @@ jobs:
     outputs:
       targets: ${{ steps.set.outputs.filtered_targets }}
     steps:
-      - name: Set filtered targets
-        id: set
-        run: |
-          import json
-          import os
+    - name: Set filtered targets
+      id: set
+      run: |
+        python3 <<EOF
+        import json
+        import os
 
-          raw_targets = json.loads(os.environ['PACKAGE_TARGETS'])
-          filtered = []
+        raw_targets = json.loads(os.environ['PACKAGE_TARGETS'])
+        filtered = []
 
-          for entry in raw_targets:
-              family = entry["amdgpu_family"]
-              if family in ("gfx942", "gfx1201", "gfx1100"):
-                  entry["runner"] = {
-                      "gfx942": "linux-mi300-1gpu-ossci-rocm",
-                      "gfx1201": "linux-rx9070-gpu-rocm",
-                      "gfx1100": "linux-rx7900-gpu-rocm"
-                  }[family]
-                  filtered.append(entry)
-              else:
-                  print(f"Skipping {family}, no runner assigned.")
+        for entry in raw_targets:
+            family = entry["amdgpu_family"]
+            if family in ("gfx942", "gfx1201", "gfx1100"):
+                entry["runner"] = {
+                    "gfx942": "linux-mi300-1gpu-ossci-rocm",
+                    "gfx1201": "linux-rx9070-gpu-rocm",
+                    "gfx1100": "linux-rx7900-gpu-rocm"
+                }[family]
+                filtered.append(entry)
+            else:
+                print(f"Skipping {family}, no runner assigned.")
 
-          print("Filtered targets:", filtered)
-          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"filtered_targets={json.dumps(filtered)}\n")
-        env:
-          PACKAGE_TARGETS: ${{ needs.setup_metadata.outputs.package_targets }}
+        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+            f.write(f"filtered_targets={json.dumps(filtered)}\n")
+        EOF
+      env:
+        PACKAGE_TARGETS: ${{ needs.setup_metadata.outputs.package_targets }}
 
   build-and-push-image:
     needs: [setup_metadata, set-runner]  # ADD set-runner as dependency
