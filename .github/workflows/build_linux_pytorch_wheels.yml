@@ -121,14 +121,16 @@ jobs:
               cd external-builds/pytorch/pytorch && \
               python -m pip install pytest pytest-xdist && \
               set +e && \
-              pytest test/test_nn.py -v && \
-              pytest test/test_torch.py -v && \
-              pytest test/test_cuda.py -v && \
-              pytest test/test_ops.py -v && \
-              pytest test/test_unary_ufuncs.py -v && \
-              pytest test/test_binary_ufuncs.py -v && \
-              pytest test/test_autograd.py -v && \
-              pytest torch/_inductor/test_torchinductor.py -v
+              EXIT_CODE=0 && \
+              pytest test/test_nn.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              pytest test/test_torch.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              pytest test/test_cuda.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              pytest test/test_ops.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              exit $EXIT_CODE
               "
 
       - name: Setup Python
