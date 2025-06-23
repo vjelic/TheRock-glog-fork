@@ -105,7 +105,7 @@ jobs:
               # - remove untracked files and directories (`clean -xfd`)
               git am --abort || true && git reset --hard && git clean -xfd && \
               cd /workspace && \
-              ./external-builds/pytorch/pytorch_torch_repo.py checkout && \
+              ./external-builds/pytorch/pytorch_torch_repo.py checkout --repo-hashtag=main && \
               ./external-builds/pytorch/pytorch_audio_repo.py checkout && \
               ./external-builds/pytorch/pytorch_vision_repo.py checkout && \
               mkdir -p /tmp/pipcache && \
