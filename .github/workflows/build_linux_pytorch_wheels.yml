@@ -92,7 +92,7 @@ jobs:
 
       - name: Sanity Check Wheel
         run: |
-          python /workspace/external-builds/pytorch/sanity_check_wheel.py ${{ env.PACKAGE_DIST_DIR }}/
+          python external-builds/pytorch/sanity_check_wheel.py ${{ env.PACKAGE_DIST_DIR }}/
 
       - name: Upload wheels to S3
         if: ${{ github.repository_owner == 'ROCm' }}
@@ -105,6 +105,7 @@ jobs:
         run: |
           pip install boto3 packaging
           python ./build_tools/third_party/s3_management/manage.py ${{ inputs.s3_subdir }}/${{ inputs.AMDGPU_FAMILIES }}
+
       - name: Trigger PyTorch Tests on GPU runner
         if: ${{ github.repository_owner == 'ROCm' }}
         uses: benc-uk/workflow-dispatch@e2e5e9a103e331dad343f381a29e654aea3cf8fc # v1.2.4
