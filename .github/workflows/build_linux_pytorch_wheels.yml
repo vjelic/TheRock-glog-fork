@@ -81,6 +81,7 @@ jobs:
           git config --global user.email "therockbot@amd.com"
 
       - name: Run Docker container with ROCm access
+        continue-on-error: true
         run: |
           docker run --rm \
             --device=/dev/kfd \
