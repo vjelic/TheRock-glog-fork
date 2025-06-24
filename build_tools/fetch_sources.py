@@ -32,14 +32,11 @@ def exec(args: list[str | Path], cwd: Path):
 
 
 def enable_longpaths():
-    # Set global user as "therockbot", so these configurations are available only to "therockbot"
-    exec(["git", "config", "--global", "user.name", "Global User"], cwd=THEROCK_DIR)
+    # Supporting git longpath
     exec(
-        ["git", "config", "--global", "user.email", "therockbot@amd.com"],
+        ["git", "config", "core.longpaths", "true", "--recurse-submodules"],
         cwd=THEROCK_DIR,
     )
-    # Supporting git longpath
-    exec(["git", "config", "--global", "core.longpaths", "true"], cwd=THEROCK_DIR)
 
 
 def get_enabled_projects(args) -> list[str]:
