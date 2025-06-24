@@ -119,9 +119,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.ref }}
           inputs: |
-            amdgpu_families: "${{ inputs.AMDGPU_FAMILIES }}"
-            python_version: "${{ inputs.python_version }}"
-            s3_bucket: "${{ inputs.s3_bucket }}"
-            s3_subdir: "${{ inputs.s3_subdir }}"
-            s3_cloudfront: "${{ inputs.s3_cloudfront }}"
-            test_runs_on: "${{ fromJson('{"gfx942":"linux-mi300-1gpu-ossci-rocm","gfx1201":"linux-rx9070-gpu-rocm","gfx1100":"linux-rx7900-gpu-rocm"}')[inputs.AMDGPU_FAMILIES] }}"
+            {
+              "amdgpu_families": "${{ inputs.AMDGPU_FAMILIES }}",
+              "python_version": "${{ inputs.python_version }}",
+              "s3_bucket": "${{ inputs.s3_bucket }}",
+              "s3_subdir": "${{ inputs.s3_subdir }}",
+              "s3_cloudfront": "${{ inputs.s3_cloudfront }}",
+              "test_runs_on": "${{ fromJson('{"gfx942":"linux-mi300-1gpu-ossci-rocm","gfx1201":"linux-rx9070-gpu-rocm","gfx1100":"linux-rx7900-gpu-rocm"}')[inputs.AMDGPU_FAMILIES] }}"
+            }
