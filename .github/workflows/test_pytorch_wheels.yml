@@ -72,39 +72,43 @@ jobs:
             --group-add video \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
-            -e PYTHON_VERSION=${{ inputs.python_version }} \
-            -e AMDGPU_FAMILIES=${{ inputs.amdgpu_families }} \
-            -e S3_BUCKET=${{ inputs.s3_bucket }} \
-            -e S3_SUBDIR=${{ inputs.s3_subdir }} \
-            -e S3_CLOUDFRONT=${{ inputs.s3_cloudfront }} \
-            -e PACKAGE_DIST_DIR=/tmp/wheels \
-            -e AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
-            -e AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
-            -e AWS_SESSION_TOKEN=${{ env.AWS_SESSION_TOKEN }} \
+            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            -e AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }} \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
             bash -c "
-              set -xuo pipefail && \
-              curl -s https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
-              unzip -q awscliv2.zip && ./aws/install --update && \
-              mkdir -p /tmp/wheels && \
-              aws s3 cp s3://${S3_BUCKET}/${S3_SUBDIR}/${AMDGPU_FAMILIES}/ /tmp/wheels/ \
-                --recursive --exclude '*' --include '*.whl' && \
-              PYBIN=\"/opt/python/\${PYTHON_VERSION%%-*}/bin/python\" && \
-              \$PYBIN -m pip install /tmp/wheels/torch-*.whl && \
-              \$PYBIN -m pip install /tmp/wheels/torchvision-*.whl && \
-              \$PYBIN -m pip install /tmp/wheels/torchaudio-*.whl && \
-              \$PYBIN -m pip install pytest pytest-xdist numpy psutil && \
-              cd external-builds/pytorch/pytorch && \
-              export PYTORCH_TEST_WITH_ROCM=1 && \
-              rocm-smi || true && \
-              set +e && EXIT_CODE=0 && \
-              \$PYBIN -m pytest test/test_nn.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
-              \$PYBIN -m pytest test/test_torch.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
-              \$PYBIN -m pytest test/test_cuda.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
-              \$PYBIN -m pytest test/test_ops.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
-              \$PYBIN -m pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
-              \$PYBIN -m pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
-              \$PYBIN -m pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
-              \$PYBIN -m pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              set -xuo pipefail
+
+              curl -s https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
+              unzip -q awscliv2.zip && ./aws/install --update
+
+              mkdir -p /tmp/wheels
+              aws s3 cp s3://${{ inputs.s3_bucket }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/ /tmp/wheels/ \
+                --recursive --exclude '*' --include '*.whl'
+
+              PYBIN=\"/opt/python/${{ inputs.python_version }}/bin/python\"
+
+              \$PYBIN -m pip install /tmp/wheels/torch-*.whl
+              \$PYBIN -m pip install /tmp/wheels/torchvision-*.whl
+              \$PYBIN -m pip install /tmp/wheels/torchaudio-*.whl
+              \$PYBIN -m pip install pytest pytest-xdist numpy psutil
+
+              cd /workspace/external-builds/pytorch/pytorch
+              export PYTORCH_TEST_WITH_ROCM=1
+              rocm-smi || true
+
+              set +e
+              EXIT_CODE=0
+
+              \$PYBIN -m pytest test/test_nn.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$PYBIN -m pytest test/test_torch.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$PYBIN -m pytest test/test_cuda.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$PYBIN -m pytest test/test_ops.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$PYBIN -m pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$PYBIN -m pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$PYBIN -m pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$PYBIN -m pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+
               exit \$EXIT_CODE
             "
+
