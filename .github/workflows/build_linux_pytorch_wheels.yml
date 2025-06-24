@@ -96,7 +96,8 @@ jobs:
             -e S3_SUBDIR=${{ inputs.s3_subdir }} \
             -e PACKAGE_DIST_DIR=${{ env.PACKAGE_DIST_DIR }} \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
-            bash ./external-builds/pytorch/pytorch_tests/build_pytorch_wheels.sh
+            bash /external-builds/pytorch/build_pytorch_wheels/build_pytorch_wheels.sh && \
+            bash /external-builds/pytorch/build_pytorch_wheels/run_pytorch_tests.sh
 
       - name: Setup Python
         uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
