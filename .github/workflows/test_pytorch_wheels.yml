@@ -34,4 +34,44 @@ jobs:
       PACKAGE_DIST_DIR: /tmp/wheels
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v4
+
+      - name: Pull test container image
+        run: docker pull ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
+
+      - name: Run test container with GPU access
+        run: |
+          docker run --rm \
+            --device=/dev/kfd \
+            --device=/dev/dri \
+            --group-add video \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            -e PYTHON_VERSION=${{ inputs.python_version }} \
+            -e AMDGPU_FAMILIES=${{ inputs.amdgpu_families }} \
+            -e S3_BUCKET=${{ inputs.s3_bucket }} \
+            -e S3_SUBDIR=${{ inputs.s3_subdir }} \
+            -e S3_CLOUDFRONT=${{ inputs.s3_cloudfront }} \
+            -e PACKAGE_DIST_DIR=/tmp/wheels \
+            ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
+            bash -c "
+              mkdir -p /tmp/wheels && \
+              aws s3 cp s3://${{ inputs.s3_bucket }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/ /tmp/wheels/ --recursive --exclude '*' --include '*.whl' && \
+              python -m pip install /tmp/wheels/torch-*.whl && \
+              python -m pip install /tmp/wheels/torchvision-*.whl && \
+              python -m pip install /tmp/wheels/torchaudio-*.whl && \
+              python -m pip install pytest pytest-xdist numpy psutil && \
+              cd external-builds/pytorch/pytorch && \
+              export PYTORCH_TEST_WITH_ROCM=1 && \
+              rocm-smi || true && \
+              set +e && EXIT_CODE=0 && \
+              pytest test/test_nn.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              pytest test/test_torch.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              pytest test/test_cuda.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              pytest test/test_ops.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=\$? && \
+              exit \$EXIT_CODE
+            "
