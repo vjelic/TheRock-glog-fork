@@ -51,15 +51,9 @@ jobs:
     name: Test PyTorch Wheels | ${{ inputs.amdgpu_families }}
     runs-on: ${{ inputs.test_runs_on }}
 
-    env:
-      PACKAGE_DIST_DIR: /tmp/wheels
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v4
 
       - name: Pull test container image
         run: docker pull ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
@@ -72,29 +66,19 @@ jobs:
             --group-add video \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
-            -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            -e AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }} \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
             bash -c "
-              set -xuo pipefail
+              set -exuo pipefail
 
-              curl -s https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
-              unzip -q awscliv2.zip && ./aws/install --update
+              PYBIN=/opt/python/${{ inputs.python_version }}/bin/python
+              INDEX_URL=https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/
 
-              mkdir -p /tmp/wheels
-              aws s3 cp s3://${{ inputs.s3_bucket }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/ /tmp/wheels/ \
-                --recursive --exclude '*' --include '*.whl'
-
-              PYBIN=\"/opt/python/${{ inputs.python_version }}/bin/python\"
-
-              \$PYBIN -m pip install /tmp/wheels/torch-*.whl
-              \$PYBIN -m pip install /tmp/wheels/torchvision-*.whl
-              \$PYBIN -m pip install /tmp/wheels/torchaudio-*.whl
+              \$PYBIN -m pip install --index-url \$INDEX_URL torch torchvision torchaudio
               \$PYBIN -m pip install pytest pytest-xdist numpy psutil
 
               cd /workspace/external-builds/pytorch/pytorch
               export PYTORCH_TEST_WITH_ROCM=1
+
               rocm-smi || true
 
               set +e
@@ -111,4 +95,3 @@ jobs:
 
               exit \$EXIT_CODE
             "
-
