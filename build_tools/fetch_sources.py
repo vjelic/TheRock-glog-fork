@@ -36,13 +36,10 @@ def enable_longpaths():
     exec(
         [
             "git",
-            "submodule",
-            "foreach",
-            "--recursive",
-            "git",
             "config",
+            "--local",
             "core.longpaths",
-            "true",
+            "true"
         ],
         cwd=THEROCK_DIR,
     )
@@ -68,10 +65,13 @@ def run(args):
     if args.remote:
         update_args += ["--remote"]
     if args.update_submodules:
-        exec(["git", "submodule", "init"] + ["--"] + submodule_paths, cwd=THEROCK_DIR)
         enable_longpaths()
+        exec["git"]
         exec(
-            ["git", "submodule", "update"] + update_args + ["--"] + submodule_paths,
+            ["git", "submodule", "update", "--init"]
+            + update_args
+            + ["--"]
+            + submodule_paths,
             cwd=THEROCK_DIR,
         )
 
