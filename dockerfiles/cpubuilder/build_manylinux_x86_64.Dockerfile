@@ -61,6 +61,12 @@ RUN yum install -y epel-release && \
     yum clean all && \
     rm -rf /var/cache/yum
 
+######## Toolchain Fixups ########
+# In some situations lld (but not the native linker) can mis-detect that it
+# should add the gcc-toolset path to the link path. This must be synced with
+# the gcc-toolset that is installed (which will be upgraded from time to time).
+ENV LIBRARY_PATH="/opt/rh/gcc-toolset-14/root/usr/lib/gcc/x86_64-redhat-linux/14"
+
 ######## GIT CONFIGURATION ########
 # Git started enforcing strict user checking, which thwarts version
 # configuration scripts in a docker image where the tree was checked
