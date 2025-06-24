@@ -105,7 +105,7 @@ jobs:
               # - remove untracked files and directories (`clean -xfd`)
               git am --abort || true && git reset --hard && git clean -xfd && \
               cd /workspace && \
-              ./external-builds/pytorch/pytorch_torch_repo.py checkout --repo-hashtag=main && \
+              ./external-builds/pytorch/pytorch_torch_repo.py checkout && \
               ./external-builds/pytorch/pytorch_audio_repo.py checkout && \
               ./external-builds/pytorch/pytorch_vision_repo.py checkout && \
               mkdir -p /tmp/pipcache && \
@@ -115,8 +115,8 @@ jobs:
                 build \
                 --install-rocm \
                 --clean \
-                --output-dir /workspace/output/packages/dist && \
-              python -m pip install /workspace/output/packages/dist/torch-*.whl && \
+                --output-dir output/packages/dist && \
+              python -m pip install output/packages/dist/torch-*.whl && \
               rocm-smi && \
               cd external-builds/pytorch/pytorch && \
               python -m pip install pytest pytest-xdist && \
@@ -130,6 +130,7 @@ jobs:
               pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
               pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
               pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
+              pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
               exit $EXIT_CODE
               "
 
