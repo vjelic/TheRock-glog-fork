@@ -3,9 +3,11 @@ set -xuo pipefail
 
 cd /workspace/external-builds/pytorch/pytorch
 
-python -m pip install pytest pytest-xdist
+# Install test dependencies
+python -m pip install pytest pytest-xdist numpy psutil
+
 export PYTORCH_TEST_WITH_ROCM=1
-rocm-smi
+rocm-smi || true
 
 set +e
 EXIT_CODE=0

@@ -34,3 +34,5 @@ cd /workspace
 
 # Install for test
 python -m pip install "${PACKAGE_DIST_DIR}"/torch-*.whl
+python -m pip install "${PACKAGE_DIST_DIR}"/torchvision-*.whl
+python -m pip install "${PACKAGE_DIST_DIR}"/torchaudio-*.whl
