@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -xuo pipefail
 
 git config --global user.name "therockbot"
 git config --global user.email "therockbot@amd.com"
