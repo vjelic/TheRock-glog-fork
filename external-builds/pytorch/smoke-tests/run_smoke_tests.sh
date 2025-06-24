@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xeuo pipefail
+set -xuo pipefail
 
 echo 'Running inside the container'
 

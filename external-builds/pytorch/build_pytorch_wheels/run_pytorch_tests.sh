@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xeuo pipefail
+set -xuo pipefail
 
 cd /workspace/external-builds/pytorch/pytorch
 
