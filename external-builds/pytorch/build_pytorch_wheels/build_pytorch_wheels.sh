@@ -4,8 +4,7 @@ set -xuo pipefail
 git config --global user.name "therockbot"
 git config --global user.email "therockbot@amd.com"
 
-python_dir="/opt/python/${PYTHON_VERSION}"
-export PATH="$python_dir/bin:$PATH"
+export PATH="/opt/python/${PYTHON_VERSION}/bin:$PATH"
 
 # Run repo checkouts
 cd /workspace
@@ -31,6 +30,11 @@ cd /workspace
   --install-rocm \
   --clean \
   --output-dir "${PACKAGE_DIST_DIR}"
+
+ls -l "${PACKAGE_DIST_DIR}"
+
+which python
+python -m pip list | grep torch
 
 # Install for test
 python -m pip install "${PACKAGE_DIST_DIR}"/torch-*.whl
