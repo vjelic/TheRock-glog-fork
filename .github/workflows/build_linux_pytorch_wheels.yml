@@ -61,9 +61,6 @@ jobs:
         continue-on-error: true
         run: |
           docker run --rm \
-            --device=/dev/kfd \
-            --device=/dev/dri \
-            --group-add video \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             -e PYTHON_VERSION=${{ inputs.python_version }} \
