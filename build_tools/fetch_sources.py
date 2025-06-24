@@ -66,7 +66,6 @@ def run(args):
         update_args += ["--remote"]
     if args.update_submodules:
         enable_longpaths()
-        exec["git"]
         exec(
             ["git", "submodule", "update", "--init"]
             + update_args
