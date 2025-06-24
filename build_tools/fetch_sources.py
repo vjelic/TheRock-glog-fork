@@ -42,8 +42,6 @@ def get_enabled_projects(args) -> list[str]:
 
 def run(args):
     projects = get_enabled_projects(args)
-    # Support git long paths before submodule retrieval
-    exec(["git", "config", "core.longpaths", "true"], cwd=THEROCK_DIR)
     submodule_paths = [get_submodule_path(project) for project in projects]
     update_args = []
     if args.depth:
@@ -54,7 +52,7 @@ def run(args):
         update_args += ["--remote"]
     if args.update_submodules:
         exec(
-            ["git", "submodule", "update", "--init"]
+            ["git", "submodule", "update", "--init", "-c", "core.longpaths=true"]
             + update_args
             + ["--"]
             + submodule_paths,
