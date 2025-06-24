@@ -39,6 +39,8 @@ on:
 permissions:
   id-token: write
   contents: read
+  packages: write
+  actions: write # Added permission to trigger workflows
 
 jobs:
   build_pytorch_wheels:
