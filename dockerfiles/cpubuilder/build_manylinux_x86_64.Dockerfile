@@ -1,6 +1,6 @@
 # This dockerfile builds automatically upon push to the main branch. It can be built
 # interactively for testing via:
-#   docker buildx build --file dockerfiles/cpubilder/build_manylinux_x86_64.Dockerfile dockerfiles/cpubuilder
+#   docker buildx build --file dockerfiles/cpubuilder/build_manylinux_x86_64.Dockerfile dockerfiles/cpubuilder
 # This will print a SHA image id, which you can run with (or equiv):
 #   sudo docker run --rm -it --entrypoint /bin/bash <<IMAGE>>
 #
@@ -9,7 +9,7 @@
 # We build our portable linux releases on the manylinux (RHEL-based)
 # images, with custom additional packages installed. We switch to
 # new upstream versions as needed.
-FROM quay.io/pypa/manylinux_2_28_x86_64@sha256:634656edbdeb07f955667e645762ad218eefe25f0d185fef913221855d610456
+FROM quay.io/pypa/manylinux_2_28_x86_64@sha256:afceced13f5f580c67c3297f197240aa8c7c942dff2426a56d246382d62888c6
 
 ######## Python and CMake setup #######
 # These images come with multiple python versions. We pin one for
@@ -52,10 +52,10 @@ COPY install_googletest.sh ./
 RUN ./install_googletest.sh "${GOOGLE_TEST_VERSION}" && rm -rf /install-googletest
 
 ######## Yum Packages #######
-# TODO: Figure out why gcc-toolset-12-libatomic-devel doesn't install with the
+# TODO: Figure out why gcc-toolset-14-libatomic-devel doesn't install with the
 # rest of the dev toolset.
 RUN yum install -y epel-release && \
-    yum install -y gcc-toolset-12-libatomic-devel && \
+    yum install -y gcc-toolset-14-libatomic-devel && \
     yum install -y patchelf && \
     yum install -y vim-common git-lfs && \
     yum clean all && \

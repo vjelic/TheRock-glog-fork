@@ -29,7 +29,7 @@ When interactively verifying that various Linux based operating systems build pr
 ```
 ./build_tools/linux_portable_build.py --interactive --image <<some reference image>> [--docker=podman]
 ... Follow OS specific setup instructions to install packages, etc ...
-cmake -S /therock/src -B /therock/output/build -GNinja . -DTHEROCK_AMDGPU_FAMILIES=gfx1100
+cmake -S /therock/src -B /therock/output/build -GNinja -DTHEROCK_AMDGPU_FAMILIES=gfx1100
 cmake --build /therock/output/build
 ```
 
