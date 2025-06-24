@@ -4,17 +4,22 @@ set -xeuo pipefail
 python_dir="/opt/python/${PYTHON_VERSION}"
 export PATH="$python_dir/bin:$PATH"
 
-cd /workspace/external-builds/pytorch/pytorch
-git am --abort || true
-git reset --hard
-git clean -xfd
-
+# Step 1: Clone and checkout repos
 cd /workspace
 ./external-builds/pytorch/pytorch_torch_repo.py checkout
 ./external-builds/pytorch/pytorch_audio_repo.py checkout
 ./external-builds/pytorch/pytorch_vision_repo.py checkout
 
+# Step 2: Clean the PyTorch repo now that it exists
+cd /workspace/external-builds/pytorch/pytorch
+git am --abort || true
+git reset --hard
+git clean -xfd
+
+# Step 3: Build and test
+cd /workspace
 mkdir -p /tmp/pipcache
+
 ./external-builds/pytorch/build_prod_wheels.py \
   --pip-cache-dir /tmp/pipcache \
   --index-url "https://${S3_CLOUDFRONT}/${S3_SUBDIR}/${AMDGPU_FAMILIES}/" \
