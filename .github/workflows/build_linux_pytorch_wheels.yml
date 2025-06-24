@@ -44,6 +44,8 @@ jobs:
   build_pytorch_wheels:
     name: Build Linux PyTorch Wheels | ${{ inputs.AMDGPU_FAMILIES }} | Python ${{ inputs.python_version }}
     runs-on: ${{ github.repository_owner == 'ROCm' && 'azure-linux-scale-rocm' || 'ubuntu-24.04' }}
+    container:
+      image: ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
     env:
       OUTPUT_DIR: ${{ github.workspace }}/output
       PACKAGE_DIST_DIR: ${{ github.workspace }}/output/packages/dist
@@ -57,31 +59,34 @@ jobs:
           git config --global user.name "therockbot"
           git config --global user.email "therockbot@amd.com"
 
-      - name: Run Docker container with ROCm access
-        continue-on-error: true
+      - name: Add selected Python version to PATH
         run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/workspace \
-            -w /workspace \
-            -e PYTHON_VERSION=${{ inputs.python_version }} \
-            -e AMDGPU_FAMILIES=${{ inputs.AMDGPU_FAMILIES }} \
-            -e S3_CLOUDFRONT=${{ inputs.s3_cloudfront }} \
-            -e S3_SUBDIR=${{ inputs.s3_subdir }} \
-            -e PACKAGE_DIST_DIR=${{ env.PACKAGE_DIST_DIR }} \
-            ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
-            bash -c "
-              bash /workspace/external-builds/pytorch/build_pytorch_wheels/build_pytorch_wheels.sh
-            "
-      - name: Setup Python
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
-        with:
-          python-version: 3.12
+          python_dir="/opt/python/${{ inputs.python_version }}"
+          if ! [ -x "${python_dir}/bin/python" ]; then
+            echo "ERROR: Could not find python: ${python_dir}"
+            exit 1
+          fi
+          echo "${python_dir}/bin" >> "$GITHUB_PATH"
 
-      - name: Update AWS CLI
+      - name: Checkout PyTorch Source Repos
         run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install --update
+          ./external-builds/pytorch/pytorch_torch_repo.py checkout
+          ./external-builds/pytorch/pytorch_audio_repo.py checkout
+          ./external-builds/pytorch/pytorch_vision_repo.py checkout
+
+      - name: Create pip cache directory
+        run: mkdir -p /tmp/pipcache
+
+      - name: Build PyTorch Wheels
+        run: |
+          echo "Building PyTorch wheels for ${{ inputs.AMDGPU_FAMILIES }}"
+          ./external-builds/pytorch/build_prod_wheels.py \
+            --pip-cache-dir /tmp/pipcache \
+            --index-url "https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.AMDGPU_FAMILIES }}/" \
+            build \
+            --install-rocm \
+            --clean \
+            --output-dir ${{ env.PACKAGE_DIST_DIR }} \
 
       - name: Configure AWS Credentials
         if: always()
