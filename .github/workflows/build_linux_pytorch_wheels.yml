@@ -39,6 +39,7 @@ on:
 permissions:
   id-token: write
   contents: read
+  actions: write # Required to allow triggering another workflow
 
 jobs:
   build_pytorch_wheels:
