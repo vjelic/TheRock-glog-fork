@@ -91,48 +91,13 @@ jobs:
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             -e PYTORCH_TEST_WITH_ROCM=1 \
+            -e PYTHON_VERSION=${{ inputs.python_version }} \
+            -e S3_CLOUDFRONT=${{ inputs.s3_cloudfront }} \
+            -e S3_SUBDIR=${{ inputs.s3_subdir }} \
+            -e AMDGPU_FAMILIES=${{ inputs.AMDGPU_FAMILIES }} \
+            -e PACKAGE_DIST_DIR=/workspace/output/packages/dist \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
-            bash -c "
-              git config --global user.name 'therockbot' && \
-              git config --global user.email 'therockbot@amd.com' && \
-              python_dir=/opt/python/${{ inputs.python_version }} && \
-              export PATH=\$python_dir/bin:\$PATH && \
-
-              cd /workspace/external-builds/pytorch/pytorch && \
-              # Ensure clean working directory before applying patches:
-              # - abort any in-progress patch (`git am`)
-              # - discard any local changes (`reset --hard`)
-              # - remove untracked files and directories (`clean -xfd`)
-              git am --abort || true && git reset --hard && git clean -xfd && \
-              cd /workspace && \
-              ./external-builds/pytorch/pytorch_torch_repo.py checkout && \
-              ./external-builds/pytorch/pytorch_audio_repo.py checkout && \
-              ./external-builds/pytorch/pytorch_vision_repo.py checkout && \
-              mkdir -p /tmp/pipcache && \
-              ./external-builds/pytorch/build_prod_wheels.py \
-                --pip-cache-dir /tmp/pipcache \
-                --index-url https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.AMDGPU_FAMILIES }}/ \
-                build \
-                --install-rocm \
-                --clean \
-                --output-dir output/packages/dist && \
-              python -m pip install output/packages/dist/torch-*.whl && \
-              rocm-smi && \
-              cd external-builds/pytorch/pytorch && \
-              python -m pip install pytest pytest-xdist && \
-              export PYTORCH_TEST_WITH_ROCM=1 && \
-              set +e && \
-              EXIT_CODE=0 && \
-              pytest test/test_nn.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              pytest test/test_torch.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              pytest test/test_cuda.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              pytest test/test_ops.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=$? && \
-              exit $EXIT_CODE
-              "
+            bash external-builds/pytorch/pytorch_tests/build_pytorch_wheels.sh
 
       - name: Setup Python
         uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
