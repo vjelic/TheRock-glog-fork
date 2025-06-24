@@ -21,7 +21,26 @@ on:
       test_runs_on:
         required: true
         type: string
-
+  workflow_call:
+    inputs:
+      amdgpu_families:
+        required: true
+        type: string
+      python_version:
+        required: true
+        type: string
+      s3_bucket:
+        required: true
+        type: string
+      s3_subdir:
+        required: true
+        type: string
+      s3_cloudfront:
+        required: true
+        type: string
+      test_runs_on:
+        required: true
+        type: string
 permissions:
   contents: read
 
