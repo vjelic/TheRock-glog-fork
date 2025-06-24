@@ -112,6 +112,16 @@ jobs:
           pip install boto3 packaging
           python ./build_tools/third_party/s3_management/manage.py ${{ inputs.s3_subdir }}/${{ inputs.AMDGPU_FAMILIES }}
 
+      - name: Resolve GPU runner
+        id: resolve_runner
+        run: |
+          case "${{ inputs.AMDGPU_FAMILIES }}" in
+            gfx942) echo "runner=linux-mi300-1gpu-ossci-rocm" >> "$GITHUB_OUTPUT" ;;
+            gfx1201) echo "runner=linux-rx9070-gpu-rocm" >> "$GITHUB_OUTPUT" ;;
+            gfx1100) echo "runner=linux-rx7900-gpu-rocm" >> "$GITHUB_OUTPUT" ;;
+            *) echo "Unknown family"; exit 1 ;;
+          esac
+
       - name: Trigger PyTorch Tests on GPU runner
         if: ${{ github.repository_owner == 'ROCm' }}
         uses: benc-uk/workflow-dispatch@e2e5e9a103e331dad343f381a29e654aea3cf8fc # v1.2.4
@@ -126,5 +136,5 @@ jobs:
               "s3_bucket": "${{ inputs.s3_bucket }}",
               "s3_subdir": "${{ inputs.s3_subdir }}",
               "s3_cloudfront": "${{ inputs.s3_cloudfront }}",
-              "test_runs_on": "${{ fromJson('{"gfx942":"linux-mi300-1gpu-ossci-rocm","gfx1201":"linux-rx9070-gpu-rocm","gfx1100":"linux-rx7900-gpu-rocm"}')[inputs.AMDGPU_FAMILIES] }}"
+              "test_runs_on": "${{ steps.resolve_runner.outputs.runner }}"
             }
