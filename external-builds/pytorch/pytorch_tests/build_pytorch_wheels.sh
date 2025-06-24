@@ -1,11 +1,15 @@
 #!/bin/bash
 set -xeuo pipefail
 
+# Fix: Set global identity early
+git config --global user.name "therockbot"
+git config --global user.email "therockbot@amd.com"
+
 python_dir="/opt/python/${PYTHON_VERSION}"
 export PATH="$python_dir/bin:$PATH"
 
 # Step 1: Clone and checkout repos
-cd /workspace
+cd /workspace/external-builds/pytorch/pytorch
 ./external-builds/pytorch/pytorch_torch_repo.py checkout
 ./external-builds/pytorch/pytorch_audio_repo.py checkout
 ./external-builds/pytorch/pytorch_vision_repo.py checkout
