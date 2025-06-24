@@ -31,6 +31,17 @@ def exec(args: list[str | Path], cwd: Path):
     subprocess.check_call(args, cwd=str(cwd), stdin=subprocess.DEVNULL)
 
 
+def enable_longpaths():
+    # Set global user as "therockbot", so these configurations are available only to "therockbot"
+    exec(["git", "config", "--global", "user.name", "Global User"], cwd=THEROCK_DIR)
+    exec(
+        ["git", "config", "--global", "user.email", "therockbot@amd.com"],
+        cwd=THEROCK_DIR,
+    )
+    # Supporting git longpath
+    exec(["git", "config", "--global", "core.longpaths", "true"], cwd=THEROCK_DIR)
+
+
 def get_enabled_projects(args) -> list[str]:
     projects = list(args.projects)
     if args.include_math_libs:
@@ -42,6 +53,7 @@ def get_enabled_projects(args) -> list[str]:
 
 def run(args):
     projects = get_enabled_projects(args)
+    enable_longpaths()
     submodule_paths = [get_submodule_path(project) for project in projects]
     update_args = []
     if args.depth:
@@ -52,7 +64,7 @@ def run(args):
         update_args += ["--remote"]
     if args.update_submodules:
         exec(
-            ["git", "submodule", "update", "--init", "-c", "core.longpaths=true"]
+            ["git", "submodule", "update", "--init"]
             + update_args
             + ["--"]
             + submodule_paths,
