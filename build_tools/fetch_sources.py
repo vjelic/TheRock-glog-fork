@@ -34,7 +34,16 @@ def exec(args: list[str | Path], cwd: Path):
 def enable_longpaths():
     # Supporting git longpath
     exec(
-        ["git", "config", "core.longpaths", "true", "--recurse-submodules"],
+        [
+            "git",
+            "submodule",
+            "foreach",
+            "--recursive",
+            "git",
+            "config",
+            "core.longpaths",
+            "true",
+        ],
         cwd=THEROCK_DIR,
     )
 
