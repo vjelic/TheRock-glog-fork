@@ -37,7 +37,8 @@ def enable_longpaths():
         [
             "git",
             "config",
-            "--local",
+            "--file",
+            ".gitmodules",
             "core.longpaths",
             "true"
         ],
