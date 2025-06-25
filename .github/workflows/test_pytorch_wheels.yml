@@ -62,19 +62,35 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Pull test container image
+      - name: Debug directory contents
         run: |
-          docker pull ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
+          ls -la
+          find . -name run_pytorch_tests.sh
 
       - name: Make test script executable
         run: |
-          chmod +x run_pytorch_tests.sh
+          if [ -f run_pytorch_tests.sh ]; then
+            chmod +x run_pytorch_tests.sh
+          elif [ -f scripts/run_pytorch_tests.sh ]; then
+            chmod +x scripts/run_pytorch_tests.sh
+          else
+            echo "Error: run_pytorch_tests.sh not found"
+            exit 1
+          fi
+
+      - name: Pull test container image
+        run: |
+          docker pull ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
 
       - name: Run PyTorch installation and tests inside container
         env:
           PYTHON_VERSION: ${{ inputs.python_version }}
           INDEX_URL: https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/
         run: |
+          script_path=run_pytorch_tests.sh
+          if [ -f scripts/run_pytorch_tests.sh ]; then
+            script_path=scripts/run_pytorch_tests.sh
+          fi
           docker run --rm \
             --device=/dev/kfd \
             --device=/dev/dri \
@@ -86,4 +102,4 @@ jobs:
             -e PYTHON_VERSION \
             -e INDEX_URL \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
-            bash external-builds/pytorch/build_pytorch_wheels/run_pytorch_tests.sh
+            bash external-builds/pytorch/run_pytorch_tests/run_pytorch_tests.sh
