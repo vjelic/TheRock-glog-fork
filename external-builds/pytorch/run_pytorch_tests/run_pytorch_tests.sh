@@ -39,7 +39,6 @@ python -m pip install pytest pytest-xdist numpy psutil expecttest hypothesis
 # Verify installed packages
 python -m pip show torch
 python -m pip show expecttest
-python -c 'import torch; print(torch.__file__); print(torch.__version__)'
 
 # Run ROCm SMI for debug
 rocm-smi || true
