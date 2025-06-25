@@ -52,7 +52,9 @@ PYTORCH_TEST_WITH_ROCM=1
 
 set +e
 EXIT_CODE=0
-for test_file in \
+
+# Use xdist for pytests
+python -m pytest \
   /workspace/external-builds/pytorch/pytorch/test/test_nn.py \
   /workspace/external-builds/pytorch/pytorch/test/test_torch.py \
   /workspace/external-builds/pytorch/pytorch/test/test_cuda.py \
@@ -60,6 +62,9 @@ for test_file in \
   /workspace/external-builds/pytorch/pytorch/test/test_unary_ufuncs.py \
   /workspace/external-builds/pytorch/pytorch/test/test_binary_ufuncs.py \
   /workspace/external-builds/pytorch/pytorch/test/test_autograd.py \
-  /workspace/external-builds/pytorch/pytorch/test/inductor/test_torchinductor.py; do
-    python -m pytest "$test_file" -v --continue-on-collection-errors || EXIT_CODE=$?
-done
+  /workspace/external-builds/pytorch/pytorch/test/inductor/test_torchinductor.py \
+  -v \
+  --continue-on-collection-errors \
+  -n auto || EXIT_CODE=$?
+
+exit $EXIT_CODE
