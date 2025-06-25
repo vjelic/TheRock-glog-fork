@@ -77,7 +77,6 @@ jobs:
             --group-add video \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
-            -e PYTORCH_TEST_WITH_ROCM=1 \
             -e PYTHON_VERSION \
             -e INDEX_URL \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
