@@ -10,7 +10,7 @@ on:
       python_version:
         required: true
         type: string
-        default: "cp311-cp311"
+        default: "cp312-cp312"
       s3_bucket:
         required: true
         type: string
@@ -73,6 +73,7 @@ jobs:
             --group-add video \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
+            -e PYTORCH_TEST_WITH_ROCM=1 \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
             bash -c "
               set -uxo pipefail
