@@ -103,15 +103,15 @@ jobs:
               python -m pip install --index-url \$index_url torch
               python -m pip install pytest pytest-xdist numpy psutil
 
-              # Also install local wheel if present
-              if compgen -G 'output/packages/dist/torch-*.whl' > /dev/null; then
-                python -m pip install output/packages/dist/torch-*.whl || true
-              fi
-
+              # Confirm installed torch is not from source
               echo 'Installed torch location:'
-              python -c 'import torch; print(torch.__file__)'
+              PYTHONPATH= python -c 'import torch; print(torch.__file__)'
 
+              # Run ROCm SMI for debug
               rocm-smi || true
+
+              # Run tests
+              cd /workspace/external-builds/pytorch/pytorch
 
               set +e
               EXIT_CODE=0
