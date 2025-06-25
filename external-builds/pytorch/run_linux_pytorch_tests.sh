@@ -30,9 +30,7 @@ git config --global user.email 'therockbot@amd.com'
 
 # Checkout repositories
 cd "$ROOT_DIR"
-./external-builds/pytorch/pytorch_torch_repo.py checkout
-./external-builds/pytorch/pytorch_audio_repo.py checkout
-./external-builds/pytorch/pytorch_vision_repo.py checkout
+./external-builds/pytorch/pytorch_torch_repo.py checkout --no-hipify --no-patch
 
 # Reset PyTorch repository
 cd "$PYTORCH_DIR"
