@@ -102,10 +102,11 @@ jobs:
 
               index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
               python -m pip install --index-url \$index_url torch
-              python -m pip install pytest pytest-xdist numpy psutil
+              python -m pip install pytest pytest-xdist numpy psutil expecttest
 
-              # Verify installed torch
+              # Verify installed packages
               python -m pip show torch
+              python -m pip show expecttest
               python -c 'import torch; print(torch.__file__); print(torch.__version__)'
 
               # Run ROCm SMI for debug
