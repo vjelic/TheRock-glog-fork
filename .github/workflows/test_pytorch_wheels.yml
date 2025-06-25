@@ -27,6 +27,7 @@ on:
         required: true
         type: string
         default: "linux-mi300-1gpu-ossci-rocm"
+
   workflow_call:
     inputs:
       amdgpu_families:
@@ -74,19 +75,37 @@ jobs:
             -w /workspace \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
             bash -c "
-              set -exuo pipefail
+              set -xuo pipefail
+              which python
+              python --version
+              git config --global user.name 'therockbot'
+              git config --global user.email 'therockbot@amd.com'
 
+              python_bin='/opt/python/${{ inputs.python_version }}/bin/python'
+              if ! [ -x \$python_bin ]; then
+                echo 'ERROR: Python binary not found at \$python_bin'
+                exit 1
+              fi
+
+              ln -sf \$python_bin /usr/bin/python || true
+
+              cd /workspace
               ./external-builds/pytorch/pytorch_torch_repo.py checkout
               ./external-builds/pytorch/pytorch_audio_repo.py checkout
               ./external-builds/pytorch/pytorch_vision_repo.py checkout
 
-              PYBIN=/opt/python/${{ inputs.python_version }}/bin/python
-              INDEX_URL=https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/
-
-              \$PYBIN -m pip install --index-url \$INDEX_URL torch torchvision torchaudio
-              \$PYBIN -m pip install pytest pytest-xdist numpy psutil
-
               cd /workspace/external-builds/pytorch/pytorch
+              git am --abort || true
+              git reset --hard
+              git clean -xfd
+
+              mkdir -p /tmp/pipcache
+
+              index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
+
+              \$python_bin -m pip install --index-url \$index_url torch torchvision torchaudio
+              \$python_bin -m pip install pytest pytest-xdist numpy psutil
+
               export PYTORCH_TEST_WITH_ROCM=1
 
               rocm-smi || true
@@ -94,14 +113,14 @@ jobs:
               set +e
               EXIT_CODE=0
 
-              \$PYBIN -m pytest test/test_nn.py -v --continue-on-collection-errors || EXIT_CODE=\$?
-              \$PYBIN -m pytest test/test_torch.py -v --continue-on-collection-errors || EXIT_CODE=\$?
-              \$PYBIN -m pytest test/test_cuda.py -v --continue-on-collection-errors || EXIT_CODE=\$?
-              \$PYBIN -m pytest test/test_ops.py -v --continue-on-collection-errors || EXIT_CODE=\$?
-              \$PYBIN -m pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$?
-              \$PYBIN -m pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$?
-              \$PYBIN -m pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=\$?
-              \$PYBIN -m pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$python_bin -m pytest test/test_nn.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$python_bin -m pytest test/test_torch.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$python_bin -m pytest test/test_cuda.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$python_bin -m pytest test/test_ops.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$python_bin -m pytest test/test_unary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$python_bin -m pytest test/test_binary_ufuncs.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$python_bin -m pytest test/test_autograd.py -v --continue-on-collection-errors || EXIT_CODE=\$?
+              \$python_bin -m pytest torch/_inductor/test_torchinductor.py -v --continue-on-collection-errors || EXIT_CODE=\$?
 
               exit \$EXIT_CODE
             "
