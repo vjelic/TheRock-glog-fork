@@ -63,6 +63,8 @@ jobs:
 
       - name: Add selected Python version to PATH
         run: |
+          echo "Available versions:"
+          ls -1 /opt/python/
           python_dir="/opt/python/${{ inputs.python_version }}"
           if ! [ -x "${python_dir}/bin/python" ]; then
             echo "ERROR: Could not find python: ${python_dir}"
