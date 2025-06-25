@@ -102,7 +102,7 @@ jobs:
 
               index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
               python -m pip install --index-url \$index_url torch
-              python -m pip install pytest pytest-xdist numpy psutil expecttest
+              python -m pip install pytest pytest-xdist numpy psutil expecttest hypothesis
 
               # Verify installed packages
               python -m pip show torch
