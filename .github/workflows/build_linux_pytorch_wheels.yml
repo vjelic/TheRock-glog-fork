@@ -126,7 +126,7 @@ jobs:
         if: ${{ github.repository_owner == 'ROCm' }}
         uses: benc-uk/workflow-dispatch@e2e5e9a103e331dad343f381a29e654aea3cf8fc # v1.2.4
         with:
-          workflow: test_pytorch_wheels.yml
+          workflow: test_linux_pytorch_wheels.yml
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.ref }}
           inputs: |
