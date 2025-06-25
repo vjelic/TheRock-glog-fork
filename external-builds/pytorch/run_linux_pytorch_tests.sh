@@ -38,6 +38,11 @@ git am --abort || true
 git reset --hard
 git clean -xfd
 
+# Run tests from a clean directory
+TEST_DIR="$(mktemp -d)"
+cd "$TEST_DIR"
+echo "Running tests in temporary directory: $TEST_DIR"
+
 export PYTORCH_PRINT_REPRO_ON_FAILURE=0
 export PYTORCH_TEST_WITH_ROCM=1
 
