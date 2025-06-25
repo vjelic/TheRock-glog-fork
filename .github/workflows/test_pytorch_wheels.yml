@@ -6,6 +6,33 @@ on:
       amdgpu_families:
         required: true
         type: string
+        default: "gfx94X-dcgpu"
+      python_version:
+        required: true
+        type: string
+        default: "cp312-cp312"
+      s3_bucket:
+        required: true
+        type: string
+        default: "therock-nightly-python"
+      s3_subdir:
+        required: true
+        type: string
+        default: "v2"
+      s3_cloudfront:
+        required: true
+        type: string
+        default: "d2awnip2yjpvqn.cloudfront.net"
+      test_runs_on:
+        required: true
+        type: string
+        default: "linux-mi300-1gpu-ossci-rocm"
+
+  workflow_call:
+    inputs:
+      amdgpu_families:
+        required: true
+        type: string
       python_version:
         required: true
         type: string
@@ -24,14 +51,33 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   test_wheels:
     name: Test PyTorch Wheels | ${{ inputs.amdgpu_families }}
     runs-on: ${{ inputs.test_runs_on }}
 
-    env:
-      PACKAGE_DIST_DIR: /tmp/wheels
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Pull test container image
+        run: |
+          docker pull ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
+
+      - name: Run PyTorch installation and tests inside container
+        env:
+          PYTHON_VERSION: ${{ inputs.python_version }}
+          INDEX_URL: https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/
+        run: |
+          docker run --rm \
+            --device=/dev/kfd \
+            --device=/dev/dri \
+            --group-add video \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            -e PYTHON_VERSION \
+            -e INDEX_URL \
+            ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
+            bash external-builds/pytorch/run_pytorch_tests/run_pytorch_tests.sh
