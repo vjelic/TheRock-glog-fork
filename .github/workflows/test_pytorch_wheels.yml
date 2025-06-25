@@ -89,6 +89,8 @@ jobs:
               # - abort any in-progress patch (`git am`)
               # - discard any local changes (`reset --hard`)
               # - remove untracked files and directories (`clean -xfd`)
+              python --version
+
               git am --abort || true && git reset --hard && git clean -xfd && \
               cd /workspace && \
               ./external-builds/pytorch/pytorch_torch_repo.py checkout && \
