@@ -62,11 +62,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Debug directory contents
-        run: |
-          ls -la
-          find . -name run_pytorch_tests.sh
-
       - name: Pull test container image
         run: |
           docker pull ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
