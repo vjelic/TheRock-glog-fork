@@ -8,6 +8,11 @@ if [ -z "$PYTHON_VERSION" ] || [ -z "$INDEX_URL" ]; then
   exit 1
 fi
 
+# Determine script and project root directories
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(realpath "$SCRIPT_DIR/../..")"
+PYTORCH_DIR="$ROOT_DIR/external-builds/pytorch/pytorch"
+
 # Set Python path
 python_dir="/opt/python/$PYTHON_VERSION"
 export PATH="$python_dir/bin:$PATH"
@@ -21,13 +26,13 @@ git config --global user.name 'therockbot'
 git config --global user.email 'therockbot@amd.com'
 
 # Checkout repositories
-cd /workspace
+cd "$ROOT_DIR"
 ./external-builds/pytorch/pytorch_torch_repo.py checkout
 ./external-builds/pytorch/pytorch_audio_repo.py checkout
 ./external-builds/pytorch/pytorch_vision_repo.py checkout
 
 # Reset PyTorch repository
-cd /workspace/external-builds/pytorch/pytorch
+cd "$PYTORCH_DIR"
 git am --abort || true
 git reset --hard
 git clean -xfd
