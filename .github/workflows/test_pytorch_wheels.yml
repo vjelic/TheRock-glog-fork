@@ -10,6 +10,7 @@ on:
       python_version:
         required: true
         type: string
+        default: "cp311-cp311"
       s3_bucket:
         required: true
         type: string
