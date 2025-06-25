@@ -47,7 +47,7 @@ rocm-smi || true
 # Run tests from a clean directory
 mkdir -p /tmp/test_dir
 cd /tmp/test_dir
-
+PYTORCH_PRINT_REPRO_ON_FAILURE=0
 set +e
 EXIT_CODE=0
 for test_file in \
