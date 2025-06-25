@@ -100,7 +100,7 @@ jobs:
               git clean -xfd
 
               index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
-              python -m pip install --index-url \$index_url torch torchvision torchaudio
+              python -m pip install --index-url \$index_url torch
               python -m pip install pytest pytest-xdist numpy psutil
 
               # Also install local wheel if present
