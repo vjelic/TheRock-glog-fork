@@ -105,6 +105,7 @@ jobs:
               python -m pip install pytest pytest-xdist numpy psutil
 
               echo 'Installed torch location:'
+              cd /
               python -c 'import torch; print(torch.__file__)'
 
               rocm-smi || true
