@@ -12,14 +12,17 @@ on:
         type: string
         default: "cp312-cp312"
       s3_bucket:
+        description: "S3 bucket to upload the wheels"
         required: true
         type: string
         default: "therock-nightly-python"
       s3_subdir:
+        description: "Subdirectory used in the bucket and CloudFront URL"
         required: true
         type: string
         default: "v2"
       s3_cloudfront:
+        description: "CloudFront URL pointing to the bucket"
         required: true
         type: string
         default: "d2awnip2yjpvqn.cloudfront.net"
