@@ -75,8 +75,9 @@ jobs:
             -w /workspace \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
             bash -c "
-              set -euxo pipefail
-
+              set -uxo pipefail
+              python --version
+              which python
               git config --global user.name 'therockbot' && \
               git config --global user.email 'therockbot@amd.com' && \
               python_dir=/opt/python/${{ inputs.python_version }} && \
@@ -94,9 +95,9 @@ jobs:
               ./external-builds/pytorch/pytorch_vision_repo.py checkout && \
 
               index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
-              \$python_bin -m pip install --index-url \$index_url torch torchvision torchaudio
-              \$python_bin -m pip install pytest pytest-xdist numpy psutil
-              
+              python -m pip install --index-url \$index_url torch torchvision torchaudio
+              python -m pip install pytest pytest-xdist numpy psutil
+
               python -m pip install output/packages/dist/torch-*.whl && \
               rocm-smi && \
               cd external-builds/pytorch/pytorch && \
