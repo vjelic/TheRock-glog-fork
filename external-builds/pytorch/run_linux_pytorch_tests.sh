@@ -40,9 +40,6 @@ git am --abort || true
 git reset --hard
 git clean -xfd
 
-# Run ROCm SMI for debug
-rocm-smi || true
-
 # Run tests from a clean directory
 TEST_DIR="$(mktemp -d)"
 cd "$TEST_DIR"
@@ -71,7 +68,7 @@ python -m pytest \
   echo "Pytest failed with exit code $EXIT_CODE"
 }
 
-# Log the final exit code but always exit with 0 to ensure workflow success
+# Log the final exit code
 echo "Final test exit code: $EXIT_CODE"
 
 # Deactivate virtual environment
