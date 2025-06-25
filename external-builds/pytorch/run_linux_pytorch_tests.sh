@@ -44,8 +44,9 @@ python -m pip show expecttest
 rocm-smi || true
 
 # Run tests from a clean directory
-mkdir -p /tmp/test_dir
-cd /tmp/test_dir
+TEST_DIR="$(mktemp -d)"
+cd "$TEST_DIR"
+echo "Running tests in temporary directory: $TEST_DIR"
 
 PYTORCH_PRINT_REPRO_ON_FAILURE=0
 PYTORCH_TEST_WITH_ROCM=1
