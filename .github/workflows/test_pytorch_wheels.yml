@@ -77,34 +77,32 @@ jobs:
             bash -c "
               set -euxo pipefail
 
-              python_bin='/opt/python/${{ inputs.python_version }}/bin/python'
-              if ! [ -x \$python_bin ]; then
-                echo 'ERROR: Python binary not found at \$python_bin'
-                exit 1
-              fi
+              git config --global user.name 'therockbot' && \
+              git config --global user.email 'therockbot@amd.com' && \
+              python_dir=/opt/python/${{ inputs.python_version }} && \
+              export PATH=\$python_dir/bin:\$PATH && \
 
-              export PATH=\$(dirname \$python_bin):\$PATH
-              ln -sf \$python_bin /usr/bin/python || true
+              cd /workspace/external-builds/pytorch/pytorch && \
+              # Ensure clean working directory before applying patches:
+              # - abort any in-progress patch (`git am`)
+              # - discard any local changes (`reset --hard`)
+              # - remove untracked files and directories (`clean -xfd`)
+              git am --abort || true && git reset --hard && git clean -xfd && \
+              cd /workspace && \
+              ./external-builds/pytorch/pytorch_torch_repo.py checkout && \
+              ./external-builds/pytorch/pytorch_audio_repo.py checkout && \
+              ./external-builds/pytorch/pytorch_vision_repo.py checkout && \
 
               index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
               \$python_bin -m pip install --index-url \$index_url torch torchvision torchaudio
               \$python_bin -m pip install pytest pytest-xdist numpy psutil
-
-              echo 'Checking out PyTorch source...'
-              ./external-builds/pytorch/pytorch_torch_repo.py checkout
-
-              cd external-builds/pytorch/pytorch
-              git am --abort || true
-              git reset --hard
-              git clean -xfd
-
-              export PYTORCH_TEST_WITH_ROCM=1
-
-              echo 'Running GPU tests...'
-              rocm-smi || true
-
-              set +e
-              EXIT_CODE=0
+              
+              python -m pip install output/packages/dist/torch-*.whl && \
+              rocm-smi && \
+              cd external-builds/pytorch/pytorch && \
+              python -m pip install pytest pytest-xdist && \
+              set +e && \
+              EXIT_CODE=0 && \
 
               for test_file in \
                 test/test_nn.py \
