@@ -6,21 +6,26 @@ on:
       amdgpu_families:
         required: true
         type: string
+        default: "gfx94X-dcgpu"
       python_version:
         required: true
         type: string
       s3_bucket:
         required: true
         type: string
+        default: "therock-nightly-python"
       s3_subdir:
         required: true
         type: string
+        default: "v2"
       s3_cloudfront:
         required: true
         type: string
+        default: "d2awnip2yjpvqn.cloudfront.net"
       test_runs_on:
         required: true
         type: string
+        default: "linux-mi300-1gpu-ossci-rocm"
   workflow_call:
     inputs:
       amdgpu_families:
