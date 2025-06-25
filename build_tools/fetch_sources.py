@@ -37,10 +37,20 @@ def enable_longpaths():
         [
             "git",
             "config",
-            "--file",
-            ".gitmodules",
+            "--local",
             "core.longpaths",
-            "true"
+            "true",
+            "--recurse-submodules"
+        ],
+        cwd=THEROCK_DIR,
+    )
+    exec(
+        [
+            "git",
+            "submodule",
+            "foreach",
+            "--recursive",
+            "'git config core.longpaths true'"
         ],
         cwd=THEROCK_DIR,
     )
