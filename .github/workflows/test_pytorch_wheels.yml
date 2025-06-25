@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Pull test container image
         run: docker pull ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
@@ -89,9 +89,9 @@ jobs:
               git config --global user.name 'therockbot'
               git config --global user.email 'therockbot@amd.com'
 
-              cd /workspace && \
-              ./external-builds/pytorch/pytorch_torch_repo.py checkout && \
-              ./external-builds/pytorch/pytorch_audio_repo.py checkout && \
+              cd /workspace
+              ./external-builds/pytorch/pytorch_torch_repo.py checkout
+              ./external-builds/pytorch/pytorch_audio_repo.py checkout
               ./external-builds/pytorch/pytorch_vision_repo.py checkout
 
               cd /workspace/external-builds/pytorch/pytorch
@@ -101,14 +101,14 @@ jobs:
 
               index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
               python -m pip install --index-url \$index_url torch torchvision torchaudio
+
               python -m pip install pytest pytest-xdist numpy psutil
 
-              echo "Testing installed torch location:"
+              echo 'Installed torch location:'
               python -c 'import torch; print(torch.__file__)'
 
               rocm-smi || true
 
-              cd /  # run outside source tree
               set +e
               EXIT_CODE=0
 
