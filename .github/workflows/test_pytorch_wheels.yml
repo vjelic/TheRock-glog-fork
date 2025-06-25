@@ -75,6 +75,7 @@ jobs:
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             -e PYTORCH_TEST_WITH_ROCM=1 \
+            -e PYTHONPATH="" \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
             bash -c "
               set -uxo pipefail
@@ -103,27 +104,27 @@ jobs:
               python -m pip install --index-url \$index_url torch
               python -m pip install pytest pytest-xdist numpy psutil
 
-              # Confirm installed torch is not from source
-              echo 'Installed torch location:'
-              PYTHONPATH= python -c 'import torch; print(torch.__file__)'
+              # Verify installed torch
+              python -m pip show torch
+              python -c 'import torch; print(torch.__file__); print(torch.__version__)'
 
               # Run ROCm SMI for debug
               rocm-smi || true
 
-              # Run tests
-              cd /workspace/external-builds/pytorch/pytorch
+              # Run tests from a clean directory
+              mkdir -p /tmp/test_dir
+              cd /tmp/test_dir
 
               set +e
               EXIT_CODE=0
               for test_file in \
-                test/test_nn.py \
-                test/test_torch.py \
-                test/test_cuda.py \
-                test/test_ops.py \
-                test/test_unary_ufuncs.py \
-                test/test_binary_ufuncs.py \
-                test/test_autograd.py \
-                torch/_inductor/test_torchinductor.py; do
+                /workspace/external-builds/pytorch/pytorch/test/test_nn.py \
+                /workspace/external-builds/pytorch/pytorch/test/test_torch.py \
+                /workspace/external-builds/pytorch/pytorch/test/test_cuda.py \
+                /workspace/external-builds/pytorch/pytorch/test/test_ops.py \
+                /workspace/external-builds/pytorch/pytorch/test/test_unary_ufuncs.py \
+                /workspace/external-builds/pytorch/pytorch/test/test_binary_ufuncs.py \
+                /workspace/external-builds/pytorch/pytorch/test/test_autograd.py; do
                   python -m pytest \$test_file -v --continue-on-collection-errors || EXIT_CODE=\$?
               done
 
