@@ -60,23 +60,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Debug directory contents
         run: |
           ls -la
           find . -name run_pytorch_tests.sh
-
-      - name: Make test script executable
-        run: |
-          if [ -f run_pytorch_tests.sh ]; then
-            chmod +x run_pytorch_tests.sh
-          elif [ -f scripts/run_pytorch_tests.sh ]; then
-            chmod +x scripts/run_pytorch_tests.sh
-          else
-            echo "Error: run_pytorch_tests.sh not found"
-            exit 1
-          fi
 
       - name: Pull test container image
         run: |
@@ -87,8 +76,8 @@ jobs:
           PYTHON_VERSION: ${{ inputs.python_version }}
           INDEX_URL: https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/
         run: |
-          script_path=run_pytorch_tests.sh
-          if [ -f scripts/run_pytorch_tests.sh ]; then
+          script_path=external-builds/pytorch/run_pytorch_tests/run_pytorch_tests.sh
+          if [ -f run_pytorch_tests.sh ]; then
             script_path=scripts/run_pytorch_tests.sh
           fi
           docker run --rm \
