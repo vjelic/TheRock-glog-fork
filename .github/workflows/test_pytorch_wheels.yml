@@ -103,11 +103,15 @@ jobs:
               python -m pip install --index-url \$index_url torch torchvision torchaudio
               python -m pip install pytest pytest-xdist numpy psutil
 
+              echo "Testing installed torch location:"
+              python -c "import torch; print(torch.__file__)"
+
               rocm-smi || true
 
+              cd /  # run outside source tree
               set +e
               EXIT_CODE=0
-
+              
               for test_file in \
                 test/test_nn.py \
                 test/test_torch.py \
