@@ -71,10 +71,9 @@ jobs:
           PYTHON_VERSION: ${{ inputs.python_version }}
           INDEX_URL: https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/
         run: |
-          script_path=external-builds/pytorch/run_pytorch_tests/run_pytorch_tests.sh
-          if [ -f run_pytorch_tests.sh ]; then
-            script_path=scripts/run_pytorch_tests.sh
-          fi
+          pwd
+          ls external-builds/pytorch/run_pytorch_tests/run_pytorch_tests.sh
+          ls workspace/external-builds/pytorch/run_pytorch_tests/run_pytorch_tests.sh
           docker run --rm \
             --device=/dev/kfd \
             --device=/dev/dri \
