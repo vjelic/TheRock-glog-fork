@@ -76,64 +76,61 @@ jobs:
             -e PYTORCH_TEST_WITH_ROCM=1 \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
             bash -c "
-              set -euxo pipefail
+            set -euxo pipefail
 
-              # Set up python path
-              python_dir=/opt/python/${{ inputs.python_version }}
-              export PATH=\$python_dir/bin:\$PATH
-              python_bin=\$python_dir/bin/python
+            python_dir=/opt/python/${{ inputs.python_version }}
+            export PATH=$python_dir/bin:$PATH
 
-              echo 'Python version:'
-              \$python_bin --version
-              which \$python_bin
+            echo 'Python version:'
+            python --version
+            which python
 
-              git config --global user.name 'therockbot'
-              git config --global user.email 'therockbot@amd.com'
+            git config --global user.name 'therockbot'
+            git config --global user.email 'therockbot@amd.com'
 
-              # Clean and checkout repos
-              cd /workspace/external-builds/pytorch/pytorch
-              git am --abort || true
-              git reset --hard
-              git clean -xfd
+            # Clean and checkout repos
+            cd /workspace/external-builds/pytorch/pytorch
+            git am --abort || true
+            git reset --hard
+            git clean -xfd
 
-              cd /workspace
-              ./external-builds/pytorch/pytorch_torch_repo.py checkout
-              ./external-builds/pytorch/pytorch_audio_repo.py checkout
-              ./external-builds/pytorch/pytorch_vision_repo.py checkout
+            cd /workspace
+            ./external-builds/pytorch/pytorch_torch_repo.py checkout
+            ./external-builds/pytorch/pytorch_audio_repo.py checkout
+            ./external-builds/pytorch/pytorch_vision_repo.py checkout
 
-              # Install wheels from S3 index
-              index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
-              \$python_bin -m pip install --index-url \$index_url torch torchvision torchaudio
+            # Install wheels from S3 index
+            index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
+            python -m pip install --index-url $index_url torch torchvision torchaudio
 
-              # Also install wheel file if present in local workspace
-              if compgen -G 'output/packages/dist/torch-*.whl' > /dev/null; then
-                \$python_bin -m pip install output/packages/dist/torch-*.whl || true
-              fi
+            # Also install wheel file if present in local workspace
+            if compgen -G 'output/packages/dist/torch-*.whl' > /dev/null; then
+              python -m pip install output/packages/dist/torch-*.whl || true
+            fi
 
-              # Install test dependencies
-              \$python_bin -m pip install pytest pytest-xdist numpy psutil
+            # Install test dependencies
+            python -m pip install pytest pytest-xdist numpy psutil
 
-              echo 'Installed torch location:'
-              \$python_bin -c 'import torch; print(torch.__file__)'
+            echo 'Installed torch location:'
+            python -c 'import torch; print(torch.__file__)'
 
-              rocm-smi || true
+            rocm-smi || true
 
-              # Run selected tests from source checkout
-              cd /workspace/external-builds/pytorch/pytorch
-              set +e
-              EXIT_CODE=0
-              for test_file in \
-                test/test_nn.py \
-                test/test_torch.py \
-                test/test_cuda.py \
-                test/test_ops.py \
-                test/test_unary_ufuncs.py \
-                test/test_binary_ufuncs.py \
-                test/test_autograd.py \
-                torch/_inductor/test_torchinductor.py; do
-                  echo \"Running: \$test_file\"
-                  \$python_bin -m pytest \$test_file -v --continue-on-collection-errors || EXIT_CODE=\$?
-              done
+            # Run selected tests from source checkout
+            cd /workspace/external-builds/pytorch/pytorch
+            set +e
+            EXIT_CODE=0
+            for test_file in \
+              test/test_nn.py \
+              test/test_torch.py \
+              test/test_cuda.py \
+              test/test_ops.py \
+              test/test_unary_ufuncs.py \
+              test/test_binary_ufuncs.py \
+              test/test_autograd.py \
+              torch/_inductor/test_torchinductor.py; do
+                echo "Running: $test_file"
+                python -m pytest $test_file -v --continue-on-collection-errors || EXIT_CODE=$?
+            done
 
-              exit \$EXIT_CODE
-            "
+            exit $EXIT_CODE
