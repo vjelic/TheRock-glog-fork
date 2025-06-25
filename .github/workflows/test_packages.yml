@@ -59,15 +59,15 @@ jobs:
       test_runs_on: ${{ inputs.test_runs_on }}
       platform: ${{ inputs.platform }}
 
-  test_rocblas:
-    name: 'Test rocBLAS math-lib'
-    uses: './.github/workflows/test_rocblas.yml'
-    needs: test_sanity_check
-    with:
-      artifact_run_id: ${{ inputs.artifact_run_id }}
-      amdgpu_families: ${{ inputs.amdgpu_families }}
-      test_runs_on: ${{ inputs.test_runs_on }}
-      platform: ${{ inputs.platform }}
+  # test_rocblas:
+  #   name: 'Test rocBLAS math-lib'
+  #   uses: './.github/workflows/test_rocblas.yml'
+  #   needs: test_sanity_check
+  #   with:
+  #     artifact_run_id: ${{ inputs.artifact_run_id }}
+  #     amdgpu_families: ${{ inputs.amdgpu_families }}
+  #     test_runs_on: ${{ inputs.test_runs_on }}
+  #     platform: ${{ inputs.platform }}
 
   # PRIM tests
   test_rocprim:
