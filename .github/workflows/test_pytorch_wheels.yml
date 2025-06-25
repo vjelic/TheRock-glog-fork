@@ -66,7 +66,14 @@ jobs:
         run: |
           docker pull ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
 
+      - name: Make test script executable
+        run: |
+          chmod +x run_pytorch_tests.sh
+
       - name: Run PyTorch installation and tests inside container
+        env:
+          PYTHON_VERSION: ${{ inputs.python_version }}
+          INDEX_URL: https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/
         run: |
           docker run --rm \
             --device=/dev/kfd \
@@ -76,58 +83,7 @@ jobs:
             -w /workspace \
             -e PYTORCH_TEST_WITH_ROCM=1 \
             -e PYTHONPATH="" \
+            -e PYTHON_VERSION \
+            -e INDEX_URL \
             ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292 \
-            bash -c "
-              set -uxo pipefail
-
-              python_dir=/opt/python/${{ inputs.python_version }}
-              export PATH=\$python_dir/bin:\$PATH
-
-              echo 'Python version:'
-              which python
-              python --version
-
-              git config --global user.name 'therockbot'
-              git config --global user.email 'therockbot@amd.com'
-
-              cd /workspace
-              ./external-builds/pytorch/pytorch_torch_repo.py checkout
-              ./external-builds/pytorch/pytorch_audio_repo.py checkout
-              ./external-builds/pytorch/pytorch_vision_repo.py checkout
-
-              cd /workspace/external-builds/pytorch/pytorch
-              git am --abort || true
-              git reset --hard
-              git clean -xfd
-
-              index_url='https://${{ inputs.s3_cloudfront }}/${{ inputs.s3_subdir }}/${{ inputs.amdgpu_families }}/'
-              python -m pip install --index-url \$index_url torch
-              python -m pip install pytest pytest-xdist numpy psutil expecttest hypothesis
-
-              # Verify installed packages
-              python -m pip show torch
-              python -m pip show expecttest
-              python -c 'import torch; print(torch.__file__); print(torch.__version__)'
-
-              # Run ROCm SMI for debug
-              rocm-smi || true
-
-              # Run tests from a clean directory
-              mkdir -p /tmp/test_dir
-              cd /tmp/test_dir
-
-              set +e
-              EXIT_CODE=0
-              for test_file in \
-                /workspace/external-builds/pytorch/pytorch/test/test_nn.py \
-                /workspace/external-builds/pytorch/pytorch/test/test_torch.py \
-                /workspace/external-builds/pytorch/pytorch/test/test_cuda.py \
-                /workspace/external-builds/pytorch/pytorch/test/test_ops.py \
-                /workspace/external-builds/pytorch/pytorch/test/test_unary_ufuncs.py \
-                /workspace/external-builds/pytorch/pytorch/test/test_binary_ufuncs.py \
-                /workspace/external-builds/pytorch/pytorch/test/test_autograd.py; do
-                  python -m pytest \$test_file -v --continue-on-collection-errors || EXIT_CODE=\$?
-              done
-
-              exit \$EXIT_CODE
-            "
+            bash external-builds/pytorch/build_pytorch_wheels/run_pytorch_tests.sh
