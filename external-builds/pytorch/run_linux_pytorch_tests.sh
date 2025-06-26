@@ -46,8 +46,8 @@ echo "Running tests in temporary directory: $TEST_DIR"
 export PYTORCH_PRINT_REPRO_ON_FAILURE=0
 export PYTORCH_TEST_WITH_ROCM=1
 
-set +e
-EXIT_CODE=0
+# Enable exit on error for tests
+set -e
 
 # Use xdist for pytests
 python -m pytest \
@@ -61,15 +61,7 @@ python -m pytest \
   "$PYTORCH_DIR/test/inductor/test_torchinductor.py" \
   -v \
   --continue-on-collection-errors \
-  -n auto || {
-  EXIT_CODE=$?
-  echo "Pytest failed with exit code $EXIT_CODE"
-}
-
-# Log the final exit code
-echo "Final test exit code: $EXIT_CODE"
+  -n auto
 
 # Deactivate virtual environment
 deactivate
-
-exit 0
