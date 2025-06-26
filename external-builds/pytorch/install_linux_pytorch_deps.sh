@@ -34,6 +34,9 @@ source "$VENV_DIR/bin/activate" || {
   exit 1
 }
 
+# Set trap to deactivate virtual environment on exit
+trap "deactivate 2> /dev/null" EXIT
+
 # Install dependencies
 python -m pip install --upgrade pip
 python -m pip install --index-url "$INDEX_URL" torch
@@ -43,6 +46,3 @@ python -m pip install pytest pytest-xdist numpy psutil expecttest hypothesis
 python -m pip show torch
 python -m pip show expecttest
 python -c 'import torch; print(torch.__file__); print(torch.__version__)'
-
-# Deactivate virtual environment
-deactivate

@@ -24,6 +24,9 @@ source "$VENV_DIR/bin/activate" || {
   exit 1
 }
 
+# Set trap to deactivate virtual environment on exit
+trap "deactivate 2> /dev/null" EXIT
+
 # Configure git
 git config --global user.name 'therockbot'
 git config --global user.email 'therockbot@amd.com'
@@ -62,6 +65,3 @@ python -m pytest \
   -v \
   --continue-on-collection-errors \
   -n auto
-
-# Deactivate virtual environment
-deactivate
