@@ -2,11 +2,12 @@
 
 import argparse
 import configparser
-import lib_python.project_builder as project_builder
 import sys
 import os
 import time
 import platform
+import lib_python.project_builder as project_builder
+import lib_python.rockbuilder_config as RockBuilderConfig
 from pathlib import Path, PurePosixPath
 
 ROCK_BUILDER_VERSION = "2025-06-25_01"
@@ -233,6 +234,12 @@ def verify_build_env(args, rock_builder_home_dir):
         ENV_VARIABLE_NAME__LIB = "LD_LIBRARY_PATH"
     else:
         ENV_VARIABLE_NAME__LIB = "LIBPATH"
+
+    # read and set up env based on to rockbuilder.ini file if it exist
+    rcb_config = RockBuilderConfig.RockBuilderConfig(rock_builder_home_dir)
+    res = rcb_config.read_cfg()
+    if res:
+        rcb_config.setup_build_env()
 
     # check that THEROCK_AMDGPU_TARGETS has been specified on Windows builds.
     # This is needdd because on locally build rocm sdk we can not automatically query
