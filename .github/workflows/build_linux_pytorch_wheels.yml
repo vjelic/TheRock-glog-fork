@@ -21,10 +21,6 @@ on:
         description: CloudFront base URL pointing to Python index
         required: true
         type: string
-      cloudfront_subdir:
-        description: CloudFront subdirectory, not including the GPU-family
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       AMDGPU_FAMILIES:
@@ -46,10 +42,6 @@ on:
         description: CloudFront base URL pointing to Python index
         type: string
         default: "d25kgig7rdsyks.cloudfront.net"
-      cloudfront_subdir:
-        description: CloudFront subdirectory, not including the GPU-family
-        type: string
-        default: "v2"
 
 permissions:
   id-token: write
@@ -97,7 +89,7 @@ jobs:
           echo "Building PyTorch wheels for ${{ inputs.AMDGPU_FAMILIES }}"
           ./external-builds/pytorch/build_prod_wheels.py \
             --pip-cache-dir /tmp/pipcache \
-            --index-url "https://${{ inputs.cloudfront_url }}/${{ inputs.cloudfront_subdir }}/${{ inputs.AMDGPU_FAMILIES }}/" \
+            --index-url "https://${{ inputs.cloudfront_url }}/${{ inputs.AMDGPU_FAMILIES }}/" \
             build \
             --install-rocm \
             --clean \

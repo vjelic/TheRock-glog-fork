@@ -14,11 +14,7 @@ on:
       cloudfront_url:
         description: CloudFront base URL pointing to Python index
         type: string
-        default: "d25kgig7rdsyks.cloudfront.net"
-      cloudfront_subdir:
-        description: CloudFront subdirectory, not including the GPU-family
-        type: string
-        default: "v2"
+        default: "d25kgig7rdsyks.cloudfront.net/v2"
   schedule:
     - cron: "0 2 * * *"  # Nightly at 2 AM UTC
 
@@ -43,5 +39,4 @@ jobs:
       python_version: ${{ matrix.python_version }}
       release_type: ${{ inputs.release_type || 'nightly' }}
       s3_subdir: ${{ inputs.s3_subdir || 'v2' }}
-      cloudfront_url: ${{ inputs.cloudfront_url  || 'd2awnip2yjpvqn.cloudfront.net' }}
-      cloudfront_subdir: ${{ inputs.cloudfront_subdir || 'v2' }}
+      cloudfront_url: ${{ inputs.cloudfront_url  || 'd2awnip2yjpvqn.cloudfront.net/v2' }}
