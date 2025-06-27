@@ -264,6 +264,18 @@ class SDKSelectionList(BaseSelectionList):
                 )
             )
             def_sel = False
+        else:
+            # add an option/selection to build the rocm sdk locally
+            rocm_home = get_therock_rocm_sdk_build_dir()
+            self.item_list.append(
+                SelectionItem(
+                    "Build TheRock ROCm SDK: " + rocm_home.as_posix(),
+                    "rocm_sdk_build",
+                    rocm_home.as_posix(),
+                    def_sel,
+                )
+            )
+            def_sel = False
         # add an option/selection to use the rocm sdk that will be installed from the python wheel
         self.item_list.append(
             SelectionItem(
