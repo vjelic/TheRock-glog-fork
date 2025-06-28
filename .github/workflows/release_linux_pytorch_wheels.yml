@@ -3,6 +3,10 @@ name: Release Linux PyTorch Wheels
 on:
   workflow_dispatch:
     inputs:
+      amdgpu_family:
+        description: AMDGPU target family
+        type: string
+        required: true
       release_type:
         description: The type of release to build ("nightly", or "dev")
         type: string
@@ -30,15 +34,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - { AMDGPU_FAMILIES: gfx94X-dcgpu }
-          - { AMDGPU_FAMILIES: gfx110X-dgpu }
-          - { AMDGPU_FAMILIES: gfx120X-all }
         python_version: ["cp311-cp311", "cp312-cp312"]
 
     uses: ./.github/workflows/build_linux_pytorch_wheels.yml
     with:
-      amdgpu_family: ${{ matrix.config.AMDGPU_FAMILIES }}
+      amdgpu_family: ${{ inputs.amdgpu_family }}
       python_version: ${{ matrix.python_version }}
       release_type: ${{ inputs.release_type || 'nightly' }}
       s3_subdir: ${{ inputs.s3_subdir || 'v2' }}
