@@ -24,6 +24,7 @@ set(THEROCK_SUPER_PROJECT_FIND_LIBRARY_NAMES
 )
 
 set(THEROCK_SUPER_PROJECT_FIND_PATHS
+  "ck/ck.hpp"
   "half/half.hpp"
   "roctracer/roctx.h"
 )
