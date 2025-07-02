@@ -1,0 +1,83 @@
+From eaf62007dc91dfb1038bbdc1fbb1801f159ec327 Mon Sep 17 00:00:00 2001
+From: Jonathan Lichtner
+ <195780826+JonathanLichtnerAMD@users.noreply.github.com>
+Date: Wed, 2 Jul 2025 02:36:24 +0000
+Subject: [PATCH] WIP: hardcode include path
+
+---
+ CMakeLists.txt            |  2 ++
+ src/CMakeLists.txt        |  2 ++
+ test/gtest/CMakeLists.txt | 17 +++++++++++++++++
+ 3 files changed, 21 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 970b8b8e2..269d240b4 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -346,6 +346,8 @@ if( MIOPEN_BACKEND STREQUAL "HIP" OR MIOPEN_BACKEND STREQUAL "HIPOC" OR MIOPEN_B
+         else()
+             find_package(composable_kernel 1.0.0 COMPONENTS device_conv_operations)
+         endif()
++	find_path(COMPOSABLEKERNEL_INCLUDE_DIR "ck/ck.hpp")
++        message(STATUS "COMPOSABLEKERNEL_INCLUDE_DIR: ${COMPOSABLEKERNEL_INCLUDE_DIR}")
+     endif()
+     if( MIOPEN_BACKEND STREQUAL "HIPNOGPU")
+         set(MIOPEN_MODE_NOGPU 1)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 74d80b8e2..817bfe685 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -867,6 +867,8 @@ if(MIOPEN_USE_COMPOSABLEKERNEL)
+         # Use the aliased targets when we pull CK from /opt/rocm or other place on disc.
+         set(MIOPEN_CK_LINK_FLAGS composable_kernel::device_conv_operations hip::host)
+     endif()
++    find_path(COMPOSABLEKERNEL_INCLUDE_DIR "ck/ck.hpp")
++    message(STATUS "COMPOSABLEKERNEL_INCLUDE_DIR: ${COMPOSABLEKERNEL_INCLUDE_DIR}")
+ endif()
+ 
+ if(WIN32)
+diff --git a/test/gtest/CMakeLists.txt b/test/gtest/CMakeLists.txt
+index 1ceaf6954..221c8a113 100644
+--- a/test/gtest/CMakeLists.txt
++++ b/test/gtest/CMakeLists.txt
+@@ -10,6 +10,11 @@ if(MIOPEN_USE_ROCBLAS)
+   find_package(rocblas REQUIRED PATHS /opt/rocm $ENV{HIP_PATH})
+ endif()
+ 
++if(MIOPEN_USE_COMPOSABLEKERNEL)
++  message("JFL 0: find package ck")
++  find_package(composable_kernel 1.0.0 COMPONENTS device_conv_operations)
++endif()
++
+ set(SOURCES
+     gtest_common.cpp
+     log.cpp
+@@ -47,6 +52,12 @@ function(add_gtest TEST_NAME TEST_CPP)
+ 
+   target_compile_options(${TEST_NAME} PRIVATE -Wno-global-constructors -Wno-undef)
+   target_include_directories(${TEST_NAME} PRIVATE ../ ../../src/kernels)
++  if(MIOPEN_USE_COMPOSABLEKERNEL)
++    message("JFL 1: adding target includes for ck")
++    target_include_directories(miopen_gtest_common PRIVATE ../../../composable_kernel/include/)
++  else()
++    message("JFL 2: not adding target includes for ck")
++  endif()
+ 
+   target_link_libraries(${TEST_NAME} miopen_gtest_common)
+   if(MIOPEN_ENABLE_AI_KERNEL_TUNING)
+@@ -148,6 +159,12 @@ endforeach()
+ # Otherwise, all files in ${SOURCES} are rebuilt for each test.
+ add_library(miopen_gtest_common STATIC ${SOURCES})
+ target_include_directories(miopen_gtest_common PRIVATE ../ ../../src/kernels)
++if(MIOPEN_USE_COMPOSABLEKERNEL)
++  message("JFL 3: adding target includes for ck")
++  target_include_directories(miopen_gtest_common PRIVATE ../../../composable_kernel/include/)
++else()
++  message("JFL 4: not adding target includes for ck")
++endif()
+ target_link_libraries(miopen_gtest_common PRIVATE GTest::gtest MIOpen)
+ if(WIN32)
+   # Refer to https://en.cppreference.com/w/cpp/language/types for details.
+-- 
+2.34.1
+
