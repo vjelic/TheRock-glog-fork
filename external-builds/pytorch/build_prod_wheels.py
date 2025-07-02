@@ -145,7 +145,7 @@ LINUX_LIBRARY_PRELOADS = [
     "miopen",
 ]
 
-# List of library preloads for Linux to generate into _rocm_init.py
+# List of library preloads for Windows to generate into _rocm_init.py
 WINDOWS_LIBRARY_PRELOADS = [
     "amd_comgr",
     "amdhip64",
