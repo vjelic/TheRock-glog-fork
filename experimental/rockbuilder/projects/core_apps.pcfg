@@ -1,5 +1,6 @@
 [projects]
 project_list=
+    dependencies
     amdsmi
     pytorch
     pytorch_vision
