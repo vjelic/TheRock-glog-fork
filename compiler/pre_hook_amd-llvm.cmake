@@ -4,7 +4,7 @@ include("${THEROCK_SOURCE_DIR}/compiler/amd-llvm/cmake/Modules/LLVMVersion.cmake
 # Build the device-libs as part of the core compiler so that clang works by
 # default (as opposed to other components that are *users* of the compiler).
 set(LLVM_EXTERNAL_AMDDEVICE_LIBS_SOURCE_DIR "${THEROCK_SOURCE_DIR}/compiler/amd-llvm/amd/device-libs")
-set(LLVM_EXTERNAL_PROJECTS "amddevice-libs" CACHE STRING "Enable extra projects" FORCE)
+set(LLVM_EXTERNAL_PROJECTS "AMDDeviceLibs" CACHE STRING "Enable extra projects" FORCE)
 
 # Build LLVM and the comgr dependency.
 # Note that in LLVM "BUILD_SHARED_LIBS" enables an unsupported development mode.
@@ -32,8 +32,9 @@ else()
   set(LIBOMP_COPY_EXPORTS OFF)
   set(LIBOMPTARGET_EXTERNAL_PROJECT_ROCM_DEVICE_LIBS_PATH "${LLVM_EXTERNAL_AMDDEVICE_LIBS_SOURCE_DIR}" CACHE STRING "Enable devicelibs for offload" FORCE)
   set(OPENMP_ENABLE_LIBOMPTARGET ON)
-  set(LIBOMPTARGET_BUILD_DEVICE_FORTRT OFF)
+  set(LIBOMPTARGET_BUILD_DEVICE_FORTRT ON)
   set(LIBOMPTARGET_ENABLE_DEBUG ON)
+  set(LIBOMP_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:$ORIGIN/../../lib:$ORIGIN/../../../lib" CACHE STRING "Set offload rpath" FORCE)
 endif()
 
 # Set the LLVM_ENABLE_PROJECTS variable before including LLVM's CMakeLists.txt
