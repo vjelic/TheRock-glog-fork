@@ -240,6 +240,7 @@ if(THEROCK_ENABLE_FFT)
     BUILD_DEPS
       rocm-cmake
       therock-googletest
+      therock-boost
     RUNTIME_DEPS
       hip-clr
       rocFFT
