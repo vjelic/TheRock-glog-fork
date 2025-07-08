@@ -314,6 +314,13 @@ def add_env_compiler_flags(env: dict[str, str], flagname: str, *compiler_flags: 
     print(f"-- Appended {flagname}+={append}")
 
 
+def find_dir_containing(file_name: str, *possible_paths: Path) -> Path:
+    for path in possible_paths:
+        if (path / file_name).exists():
+            return path
+    raise ValueError(f"No directory contains {file_name}: {possible_paths}")
+
+
 def do_build(args: argparse.Namespace):
     if args.install_rocm:
         do_install_rocm(args)
@@ -476,7 +483,10 @@ def do_build_triton(
     )
 
     print("+++ Building triton:")
-    triton_python_dir = triton_dir / "python"
+    # In early ~2.9, setup.py moved from the python/ dir to the root. Check both.
+    triton_python_dir = find_dir_containing(
+        "setup.py", triton_dir / "python", triton_dir
+    )
     remove_dir_if_exists(triton_python_dir / "dist")
     if args.clean:
         remove_dir_if_exists(triton_python_dir / "build")
