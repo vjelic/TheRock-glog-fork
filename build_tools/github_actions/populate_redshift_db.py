@@ -5,7 +5,7 @@ This script is executed as part of the workflow after `fetch_job_status.py` comp
 
 Schema overview:
 - Table: workflow_run_details
-  Columns: ['build_id', 'id', 'head_branch', 'workflow_name', 'project', 'started_at', 'run_url']
+  Columns: ['run_id', 'id', 'head_branch', 'workflow_name', 'project', 'started_at', 'run_url']
 
 - Table: step_status
   Columns: ['workflow_run_details_id', 'id', 'name', 'status', 'conclusion', 'started_at', 'completed_at']
@@ -30,7 +30,7 @@ logging.basicConfig(level=logging.INFO)
 def populate_redshift_db(
     log,
     api_output,
-    build_id,
+    run_id,
     redshift_cluster_endpoint,
     dbname,
     redshift_username,
@@ -98,7 +98,7 @@ def populate_redshift_db(
 
                     logging.info(
                         f"\nInserting workflow run details into 'workflow_run_details' table: "
-                        f"build_id={build_id}, id={workflow_id}, head_branch='{head_branch}', "
+                        f"run_id={run_id}, id={workflow_id}, head_branch='{head_branch}', "
                         f"workflow_name='{workflow_name}', project='{project}', "
                         f"started_at='{workflow_started_at}', run_url='{run_url}'\n"
                     )
@@ -108,11 +108,11 @@ def populate_redshift_db(
                     cursor.execute(
                         """
                             INSERT INTO workflow_run_details
-                                ("build_id", "id", "head_branch", "workflow_name", "project", "started_at", "run_url")
+                                ("run_id", "id", "head_branch", "workflow_name", "project", "started_at", "run_url")
                             VALUES (%s, %s, %s, %s, %s, %s, %s)
                         """,
                         (
-                            build_id,
+                            run_id,
                             workflow_id,
                             head_branch,
                             workflow_name,
@@ -172,9 +172,9 @@ def main():
         help="GitHub API output to populate the tables in DB",
     )
     parser.add_argument(
-        "--build-id",
+        "--run-id",
         type=int,
-        help="build_id to populate the tables in DB",
+        help="run_id to populate the tables in DB",
     )
     parser.add_argument(
         "--redshift-cluster-endpoint",
@@ -205,12 +205,12 @@ def main():
     )
     args = parser.parse_args()
 
-    build_id = args.build_id
+    run_id = args.run_id
 
     populate_redshift_db(
         logging,
         args.api_output,
-        build_id,
+        run_id,
         args.redshift_cluster_endpoint,
         args.dbname,
         args.redshift_username,
