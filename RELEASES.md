@@ -33,18 +33,20 @@ Table of contents:
 We recommend installing ROCm and projects like PyTorch via `pip`, the
 [Python package installer](https://packaging.python.org/en/latest/guides/tool-recommendations/).
 
-We currently support Python 3.11 and 3.12, with 3.13 support coming soon.
+We currently support Python 3.11, 3.12, and 3.13.
 
-### Python packages support status
-
-|         | ROCm Python packages                                                | PyTorch Python packages                                             |
-| ------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Linux   | ✅ Supported                                                        | 🟡 In progress ([#703](https://github.com/ROCm/TheRock/issues/703)) |
-| Windows | 🟡 In Progress ([#827](https://github.com/ROCm/TheRock/issues/827)) | 🟡 In Progress ([#827](https://github.com/ROCm/TheRock/issues/827)) |
+### Python packages release status
 
 > [!IMPORTANT]
 > Known issues with the Python wheels are tracked at
 > https://github.com/ROCm/TheRock/issues/808.
+>
+> ⚠️ Windows packages are new and may be unstable! ⚠️
+
+| Platform |                                                                                                                                                                                                                                         ROCm Python packages |                                                                                                                                                                                                                                 PyTorch Python packages |
+| -------- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Linux    | [![Release portable Linux packages](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_packages.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_packages.yml?query=branch%3Amain) |     [![Release Linux PyTorch Wheels](https://github.com/ROCm/TheRock/actions/workflows/release_linux_pytorch_wheels.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_linux_pytorch_wheels.yml?query=branch%3Amain) |
+| Windows  |                      [![Release Windows packages](https://github.com/ROCm/TheRock/actions/workflows/release_windows_packages.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_windows_packages.yml?query=branch%3Amain) | [![Release Windows PyTorch Wheels](https://github.com/ROCm/TheRock/actions/workflows/release_windows_pytorch_wheels.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_linux_pytorch_wheels.yml?query=branch%3Amain) |
 
 ### Installing ROCm Python packages
 
