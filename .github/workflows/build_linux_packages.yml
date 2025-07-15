@@ -113,21 +113,21 @@ jobs:
       #   run: |
       #     ctest --test-dir build --output-on-failure
 
-      - name: Report
-        if: ${{ !cancelled() }}
-        run: |
-          echo "Full SDK du:"
-          echo "------------"
-          du -h -d 1 build/dist/rocm
-          echo "Artifact Archives:"
-          echo "------------------"
-          ls -lh build/artifacts/*.tar.xz
-          echo "Artifacts:"
-          echo "----------"
-          du -h -d 1 build/artifacts
-          echo "CCache Stats:"
-          echo "-------------"
-          ccache -s -v
+      # - name: Report
+      #   if: ${{ !cancelled() }}
+      #   run: |
+      #     echo "Full SDK du:"
+      #     echo "------------"
+      #     du -h -d 1 build/dist/rocm
+      #     echo "Artifact Archives:"
+      #     echo "------------------"
+      #     ls -lh build/artifacts/*.tar.xz
+      #     echo "Artifacts:"
+      #     echo "----------"
+      #     du -h -d 1 build/artifacts
+      #     echo "CCache Stats:"
+      #     echo "-------------"
+      #     ccache -s -v
 
       - name: Configure AWS Credentials
         if: always()
