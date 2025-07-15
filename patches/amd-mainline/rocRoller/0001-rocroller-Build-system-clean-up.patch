@@ -1,0 +1,234 @@
+From 54dc3a0c6bda836c357d5885e4a1aa78bb9fab75 Mon Sep 17 00:00:00 2001
+From: David Dixon <david.dixon@amd.com>
+Date: Tue, 15 Jul 2025 23:24:00 +0000
+Subject: [PATCH] [rocroller] Build system clean up
+
+Ported from https://github.com/ROCm/rocm-libraries/pull/645.
+---
+ .jenkins/precheckin.groovy |  2 +-
+ CMakeLists.txt             | 20 +++++++++++-------
+ client/CMakeLists.txt      |  2 +-
+ test/CMakeLists.txt        | 43 ++++++++++++++++++--------------------
+ test/catch/CMakeLists.txt  |  2 +-
+ 5 files changed, 36 insertions(+), 33 deletions(-)
+
+diff --git a/.jenkins/precheckin.groovy b/.jenkins/precheckin.groovy
+index dc1bb779..3505f231 100644
+--- a/.jenkins/precheckin.groovy
++++ b/.jenkins/precheckin.groovy
+@@ -13,7 +13,7 @@ def runCI =
+ 
+     //use docker files from this repo
+     prj.repoDockerfile = true
+-    prj.defaults.ccache = true
++    prj.defaults.ccache = false
+ 
+     def uniqueTag = params?."Unique Docker image tag" ? org.apache.commons.lang.RandomStringUtils.random(9, true, true) : ""
+ 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6c190ce3..90e51b06 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -30,7 +30,7 @@ cmake_dependent_option(ROCROLLER_ENABLE_LLVM "Enable llvm yaml backend." ON "NOT
+ option(ROCROLLER_BUILD_TESTING "Build rocRoller testing." ON)
+ option(ROCROLLER_ENABLE_DOCS "Build rocRoller documentation." OFF)
+ option(ROCROLLER_ENABLE_CATCH "Build rocRoller catch unit tests" ON)
+-option(ROCROLLER_ENABLE_ARCH_GEN_TEST "Build rocRoller architecture generator test" ON)
++option(ROCROLLER_ENABLE_GEMM_CLIENT_TESTS "Use pytest test discovery to add gemm client tests (requires pytest-cmake)" ON)
+ option(ROCROLLER_ENABLE_TEST_DISCOVERY "Use gtest and catch2 test discovery functions." ON)
+ option(ROCROLLER_ENABLE_COVERAGE "Build code coverage." OFF)
+ cmake_dependent_option(ROCROLLER_ENABLE_SLOW_TESTS "Disable slow running tests." ON "NOT ROCROLLER_ENABLE_COVERAGE" OFF)
+@@ -71,7 +71,7 @@ else()
+     unset(CMAKE_CXX_CPPCHECK CACHE)
+ endif()
+ 
+-find_package(fmt 11.1.3)
++find_package(fmt 11.1.3 QUIET)
+ if(NOT fmt_FOUND)
+     if(ROCROLLER_ENABLE_FETCH)
+         set(FMT_SYSTEM_HEADERS ON)
+@@ -86,7 +86,7 @@ if(NOT fmt_FOUND)
+     endif()
+ endif()
+ 
+-find_package(spdlog)
++find_package(spdlog QUIET)
+ if(NOT spdlog_FOUND)
+     if(ROCROLLER_ENABLE_FETCH)
+         FetchContent_Declare(
+@@ -100,7 +100,7 @@ if(NOT spdlog_FOUND)
+     endif()
+ endif()
+ 
+-find_package(libdivide)
++find_package(libdivide QUIET)
+ if(NOT libdivide_FOUND)
+ if(ROCROLLER_ENABLE_FETCH)
+     FetchContent_Declare(
+@@ -124,7 +124,7 @@ else()
+     set(msgpack_libs msgpackc)
+ endif()
+ 
+-find_package(Boost 1.74.0)
++find_package(Boost 1.74.0 QUIET)
+ if(NOT Boost_FOUND)
+     if(ROCROLLER_ENABLE_FETCH)
+         FetchContent_Declare(
+@@ -162,6 +162,8 @@ add_library(roc::rocroller ALIAS rocroller)
+ add_library(rocroller-interface INTERFACE)
+ add_library(roc::rocroller-interface ALIAS rocroller-interface)
+ 
++target_compile_options(rocroller PUBLIC $<BUILD_INTERFACE:-fmacro-prefix-map=${PROJECT_SOURCE_DIR}=rocm-libraries/shared/rocroller>)
++
+ if(ROCROLLER_ENABLE_LLD)
+     find_package(LLD REQUIRED)
+     target_include_directories(rocroller PRIVATE "${LLD_INCLUDES}")
+@@ -254,7 +256,11 @@ target_link_libraries(rocroller
+         ${llvm_libs}
+ )
+ 
+-target_include_directories(rocroller PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/include>)
++target_include_directories(rocroller 
++    PUBLIC 
++        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/include>
++)
++
+ 
+ target_compile_features(rocroller PUBLIC cxx_std_20)
+ 
+@@ -285,7 +291,7 @@ rocm_install(
+     TARGETS rocroller rocroller-interface
+     EXPORT rocroller-targets
+     INCLUDE
+-        "${ROCROLLER_LIB_DIR}/include"
++        "${CMAKE_CURRENT_SOURCE_DIR}/lib/include"
+ )
+ 
+ if(ROCROLLER_BUILD_TESTING OR BUILD_TESTING)
+diff --git a/client/CMakeLists.txt b/client/CMakeLists.txt
+index 3cc6401b..51b3d75a 100644
+--- a/client/CMakeLists.txt
++++ b/client/CMakeLists.txt
+@@ -3,7 +3,7 @@
+ 
+ find_package(BLAS REQUIRED)
+ 
+-find_package(CLI11)
++find_package(CLI11 QUIET)
+ if(NOT CLI11_FOUND)
+     if(ROCROLLER_ENABLE_FETCH)
+         FetchContent_Declare(
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index c0ab27d6..a3f86879 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ # Copyright Advanced Micro Devices, Inc., or its affiliates.
+ # SPDX-License-Identifier:  MIT
+ 
+-find_package(GTest)
++find_package(GTest QUIET)
+ if(NOT GTest_FOUND)
+     if(ROCROLLER_ENABLE_FETCH)
+         FetchContent_Declare(
+@@ -14,7 +14,7 @@ if(NOT GTest_FOUND)
+     endif()
+ endif()
+ 
+-find_package(mxDataGenerator)
++find_package(mxDataGenerator QUIET)
+ if(NOT mxDataGenerator_FOUND)
+     if(ROCROLLER_ENABLE_FETCH)
+         FetchContent_Declare(
+@@ -44,7 +44,7 @@ if(ROCROLLER_ENABLE_CATCH AND (ROCROLLER_BUILD_TESTING OR BUILD_TESTING))
+     # to ensure that the command supplied to execute_process is interpreted as a list
+     # of strings rather than one white space delimited string.
+     if(ROCROLLER_ENABLE_ASAN)
+-    rocroller_target_configure_sanitizers(rocroller-test-catch PRIVATE)
++        rocroller_target_configure_sanitizers(rocroller-test-catch PRIVATE)
+         set_target_properties(rocroller-tests-catch
+             PROPERTIES 
+                 CROSSCOMPILING_EMULATOR "${CMAKE_COMMAND};-E;env;${asan_opts}"
+@@ -68,7 +68,7 @@ if(ROCROLLER_ENABLE_ASAN)
+     )
+ endif()
+ 
+-if(ROCROLLER_ENABLE_ARCH_GEN_TEST)
++if(ROCROLLER_ENABLE_GEMM_CLIENT_TESTS)
+     if(NOT ROCROLLER_ENABLE_LLD)
+         # There are a few tests that require ReadELF functionality
+         # which is disabled by default and on a deprecation path.
+@@ -92,14 +92,15 @@ if(ROCROLLER_ENABLE_ARCH_GEN_TEST)
+         PROPERTIES
+             SKIP_REGULAR_EXPRESSION ${rocroller_skip_regex}
+     )
+-    add_executable(arch-gen-tests)
+-    if(ROCROLLER_ENABLE_ASAN)
+-        rocroller_target_configure_sanitizers(arch-gen-tests PRIVATE)
+-        set_target_properties(arch-gen-tests
+-            PROPERTIES 
+-                CROSSCOMPILING_EMULATOR "${CMAKE_COMMAND};-E;env;${asan_opts}"
+-        )
+-    endif()
++endif()
++
++add_executable(arch-gen-tests)
++if(ROCROLLER_ENABLE_ASAN)
++    rocroller_target_configure_sanitizers(arch-gen-tests PRIVATE)
++    set_target_properties(arch-gen-tests
++        PROPERTIES
++            CROSSCOMPILING_EMULATOR "${CMAKE_COMMAND};-E;env;${asan_opts}"
++    )
+ endif()
+ 
+ find_package(BLAS REQUIRED)
+@@ -129,7 +130,6 @@ if(ROCROLLER_ENABLE_TEST_DISCOVERY)
+         TEST_FILTER "-*GPU_*"
+         DISCOVERY_MODE PRE_TEST
+         PROPERTIES
+-            SKIP_REGULAR_EXPRESSION "test/unit/ErrorTest.cpp:"
+             ENVIRONMENT "${asan_opts}"
+     )
+     gtest_discover_tests(
+@@ -139,18 +139,15 @@ if(ROCROLLER_ENABLE_TEST_DISCOVERY)
+         PROPERTIES "LABELS" "GPU"
+         DISCOVERY_MODE PRE_TEST
+         PROPERTIES
+-            SKIP_REGULAR_EXPRESSION "test/unit/ErrorTest.cpp:"
+             ENVIRONMENT "${asan_opts}"
+     )
+-    if(ROCROLLER_ENABLE_ARCH_GEN_TEST)
+-        gtest_discover_tests(
+-            arch-gen-tests
+-            XML_OUTPUT_DIR ${TEST_REPORT_DIR}
+-            DISCOVERY_MODE PRE_TEST
+-            PROPERTIES
+-                ENVIRONMENT "${asan_opts}"
+-        )
+-    endif()
++    gtest_discover_tests(
++        arch-gen-tests
++        XML_OUTPUT_DIR ${TEST_REPORT_DIR}
++        DISCOVERY_MODE PRE_TEST
++        PROPERTIES
++            ENVIRONMENT "${asan_opts}"
++    )
+ 
+     if(ROCROLLER_ENABLE_CATCH)
+         if(ROCROLLER_ENABLE_FETCH)
+diff --git a/test/catch/CMakeLists.txt b/test/catch/CMakeLists.txt
+index bc45c243..e31d3f39 100644
+--- a/test/catch/CMakeLists.txt
++++ b/test/catch/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ # Copyright Advanced Micro Devices, Inc., or its affiliates.
+ # SPDX-License-Identifier:  MIT
+ 
+-find_package(Catch2)
++find_package(Catch2 QUIET)
+ if(NOT Catch2_FOUND)
+     if(ROCROLLER_ENABLE_FETCH)
+         FetchContent_Declare(
+-- 
+2.43.0
+
