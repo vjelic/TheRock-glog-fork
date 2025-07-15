@@ -89,9 +89,9 @@ jobs:
       #   run: |
       #     ./build_tools/fetch_sources.py --jobs 12
 
-      # - name: Install python deps
-      #   run: |
-      #     pip install -r requirements.txt
+      - name: Install python deps
+        run: |
+          pip install -r requirements.txt
 
       # - name: Configure Projects
       #   env:
