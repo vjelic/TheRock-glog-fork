@@ -54,6 +54,7 @@ def run():
             )
 
         job_data = json.loads(response.read().decode("utf-8"))
+        # Check if API output shows number of jobs run in the workflow to be atleast 1
         if not job_data.get("jobs"):
             raise Exception("No jobs found in the GitHub workflow run.")
         # Output the job summary JSON string directly to stdout

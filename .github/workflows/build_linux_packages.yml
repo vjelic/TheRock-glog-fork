@@ -150,20 +150,7 @@ jobs:
             --run-id ${{ github.run_id }} \
             --amdgpu-family ${{ inputs.amdgpu_families }} \
             --build-dir build
-
-      - name: Determine job status for workflow run
-        if: '!cancelled()'
-        id: job-status-step
-        env:
-          RUN_ID: ${{ github.run_id }}
-          ATTEMPT: ${{ github.run_attempt }}
-        run: python build_tools/github_actions/fetch_job_status.py
-
-      - name: Install redshift_connector
-        if: always()
-        run: |
-          pip install redshift_connector
-
+            
       - name: Upload Logs
         if: always()
         run: |
