@@ -5,10 +5,10 @@ This script is executed as part of the workflow after `fetch_job_status.py` comp
 
 Schema overview:
 - Table: workflow_run_details
-  Columns: ['run_id', 'id', 'head_branch', 'workflow_name', 'project', 'started_at', 'run_url']
+  Columns: ['run_id', 'id', 'head_branch', 'workflow_name', 'workflow_job_name','platform' 'project', 'started_at', 'run_url']
 
 - Table: step_status
-  Columns: ['workflow_run_details_id', 'id', 'name', 'status', 'conclusion', 'started_at', 'completed_at']
+  Columns: ['workflow_job_id', 'id', 'name', 'status', 'conclusion', 'started_at', 'completed_at']
 
 """
 
@@ -52,7 +52,14 @@ def populate_redshift_db(
                 logging.info(
                     f"Successfully connected to Redshift"
                 )
+                """
+                Retrieve column metadata from Redshift tables:
 
+                - Enable autocommit mode.
+                - Use SELECT ... LIMIT 0 to fetch only schema without data.
+                - Log column names for 'workflow_run_details' and 'step_status'.
+                - Raise RuntimeError if retrieval fails.
+                """
                 try:
                     conn.autocommit = True
 
@@ -105,7 +112,7 @@ def populate_redshift_db(
                     else:
                         platform = ""
                     match_job = re.search(r"[^/]+$", platform_str)
-                    workflow_id = job["id"]
+                    job_id = int(job['id'])
                     head_branch = job["head_branch"]
                     workflow_name = job["workflow_name"]
                     workflow_job_name = match_job.group(0).lstrip()
@@ -114,7 +121,7 @@ def populate_redshift_db(
     
                     logging.info(
                         f"Inserting workflow run details into 'workflow_run_details' table: "
-                        f"run_id={run_id}, id={workflow_id}, workflow_job_name={workflow_job_name}, head_branch='{head_branch}', "
+                        f"run_id={run_id}, id={job_id}, workflow_job_name={workflow_job_name}, head_branch='{head_branch}', "
                         f"workflow_name='{workflow_name}', platform='{platform}', project='{project}', "
                         f"started_at='{workflow_started_at}', run_url='{run_url}'"
                     )
@@ -129,7 +136,7 @@ def populate_redshift_db(
                         """,
                         (
                             run_id,
-                            workflow_id,
+                            job_id,
                             head_branch,
                             workflow_name,
                             workflow_job_name,
@@ -139,12 +146,13 @@ def populate_redshift_db(
                             run_url,
                         ),
                     )
-
+                    logging.info(
+                            f"Inserting step status into 'step_status' table: "
+                            f"workflow_job_id={job["id"]}"
+                        )
                     # Iterate over each step in the current job
                     for j in range(len(job["steps"])):
                         step = job["steps"][j]
-
-                        steps_id = job["id"]
                         steps_name = step["name"]
                         status = step["status"]
                         conclusion = step["conclusion"]
@@ -152,10 +160,8 @@ def populate_redshift_db(
                         step_completed_at = step["completed_at"]
 
                         logging.info(
-                            f"Inserting step status into 'step_status' table: "
-                            f"workflow_run_details_id={steps_id}, id={j + 1}, name='{steps_name}', "
-                            f"status='{status}', conclusion='{conclusion}', "
-                            f"started_at='{step_started_at}', completed_at='{step_completed_at}"
+                            f"workflow_job_id={steps_id}, name='{steps_name}', "
+                            f"status='{status}', conclusion='{conclusion}' "
                         )
 
                         # Insert step status details into the database
@@ -163,7 +169,7 @@ def populate_redshift_db(
                         cursor.execute(
                             """
                                 INSERT INTO step_status
-                                    ("workflow_run_details_id", "id", "name", "status", "conclusion", "started_at", "completed_at")
+                                    ("workflow_job_id", "id", "name", "status", "conclusion", "started_at", "completed_at")
                                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                             """,
                             (
