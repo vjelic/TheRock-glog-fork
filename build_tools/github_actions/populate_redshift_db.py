@@ -34,7 +34,6 @@ def populate_redshift_db(
     redshift_password,
     redshift_port,
 ):
-    import pdb; pdb.set_trace()
     logging.info(f"Github API output from Workflow {api_output}")
 
     input_dict = json.loads(api_output)
