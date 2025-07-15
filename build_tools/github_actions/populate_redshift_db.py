@@ -111,71 +111,71 @@ def populate_redshift_db(
                     workflow_job_name = match_job.group(0).lstrip()
                     workflow_started_at = job["started_at"]
                     run_url = job["run_url"]
-                    if platform != "":
+    
+                    logging.info(
+                        f"Inserting workflow run details into 'workflow_run_details' table: "
+                        f"run_id={run_id}, id={workflow_id}, workflow_job_name={workflow_job_name}, head_branch='{head_branch}', "
+                        f"workflow_name='{workflow_name}', platform='{platform}', project='{project}', "
+                        f"started_at='{workflow_started_at}', run_url='{run_url}'"
+                    )
+
+                    # Insert workflow run details into the database
+
+                    cursor.execute(
+                        """
+                            INSERT INTO workflow_run_details
+                                ("run_id", "id", "head_branch", "workflow_name", "workflow_job_name", "platform", "project", "started_at", "run_url")
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """,
+                        (
+                            run_id,
+                            workflow_id,
+                            head_branch,
+                            workflow_name,
+                            workflow_job_name,
+                            platform,
+                            project,
+                            workflow_started_at,
+                            run_url,
+                        ),
+                    )
+
+                    # Iterate over each step in the current job
+                    for j in range(len(job["steps"])):
+                        step = job["steps"][j]
+
+                        steps_id = job["id"]
+                        steps_name = step["name"]
+                        status = step["status"]
+                        conclusion = step["conclusion"]
+                        step_started_at = step["started_at"]
+                        step_completed_at = step["completed_at"]
+
                         logging.info(
-                            f"Inserting workflow run details into 'workflow_run_details' table: "
-                            f"run_id={run_id}, id={workflow_id}, workflow_job_name={workflow_job_name}, head_branch='{head_branch}', "
-                            f"workflow_name='{workflow_name}', platform='{platform}', project='{project}', "
-                            f"started_at='{workflow_started_at}', run_url='{run_url}'"
+                            f"Inserting step status into 'step_status' table: "
+                            f"workflow_run_details_id={steps_id}, id={j + 1}, name='{steps_name}', "
+                            f"status='{status}', conclusion='{conclusion}', "
+                            f"started_at='{step_started_at}', completed_at='{step_completed_at}"
                         )
 
-                        # Insert workflow run details into the database
-
+                        # Insert step status details into the database
+                        # j + 1 is used to populate an ID for each step in the each workflow run
                         cursor.execute(
                             """
-                                INSERT INTO workflow_run_details
-                                    ("run_id", "id", "head_branch", "workflow_name", "workflow_job_name", "platform", "project", "started_at", "run_url")
-                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                INSERT INTO step_status
+                                    ("workflow_run_details_id", "id", "name", "status", "conclusion", "started_at", "completed_at")
+                                VALUES (%s, %s, %s, %s, %s, %s, %s)
                             """,
                             (
-                                run_id,
-                                workflow_id,
-                                head_branch,
-                                workflow_name,
-                                workflow_job_name,
-                                platform,
-                                project,
-                                workflow_started_at,
-                                run_url,
+                                steps_id,
+                                j + 1,
+                                steps_name,
+                                status,
+                                conclusion,
+                                step_started_at,
+                                step_completed_at,
                             ),
                         )
-
-                        # Iterate over each step in the current job
-                        for j in range(len(job["steps"])):
-                            step = job["steps"][j]
-
-                            steps_id = job["id"]
-                            steps_name = step["name"]
-                            status = step["status"]
-                            conclusion = step["conclusion"]
-                            step_started_at = step["started_at"]
-                            step_completed_at = step["completed_at"]
-
-                            logging.info(
-                                f"Inserting step status into 'step_status' table: "
-                                f"workflow_run_details_id={steps_id}, id={j + 1}, name='{steps_name}', "
-                                f"status='{status}', conclusion='{conclusion}', "
-                                f"started_at='{step_started_at}', completed_at='{step_completed_at}"
-                            )
-
-                            # Insert step status details into the database
-                            # j + 1 is used to populate an ID for each step in the each workflow run
-                            cursor.execute(
-                                """
-                                    INSERT INTO step_status
-                                        ("workflow_run_details_id", "id", "name", "status", "conclusion", "started_at", "completed_at")
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                                """,
-                                (
-                                    steps_id,
-                                    j + 1,
-                                    steps_name,
-                                    status,
-                                    conclusion,
-                                    step_started_at,
-                                    step_completed_at,
-                                ),
-                            )
 
     except Exception as e:
         raise RuntimeError(f"Redshift connection failed: {e}")
