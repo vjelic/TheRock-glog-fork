@@ -58,10 +58,6 @@ def run():
             raise Exception("No jobs found in the GitHub workflow run.")
         # Output the job summary JSON string directly to stdout
         print(json.dumps(job_data))
-        # Check if API output shows number of jobs run in the workflow to be atleast 1
-        # if len(job_data["jobs"]) > 0:
-        #     set_github_output({"job_summary": json.dumps(job_data)})
-
 
 if __name__ == "__main__":
     run()
