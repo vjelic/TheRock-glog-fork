@@ -28,3 +28,7 @@ include = [
   "bin/*.hip",
   "bin/rocthrust/CTestTestfile.cmake",
 ]
+[components.test."math-libs/rocThrust/release"]
+include = [
+  "bin/*.hip",
+]

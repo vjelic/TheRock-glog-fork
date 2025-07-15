@@ -51,7 +51,7 @@ test_matrix = {
         "fetch_artifact_args": "--prim --tests",
         "timeout_minutes": 15,
         "test_script": f"python {SCRIPT_DIR / 'test_rocthrust.py'}",
-        "platform": ["linux"],
+        "platform": ["linux", "windows"],
     },
     # SPARSE tests
     "hipsparse": {
