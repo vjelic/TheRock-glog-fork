@@ -20,8 +20,6 @@ import json
 import sys
 import re
 
-supported_workflows = ['Build Linux Packages']
-
 logging.basicConfig(level=logging.INFO)
 
 
@@ -127,7 +125,6 @@ def populate_redshift_db(
                     )
 
                     # Insert workflow run details into the database
-
                     cursor.execute(
                         """
                             INSERT INTO workflow_run_details
@@ -148,11 +145,12 @@ def populate_redshift_db(
                     )
                     logging.info(
                             f"Inserting step status into 'step_status' table: "
-                            f"workflow_job_id={job["id"]}"
+                            f"workflow_job_id={job['id']}"
                         )
                     # Iterate over each step in the current job
                     for j in range(len(job["steps"])):
                         step = job["steps"][j]
+                        job_id = job['id']
                         steps_name = step["name"]
                         status = step["status"]
                         conclusion = step["conclusion"]
@@ -160,7 +158,7 @@ def populate_redshift_db(
                         step_completed_at = step["completed_at"]
 
                         logging.info(
-                            f"workflow_job_id={steps_id}, name='{steps_name}', "
+                            f"workflow_job_id={job_id}, name='{steps_name}', "
                             f"status='{status}', conclusion='{conclusion}' "
                         )
 
@@ -173,7 +171,7 @@ def populate_redshift_db(
                                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                             """,
                             (
-                                steps_id,
+                                job_id,
                                 j + 1,
                                 steps_name,
                                 status,
