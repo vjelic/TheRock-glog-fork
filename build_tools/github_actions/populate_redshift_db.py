@@ -32,6 +32,24 @@ def populate_redshift_db(
     redshift_password,
     redshift_port,
 ):
+    # Validate presence of required Redshift connection parameters and collect any missing ones
+    missing = []
+    if not redshift_cluster_endpoint:
+        missing.append("--redshift-cluster-endpoint")
+    if not dbname:
+        missing.append("--dbname")
+    if not redshift_username:
+        missing.append("--redshift-username")
+    if not redshift_password:
+        missing.append("--redshift-password")
+    if not redshift_port:
+        missing.append("--redshift-port")
+
+    # Fail gracefully if required parameters are missing
+    if missing:
+        print(f"Error: Missing required arguments: {', '.join(missing)}")
+        sys.exit(1)
+
     logging.info(f"Github API output from Workflow {api_output}")
 
     input_dict = json.loads(api_output)
@@ -47,7 +65,9 @@ def populate_redshift_db(
             password=redshift_password,
         ) as conn:
             with conn.cursor() as cursor:
-                logging.info(f"Successfully connected to Redshift")
+                logging.info(
+                    f"Successfully connected to Redshift"
+                )
                 """
                 Retrieve column metadata from Redshift tables:
 
@@ -59,9 +79,7 @@ def populate_redshift_db(
                 try:
                     conn.autocommit = True
 
-                    logging.info(
-                        "Retrieving column metadata for 'workflow_run_details'..."
-                    )
+                    logging.info("Retrieving column metadata for 'workflow_run_details'...")
                     cursor.execute("SELECT * FROM workflow_run_details LIMIT 0")
                     colnames = [desc[0] for desc in cursor.description]
                     logging.info(
@@ -90,37 +108,39 @@ def populate_redshift_db(
                             the extracted project name will be "TheRock".
                     """
                     project = job["run_url"].split("/")[5]
-                    """
-                        Extract name of the platforms job is run on name from the GitHub API output.
 
-                        The platform name is located inside the parentheses of the value in input_dict["jobs"][i]["name"]
-                        Example:
-                            For the job - input_dict['jobs'][6]['name'] output will be as below,
-                            'Linux (linux-mi300-1gpu-ossci-rocm, gfx94X-dcgpu, gfx942) / Build / Build Linux Packages (xfail false)''
-                            the extracted project name will be 'gfx94X-dcgpu, gfx942'.
                     """
-                    platform_str = input_dict["jobs"][i]["name"]
-                    if "gfx" in platform_str:
-                        # Extract first (...) group to filter out GPUs
+                    Extract the GPU architecture identifiers from the GitHub Actions job name.
+
+                    The platform string often includes multiple comma-separated values within parentheses,
+                    where GPU identifiers typically start with 'gfx'. We extract those values into a list.
+
+                    Example:
+                    Given input_dict['jobs'][6]['name'] as:
+                    'Linux (linux-mi300-1gpu-ossci-rocm, gfx94X-dcgpu, gfx942) / Build / Build Linux Packages (xfail false)'
+
+                    This will extract:
+                    ['gfx94X-dcgpu', 'gfx942']
+                    """
+                    platform_str = input_dict['jobs'][i]['name']
+                    if 'gfx' in platform_str:
+                        # Extract first group to filter out GPUs from platform_str Linux (linux-mi300-1gpu-ossci-rocm, gfx94X-dcgpu, gfx942) / Build / Build Linux Packages (xfail false) into list [gfx94X-dcgpu, gfx942] 
                         match = re.search(r"\(([^)]*)\)", platform_str)
                         inside = match.group(1) if match else ""
                         # Split by comma and filter for entries starting with 'gfx'
-                        gpu_list = [
-                            item.strip()
-                            for item in inside.split(",")
-                            if item.strip().startswith("gfx")
-                        ]
+                        gpu_list = [item.strip() for item in inside.split(",") if item.strip().startswith("gfx")]
+
                         platform = ", ".join(gpu_list)
                     else:
                         platform = ""
                     match_job = re.search(r"[^/]+$", platform_str)
-                    job_id = int(job["id"])
+                    job_id = int(job['id'])
                     head_branch = job["head_branch"]
                     workflow_name = job["workflow_name"]
                     workflow_job_name = match_job.group(0).lstrip()
                     workflow_started_at = job["started_at"]
                     run_url = job["run_url"]
-
+    
                     logging.info(
                         f"Inserting workflow run details into 'workflow_run_details' table: "
                         f"run_id={run_id}, id={job_id}, workflow_job_name={workflow_job_name}, head_branch='{head_branch}', "
@@ -148,13 +168,13 @@ def populate_redshift_db(
                         ),
                     )
                     logging.info(
-                        f"Inserting step status into 'step_status' table: "
-                        f"workflow_job_id={job['id']}"
-                    )
+                            f"Inserting 'step_status' table: "
+                            f"workflow_job_id={job['id']}"
+                        )
                     # Iterate over each step in the current job
                     for j in range(len(job["steps"])):
                         step = job["steps"][j]
-                        job_id = job["id"]
+                        job_id = job['id']
                         steps_name = step["name"]
                         status = step["status"]
                         conclusion = step["conclusion"]
@@ -162,7 +182,7 @@ def populate_redshift_db(
                         step_completed_at = step["completed_at"]
 
                         logging.info(
-                            f"workflow_job_id={job_id}, name='{steps_name}', "
+                            f"Inserting workflow_job_id={job_id}, name='{steps_name}', "
                             f"status='{status}', conclusion='{conclusion}' "
                         )
 
@@ -194,37 +214,43 @@ def main():
     parser.add_argument(
         "--api-output",
         type=str,
+        required=True,
         help="GitHub API output to populate the tables in DB",
     )
     parser.add_argument(
         "--run-id",
         type=int,
+        required=True,
         help="run_id to populate the tables in DB",
     )
     parser.add_argument(
         "--redshift-cluster-endpoint",
         type=str,
+        required=True,
         help="redshift cluster endpoint to access cluster",
     )
     parser.add_argument(
         "--dbname",
         type=str,
+        required=True,
         help="database name to populate the tables in DB",
     )
     parser.add_argument(
         "--redshift-username",
         type=str,
+        required=True,
         help="username to access redshift cluster",
     )
     parser.add_argument(
         "--redshift-password",
         type=str,
+        required=True,
         help="password to access redshift cluster",
     )
     parser.add_argument(
         "--redshift-port",
         type=int,
-        default=5439,
+        required=True,
         help="port to access redshift cluster",
     )
     args = parser.parse_args()

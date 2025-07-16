@@ -60,6 +60,5 @@ def run():
         # Output the job summary JSON string directly to stdout
         print(json.dumps(job_data))
 
-
 if __name__ == "__main__":
     run()
