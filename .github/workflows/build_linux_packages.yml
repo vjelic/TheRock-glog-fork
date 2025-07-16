@@ -182,7 +182,7 @@ jobs:
         run: |
           # Fetch job summary and store it
           JOB_SUMMARY=$(python3 build_tools/github_actions/fetch_job_status.py)
-          # Populate Redshift Database tables 
+          # Populate Redshift Database tables
           python3 build_tools/github_actions/populate_redshift_db.py \
             --api-output "$JOB_SUMMARY" \
             --redshift-cluster-endpoint "${{ secrets.THEROCK_REDSHIFT_CLUSTER_ENDPOINT }}" \

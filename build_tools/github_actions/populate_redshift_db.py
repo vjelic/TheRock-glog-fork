@@ -65,9 +65,7 @@ def populate_redshift_db(
             password=redshift_password,
         ) as conn:
             with conn.cursor() as cursor:
-                logging.info(
-                    f"Successfully connected to Redshift"
-                )
+                logging.info(f"Successfully connected to Redshift")
                 """
                 Retrieve column metadata from Redshift tables:
 
@@ -79,7 +77,9 @@ def populate_redshift_db(
                 try:
                     conn.autocommit = True
 
-                    logging.info("Retrieving column metadata for 'workflow_run_details'...")
+                    logging.info(
+                        "Retrieving column metadata for 'workflow_run_details'..."
+                    )
                     cursor.execute("SELECT * FROM workflow_run_details LIMIT 0")
                     colnames = [desc[0] for desc in cursor.description]
                     logging.info(
@@ -122,25 +122,29 @@ def populate_redshift_db(
                     This will extract:
                     ['gfx94X-dcgpu', 'gfx942']
                     """
-                    platform_str = input_dict['jobs'][i]['name']
-                    if 'gfx' in platform_str:
-                        # Extract first group to filter out GPUs from platform_str Linux (linux-mi300-1gpu-ossci-rocm, gfx94X-dcgpu, gfx942) / Build / Build Linux Packages (xfail false) into list [gfx94X-dcgpu, gfx942] 
+                    platform_str = input_dict["jobs"][i]["name"]
+                    if "gfx" in platform_str:
+                        # Extract first group to filter out GPUs from platform_str Linux (linux-mi300-1gpu-ossci-rocm, gfx94X-dcgpu, gfx942) / Build / Build Linux Packages (xfail false) into list [gfx94X-dcgpu, gfx942]
                         match = re.search(r"\(([^)]*)\)", platform_str)
                         inside = match.group(1) if match else ""
                         # Split by comma and filter for entries starting with 'gfx'
-                        gpu_list = [item.strip() for item in inside.split(",") if item.strip().startswith("gfx")]
+                        gpu_list = [
+                            item.strip()
+                            for item in inside.split(",")
+                            if item.strip().startswith("gfx")
+                        ]
 
                         platform = ", ".join(gpu_list)
                     else:
                         platform = ""
                     match_job = re.search(r"[^/]+$", platform_str)
-                    job_id = int(job['id'])
+                    job_id = int(job["id"])
                     head_branch = job["head_branch"]
                     workflow_name = job["workflow_name"]
                     workflow_job_name = match_job.group(0).lstrip()
                     workflow_started_at = job["started_at"]
                     run_url = job["run_url"]
-    
+
                     logging.info(
                         f"Inserting workflow run details into 'workflow_run_details' table: "
                         f"run_id={run_id}, id={job_id}, workflow_job_name={workflow_job_name}, head_branch='{head_branch}', "
@@ -168,13 +172,13 @@ def populate_redshift_db(
                         ),
                     )
                     logging.info(
-                            f"Inserting 'step_status' table: "
-                            f"workflow_job_id={job['id']}"
-                        )
+                        f"Inserting 'step_status' table: "
+                        f"workflow_job_id={job['id']}"
+                    )
                     # Iterate over each step in the current job
                     for j in range(len(job["steps"])):
                         step = job["steps"][j]
-                        job_id = job['id']
+                        job_id = job["id"]
                         steps_name = step["name"]
                         status = step["status"]
                         conclusion = step["conclusion"]
