@@ -1,4 +1,4 @@
-From fd907c08049531f95c427730b4901e851884fde5 Mon Sep 17 00:00:00 2001
+From b39962c1e0478f674ca5dc33e636edf8d898a2b7 Mon Sep 17 00:00:00 2001
 From: David Dixon <david.dixon@amd.com>
 Date: Thu, 17 Jul 2025 10:17:10 +0000
 Subject: [PATCH 2/2] Fix linkage for tensilelite-host target and bump
@@ -6,16 +6,16 @@ Subject: [PATCH 2/2] Fix linkage for tensilelite-host target and bump
 
 - Updates linkage for tensilelite-host msgpack dependency because it is
   a build and usage requirement.
-- Make tensilelite-host and PUBLIC dependency but only for build
-  interface.
+- Add tensilelite-host to rocroller host target
 
 https://github.com/ROCm/rocm-libraries/pull/702
 ---
- clients/CMakeLists.txt        |  2 +-
- clients/common/mxDataGen.cpp  | 16 ++++++++--------
- clients/include/mxDataGen.hpp |  6 +++---
- next-cmake/CMakeLists.txt     | 22 ++++++++++++----------
- 4 files changed, 24 insertions(+), 22 deletions(-)
+ clients/CMakeLists.txt                        |  2 +-
+ clients/common/mxDataGen.cpp                  | 16 +++++++-------
+ clients/include/mxDataGen.hpp                 |  6 ++---
+ next-cmake/CMakeLists.txt                     | 22 ++++++++++---------
+ .../host-library/src/rocblaslt/CMakeLists.txt |  8 ++++++-
+ 5 files changed, 31 insertions(+), 23 deletions(-)
 
 diff --git a/clients/CMakeLists.txt b/clients/CMakeLists.txt
 index 05e6c989..b379bd02 100755
@@ -96,7 +96,7 @@ index 766c548d..6f50adde 100644
                                     int const              scaleBlockRowSize,
                                     int const              scaleBlockColSize,
 diff --git a/next-cmake/CMakeLists.txt b/next-cmake/CMakeLists.txt
-index 6e4e15da..1ad8e4b8 100644
+index 67329ebc..a19f886a 100644
 --- a/next-cmake/CMakeLists.txt
 +++ b/next-cmake/CMakeLists.txt
 @@ -52,7 +52,7 @@ endif()
@@ -162,16 +162,38 @@ index 6e4e15da..1ad8e4b8 100644
          PUBLIC
              rocisa::rocisa-cpp
              hip::device
-@@ -292,8 +294,8 @@ if(HIPBLASLT_ENABLE_HOST)
-         PUBLIC
+@@ -293,7 +295,7 @@ if(HIPBLASLT_ENABLE_HOST)
              roc::${hipblas_target}
              hip::device
-+            $<BUILD_INTERFACE:tensilelite::tensilelite-host>
          PRIVATE
 -            tensilelite-host
++            tensilelite::tensilelite-host
              ${CMAKE_DL_LIBS}
              ${rocTracer}
      )
+diff --git a/next-cmake/host-library/src/rocblaslt/CMakeLists.txt b/next-cmake/host-library/src/rocblaslt/CMakeLists.txt
+index bd7d7869..c710c283 100644
+--- a/next-cmake/host-library/src/rocblaslt/CMakeLists.txt
++++ b/next-cmake/host-library/src/rocblaslt/CMakeLists.txt
+@@ -45,11 +45,17 @@ if(HIPBLASLT_ENABLE_ROCROLLER)
+     )
+     target_compile_features(hipblaslt-rocroller PRIVATE cxx_std_20)
+     set_target_properties(hipblaslt-rocroller PROPERTIES POSITION_INDEPENDENT_CODE ON)
+-    target_link_libraries(hipblaslt-rocroller PRIVATE hip::host roc::hipblas-common roc::rocroller)
++    target_link_libraries(hipblaslt-rocroller PRIVATE hip::host roc::hipblas-common roc::rocroller tensilelite::tensilelite-host)
+     target_compile_definitions(hipblaslt-rocroller PRIVATE HIPBLASLT_USE_ROCROLLER)
+     target_include_directories(hipblaslt-rocroller PRIVATE "${_CMAKE_CURRENT_SOURCE_DIR}/include")
+     target_include_directories(hipblaslt-rocroller PRIVATE "${_CMAKE_CURRENT_SOURCE_DIR}/../include")
+     target_include_directories(hipblaslt-rocroller PRIVATE "${_CMAKE_CURRENT_SOURCE_DIR}/../../../../include")
+     target_include_directories(hipblaslt-rocroller PRIVATE "${PROJECT_BINARY_DIR}/host-library/include")
+     target_link_libraries(hipblaslt PRIVATE hipblaslt-rocroller)
++    set_source_files_properties(
++        "${_CMAKE_CURRENT_SOURCE_DIR}/rocroller_host.cpp"
++          PROPERTIES
++              LANGUAGE CXX
++              COMPILE_OPTIONS "-x;c++"
++    )
+ endif()
 -- 
-2.43.0
+2.25.1
 
