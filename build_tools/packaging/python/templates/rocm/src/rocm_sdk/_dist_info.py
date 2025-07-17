@@ -6,7 +6,6 @@ of bootstrapping, we are including it inline for the moment.
 
 import importlib.util
 import os
-import platform
 
 
 CACHED_TARGET_FAMILY: str | None = None
@@ -16,18 +15,20 @@ class LibraryEntry:
     """Defines a public library that can be located by name within the overall
     distribution."""
 
-    def __init__(self, shortname: str, package_name: str, soname: str, dllname: str):
+    def __init__(
+        self, shortname: str, package_name: str, so_pattern: str, dll_pattern: str
+    ):
         self.shortname = shortname
         self.package = ALL_PACKAGES[package_name]
         self.posix_relpath = "lib"
         self.windows_relpath = "bin"
-        self.soname = soname
-        self.dllname = dllname
+        self.so_pattern = so_pattern
+        self.dll_pattern = dll_pattern
         assert shortname not in ALL_LIBRARIES
         ALL_LIBRARIES[shortname] = self
 
     def __repr__(self):
-        return f"{self.shortname}(soname={self.soname}, dllname={self.dllname}, package={self.package})"
+        return f"{self.shortname}(so_pattern={self.so_pattern}, dll_pattern={self.dll_pattern}, package={self.package})"
 
 
 class PackageEntry:
@@ -161,22 +162,22 @@ PackageEntry(
 # TODO(#703,#1057): Use patterns for version suffixes and platform differences too?
 
 # Public libraries.
-LibraryEntry("amdhip64", "core", "libamdhip64.so*", "amdhip64*.dll")
+LibraryEntry("amdhip64", "core", "libamdhip64.so", "amdhip64*.dll")
 # The DLL glob here uses '0' from the version to avoid matching 'hiprtc-builtins'.
 # If DLLs with no version suffix are later added we will need a different pattern.
-LibraryEntry("hiprtc", "core", "libhiprtc.so*", "hiprtc0*.dll")
-LibraryEntry("roctx64", "core", "libroctx64.so*", "")
-LibraryEntry("rocprofiler-sdk-roctx", "core", "librocprofiler-sdk-roctx.so*", "")
+LibraryEntry("hiprtc", "core", "libhiprtc.so", "hiprtc0*.dll")
+LibraryEntry("roctx64", "core", "libroctx64.so", "")
+LibraryEntry("rocprofiler-sdk-roctx", "core", "librocprofiler-sdk-roctx.so", "")
 
-LibraryEntry("amd_comgr", "core", "libamd_comgr.so*", "amd_comgr*.dll")
-LibraryEntry("hipblas", "libraries", "libhipblas.so*", "libhipblas*.dll")
-LibraryEntry("hipfft", "libraries", "libhipfft.so*", "hipfft*.dll")
-LibraryEntry("hiprand", "libraries", "libhiprand.so*", "hiprand*.dll")
-LibraryEntry("hipsparse", "libraries", "libhipsparse.so*", "hipsparse*.dll")
-LibraryEntry("hipsolver", "libraries", "libhipsolver.so*", "hipsolver*.dll")
-LibraryEntry("rccl", "libraries", "librccl.so*", "")
-LibraryEntry("hipblaslt", "libraries", "libhipblaslt.so*", "hipblaslt*.dll")
-LibraryEntry("miopen", "libraries", "libMIOpen.so*", "MIOpen*.dll")
+LibraryEntry("amd_comgr", "core", "libamd_comgr.so", "amd_comgr*.dll")
+LibraryEntry("hipblas", "libraries", "libhipblas.so", "libhipblas*.dll")
+LibraryEntry("hipfft", "libraries", "libhipfft.so", "hipfft*.dll")
+LibraryEntry("hiprand", "libraries", "libhiprand.so", "hiprand*.dll")
+LibraryEntry("hipsparse", "libraries", "libhipsparse.so", "hipsparse*.dll")
+LibraryEntry("hipsolver", "libraries", "libhipsolver.so", "hipsolver*.dll")
+LibraryEntry("rccl", "libraries", "librccl.so", "")
+LibraryEntry("hipblaslt", "libraries", "libhipblaslt.so", "hipblaslt*.dll")
+LibraryEntry("miopen", "libraries", "libMIOpen.so", "MIOpen*.dll")
 
 # Others we may want:
 # hiprtc-builtins
