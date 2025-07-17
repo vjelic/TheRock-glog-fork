@@ -10,10 +10,7 @@ THEROCK_DIR = SCRIPT_DIR.parent.parent.parent
 
 logging.basicConfig(level=logging.INFO)
 
-cmd = [
-    f"{THEROCK_BIN_DIR}/rocsolver-test",
-    "--gtest_filter=checkin*-*known_bug*"
-]
+cmd = [f"{THEROCK_BIN_DIR}/rocsolver-test", "--gtest_filter=checkin*-*known_bug*"]
 logging.info(f"++ Exec [{THEROCK_DIR}]$ {shlex.join(cmd)}")
 
 subprocess.run(
