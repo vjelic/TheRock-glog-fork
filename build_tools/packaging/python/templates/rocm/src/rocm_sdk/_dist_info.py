@@ -158,23 +158,34 @@ PackageEntry(
     required=False,
 )
 
-# TODO(#703): Use patterns for version suffixes and platform differences.
+# TODO(#703,#1057): Use patterns for version suffixes and platform differences too?
 
 # Public libraries.
-LibraryEntry("amdhip64", "core", "libamdhip64.so.7", "amdhip64_7.dll")
-LibraryEntry("hiprtc", "core", "libhiprtc.so.7", "hiprtc0700.dll")
-LibraryEntry("roctx64", "core", "libroctx64.so.4", "")
-LibraryEntry("rocprofiler-sdk-roctx", "core", "librocprofiler-sdk-roctx.so.1", "")
+LibraryEntry("amdhip64", "core", "libamdhip64.so*", "amdhip64*.dll")
+# The DLL glob here uses '0' from the version to avoid matching 'hiprtc-builtins'.
+# If DLLs with no version suffix are later added we will need a different pattern.
+LibraryEntry("hiprtc", "core", "libhiprtc.so*", "hiprtc0*.dll")
+LibraryEntry("roctx64", "core", "libroctx64.so*", "")
+LibraryEntry("rocprofiler-sdk-roctx", "core", "librocprofiler-sdk-roctx.so*", "")
 
-LibraryEntry("amd_comgr", "core", "libamd_comgr.so.3", "amd_comgr0700.dll")
-LibraryEntry("hipblas", "libraries", "libhipblas.so.3", "libhipblas.dll")
-LibraryEntry("hipfft", "libraries", "libhipfft.so.0", "hipfft.dll")
-LibraryEntry("hiprand", "libraries", "libhiprand.so.1", "hiprand.dll")
-LibraryEntry("hipsparse", "libraries", "libhipsparse.so.4", "hipsparse.dll")
-LibraryEntry("hipsolver", "libraries", "libhipsolver.so.1", "hipsolver.dll")
-LibraryEntry("rccl", "libraries", "librccl.so.1", "")
-LibraryEntry("hipblaslt", "libraries", "libhipblaslt.so.1", "hipblaslt.dll")
-LibraryEntry("miopen", "libraries", "libMIOpen.so.1", "MIOpen.dll")
+LibraryEntry("amd_comgr", "core", "libamd_comgr.so*", "amd_comgr*.dll")
+LibraryEntry("hipblas", "libraries", "libhipblas.so*", "libhipblas*.dll")
+LibraryEntry("hipfft", "libraries", "libhipfft.so*", "hipfft*.dll")
+LibraryEntry("hiprand", "libraries", "libhiprand.so*", "hiprand*.dll")
+LibraryEntry("hipsparse", "libraries", "libhipsparse.so*", "hipsparse*.dll")
+LibraryEntry("hipsolver", "libraries", "libhipsolver.so*", "hipsolver*.dll")
+LibraryEntry("rccl", "libraries", "librccl.so*", "")
+LibraryEntry("hipblaslt", "libraries", "libhipblaslt.so*", "hipblaslt*.dll")
+LibraryEntry("miopen", "libraries", "libMIOpen.so*", "MIOpen*.dll")
+
+# Others we may want:
+# hiprtc-builtins
+# rocblas
+# rocfft
+# rocm-openblas
+# rocrand
+# rocsolver
+# rocsparse
 
 # Overall ROCM package version.
 __version__ = "DEFAULT"
