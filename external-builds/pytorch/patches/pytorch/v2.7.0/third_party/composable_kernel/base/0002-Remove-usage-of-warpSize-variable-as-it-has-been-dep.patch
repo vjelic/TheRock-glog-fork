@@ -1,0 +1,57 @@
+From a2df6c60bd7b37132ca80905f8b8b87d498590c5 Mon Sep 17 00:00:00 2001
+From: John Afaganis <john.afaganis@amd.com>
+Date: Tue, 10 Jun 2025 08:34:54 -0600
+Subject: [PATCH 2/2] Remove usage of 'warpSize' variable as it has been
+ deprecated (#2295)
+
+* SWDEV-535598 - remove usage of 'warpSize' variable as it has been deprecated. Ideally get_warp_size() should not be constexpr but this is just a workaround
+
+* SWDEV-535598 - remove comment from get_warp_size as constexpr is required for this repo
+
+---------
+
+Co-authored-by: Gerardo Hernandez <gerardo.hernandez@amd.com>
+---
+ include/ck/utility/get_id.hpp      | 7 +++++--
+ include/ck_tile/core/arch/arch.hpp | 7 +++++--
+ 2 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/include/ck/utility/get_id.hpp b/include/ck/utility/get_id.hpp
+index 77564c613..fd0d1024b 100644
+--- a/include/ck/utility/get_id.hpp
++++ b/include/ck/utility/get_id.hpp
+@@ -9,8 +9,11 @@ namespace ck {
+ 
+ __host__ __device__ constexpr index_t get_warp_size()
+ {
+-    // warpSize is defined by HIP
+-    return warpSize;
++#if defined(__GFX9__) || !defined(__HIP_DEVICE_COMPILE__)
++    return 64;
++#else
++    return 32;
++#endif
+ }
+ 
+ __device__ index_t get_thread_local_1d_id() { return threadIdx.x; }
+diff --git a/include/ck_tile/core/arch/arch.hpp b/include/ck_tile/core/arch/arch.hpp
+index 09de5f325..c1190fc08 100644
+--- a/include/ck_tile/core/arch/arch.hpp
++++ b/include/ck_tile/core/arch/arch.hpp
+@@ -50,8 +50,11 @@ enum struct memory_operation_enum : std::uint16_t
+ 
+ CK_TILE_HOST_DEVICE constexpr index_t get_warp_size()
+ {
+-    // warpSize is defined by HIP
+-    return warpSize;
++#if defined(__GFX9__) || !defined(__HIP_DEVICE_COMPILE__)
++    return 64;
++#else
++    return 32;
++#endif
+ }
+ 
+ CK_TILE_DEVICE index_t get_grid_size() { return gridDim.x; }
+-- 
+2.47.1.windows.2
+
