@@ -1,0 +1,559 @@
+From 69158a532f40f1b03263a3b41137e8506f0fa624 Mon Sep 17 00:00:00 2001
+From: Marius Brehler <marius.brehler@amd.com>
+Date: Fri, 18 Jul 2025 20:20:02 +0000
+Subject: [PATCH 3/3] Replace wrapSize usage
+
+Upstream patches:
+* https://github.com/ROCm/composable_kernel/commit/4c57157d508e4c102626730aa372c8111670a878
+* https://github.com/ROCm/composable_kernel/commit/a4bf78ac0ec5882692423bd5b58d84feb3488629
+---
+ include/ck/ck.hpp                             |  6 +++
+ include/ck_tile/core/arch/utility.hpp         |  2 +-
+ .../flatmm_32x512x128_1x4x1_16x16x32.hpp      | 26 +++++-----
+ ...k_fmha_pipeline_qx_ks_vs_custom_policy.hpp | 48 ++++++++---------
+ .../fused_moe/kernel/fused_moegemm_shape.hpp  |  2 +-
+ .../fused_moe/kernel/moe_sorting_kernel.hpp   | 14 ++---
+ .../fused_moegemm_pipeline_flatmm_policy.hpp  | 52 +++++++++----------
+ .../pipeline/tile_image_to_column_shape.hpp   |  2 +-
+ .../norm_reduce/block/block_norm_reduce.hpp   |  4 +-
+ .../ops/reduce/block/block_reduce2d.hpp       |  4 +-
+ 10 files changed, 83 insertions(+), 77 deletions(-)
+
+diff --git a/include/ck/ck.hpp b/include/ck/ck.hpp
+index 5e096399c..84cfcbcfb 100644
+--- a/include/ck/ck.hpp
++++ b/include/ck/ck.hpp
+@@ -263,6 +263,12 @@ CK_DECLARE_ENV_VAR_BOOL(CK_LOGGING)
+ 
+ namespace ck {
+ 
++#if defined(__GFX9__) || !defined(__HIP_DEVICE_COMPILE__)
++__device__ static constexpr int WarpSize = 64;
++#else
++__device__ static constexpr int WarpSize = 32;
++#endif
++
+ enum struct InMemoryDataOperationEnum
+ {
+     Set,
+diff --git a/include/ck_tile/core/arch/utility.hpp b/include/ck_tile/core/arch/utility.hpp
+index df0f54c5e..7184f9952 100644
+--- a/include/ck_tile/core/arch/utility.hpp
++++ b/include/ck_tile/core/arch/utility.hpp
+@@ -35,7 +35,7 @@ CK_TILE_DEVICE T warp_shuffle_up(const T& v_local, uint32_t lane_delta)
+ #elif 1
+     static_assert(sizeof(T) == sizeof(int32_t), "wrong!");
+ 
+-    const uint32_t wrap_around_lane_delta = warpSize - lane_delta;
++    const uint32_t wrap_around_lane_delta = get_warp_size() - lane_delta;
+ 
+     const int32_t v_remote_tmp = __builtin_amdgcn_ds_bpermute(
+         (__lane_id() << 2) + (wrap_around_lane_delta << 2), bit_cast<int32_t>(v_local));
+diff --git a/include/ck_tile/ops/flatmm/block/flatmm_32x512x128_1x4x1_16x16x32.hpp b/include/ck_tile/ops/flatmm/block/flatmm_32x512x128_1x4x1_16x16x32.hpp
+index 869ab32c2..1dcd62011 100644
+--- a/include/ck_tile/ops/flatmm/block/flatmm_32x512x128_1x4x1_16x16x32.hpp
++++ b/include/ck_tile/ops/flatmm/block/flatmm_32x512x128_1x4x1_16x16x32.hpp
+@@ -95,7 +95,7 @@ struct Flatmm_32x512x128_1x4x1_16x16x32_Base // for f16/bf16
+         // constexpr index_t Block_M = Problem::BlockShape::Block_M0;
+         // constexpr index_t Block_K = Problem::BlockShape::Block_K0;
+         // constexpr index_t BlockSize = Problem::BlockShape::BlockSize;
+-        constexpr index_t warpSize = ck_tile::get_warp_size();
++        constexpr index_t WarpSize = ck_tile::get_warp_size();
+         // constexpr index_t NumWarps = Problem::BlockShape::NumWarps;
+ 
+         constexpr index_t KPack_  = 8;      // GetSmemKPack_A<Problem>(); // LDS
+@@ -104,11 +104,11 @@ struct Flatmm_32x512x128_1x4x1_16x16x32_Base // for f16/bf16
+ 
+         static_assert(Block_K % KVector == 0);
+         constexpr index_t LanesPerK = Block_K / KVector; // how many thread loading K
+-        if constexpr(LanesPerK >= warpSize)
++        if constexpr(LanesPerK >= WarpSize)
+         {
+             // need multiple waves to load K
+-            static_assert(LanesPerK % warpSize == 0);
+-            constexpr index_t wavesPerK = LanesPerK / warpSize;
++            static_assert(LanesPerK % WarpSize == 0);
++            constexpr index_t wavesPerK = LanesPerK / WarpSize;
+             if constexpr(wavesPerK > NumWarps)
+             {
+                 // TODO: need multiple issues along K to load all data
+@@ -121,11 +121,11 @@ struct Flatmm_32x512x128_1x4x1_16x16x32_Base // for f16/bf16
+                     make_tuple(number<NumIssues>{},                             // m0
+                                number<wavesPerM>{},                             // m1
+                                number<wavesPerK>{},                             // k0
+-                               number<warpSize>{},                              // k1
++                               number<WarpSize>{},                              // k1
+                                number<KVector>{}),                              // k2
+-                    make_tuple(number<NumWarps*(warpSize * KVector + KPad)>{},  // m0
+-                               number<wavesPerK*(warpSize * KVector + KPad)>{}, // m1
+-                               number<warpSize * KVector + KPad>{},             // k0
++                    make_tuple(number<NumWarps*(WarpSize * KVector + KPad)>{},  // m0
++                               number<wavesPerK*(WarpSize * KVector + KPad)>{}, // m1
++                               number<WarpSize * KVector + KPad>{},             // k0
+                                number<KVector>{},                               // k1
+                                number<1>{}),                                    // k2
+                     number<KVector>{}, // lds store vector(actually no explicit store)
+@@ -136,7 +136,7 @@ struct Flatmm_32x512x128_1x4x1_16x16x32_Base // for f16/bf16
+                     make_tuple(
+                         make_pass_through_transform(number<NumIssues>{}),
+                         make_merge_transform(make_tuple(number<wavesPerM>{}, number<wavesPerK>{})),
+-                        make_merge_transform(make_tuple(number<warpSize>{}, number<KVector>{}))),
++                        make_merge_transform(make_tuple(number<WarpSize>{}, number<KVector>{}))),
+                     make_tuple(sequence<0>{}, sequence<1, 2>{}, sequence<3, 4>{}),
+                     make_tuple(sequence<0>{}, sequence<1>{}, sequence<2>{}));
+ 
+@@ -146,8 +146,8 @@ struct Flatmm_32x512x128_1x4x1_16x16x32_Base // for f16/bf16
+         else
+         {
+             // lanes within a wave load different M but same K
+-            static_assert(warpSize % LanesPerK == 0);
+-            constexpr index_t LaneGroups = warpSize / LanesPerK; // along m
++            static_assert(WarpSize % LanesPerK == 0);
++            constexpr index_t LaneGroups = WarpSize / LanesPerK; // along m
+             constexpr index_t NumIssues  = Block_M / (LaneGroups * NumWarps);
+ 
+             constexpr auto lds_block_desc_0 = make_naive_tensor_descriptor(
+@@ -156,9 +156,9 @@ struct Flatmm_32x512x128_1x4x1_16x16x32_Base // for f16/bf16
+                            number<NumWarps>{},                             // m2
+                            number<LanesPerK>{},                            // k0
+                            number<KVector>{}),                             // k1
+-                make_tuple(number<NumWarps*(warpSize * KVector + KPad)>{}, // m0
++                make_tuple(number<NumWarps*(WarpSize * KVector + KPad)>{}, // m0
+                            number<Block_K>{},                              // m1
+-                           number<warpSize * KVector + KPad>{},            // m2
++                           number<WarpSize * KVector + KPad>{},            // m2
+                            number<KVector>{},                              // k0
+                            number<1>{}),                                   // k1
+                 number<KVector>{}, // lds store vector(actually no explicit store)
+diff --git a/include/ck_tile/ops/fmha/pipeline/block_fmha_pipeline_qx_ks_vs_custom_policy.hpp b/include/ck_tile/ops/fmha/pipeline/block_fmha_pipeline_qx_ks_vs_custom_policy.hpp
+index 3db461e97..11308a3ba 100644
+--- a/include/ck_tile/ops/fmha/pipeline/block_fmha_pipeline_qx_ks_vs_custom_policy.hpp
++++ b/include/ck_tile/ops/fmha/pipeline/block_fmha_pipeline_qx_ks_vs_custom_policy.hpp
+@@ -436,19 +436,19 @@ struct BlockFmhaPipelineQXKSVSCustomPolicy : BlockFmhaPipelineQXCustomPolicy<QLo
+                 constexpr index_t kNPerBlock = Problem::BlockFmhaShape::kN0;
+                 constexpr index_t kKPerBlock = Problem::BlockFmhaShape::kK1;
+                 constexpr index_t NumWarps   = Problem::BlockFmhaShape::NumWarps;
+-                constexpr index_t warpSize   = ck_tile::get_warp_size();
++                constexpr index_t WarpSize   = ck_tile::get_warp_size();
+ 
+                 constexpr index_t KPack   = GetSmemKPackK<Problem>(); // this is for lds
+                 constexpr index_t KVector = GetAlignmentK<Problem>(); // this is for global load
+                 constexpr index_t kPad    = KPack;
+ 
+-                static_assert(warpSize * KVector >= kKPerBlock &&
+-                              warpSize * KVector % kKPerBlock == 0);
++                static_assert(WarpSize * KVector >= kKPerBlock &&
++                              WarpSize * KVector % kKPerBlock == 0);
+                 constexpr index_t LanesPerK  = kKPerBlock / KVector;
+-                constexpr index_t LaneGroups = warpSize / LanesPerK;
++                constexpr index_t LaneGroups = WarpSize / LanesPerK;
+                 constexpr index_t NumIssues  = kNPerBlock / (LaneGroups * NumWarps);
+ 
+-                return NumIssues * NumWarps * (warpSize * KVector + kPad);
++                return NumIssues * NumWarps * (WarpSize * KVector + kPad);
+             }
+         }();
+ 
+@@ -504,18 +504,18 @@ struct BlockFmhaPipelineQXKSVSCustomPolicy : BlockFmhaPipelineQXCustomPolicy<QLo
+         constexpr index_t kKPerBlock = Problem::BlockFmhaShape::kK1;
+         constexpr index_t kBlockSize = Problem::kBlockSize;
+         constexpr index_t NumWarps   = Problem::BlockFmhaShape::NumWarps;
+-        constexpr index_t warpSize   = ck_tile::get_warp_size();
++        constexpr index_t WarpSize   = ck_tile::get_warp_size();
+ 
+         constexpr index_t KPack   = GetSmemKPackK<Problem>(); // this is for lds
+         constexpr index_t KVector = GetAlignmentK<Problem>(); // this is for global load
+         constexpr index_t kPad =
+             KPack; // for async-copy, this pad is between warps. Optimize this for lds_read speed
+ 
+-        static_assert(warpSize * KVector >= kKPerBlock && warpSize * KVector % kKPerBlock == 0);
++        static_assert(WarpSize * KVector >= kKPerBlock && WarpSize * KVector % kKPerBlock == 0);
+         constexpr index_t LanesPerK =
+             kKPerBlock / KVector; // how many lane (within a wave) to load K
+         constexpr index_t LaneGroups =
+-            warpSize /
++            WarpSize /
+             LanesPerK; // how many groups (within a wave), they may load different N, but same K
+         constexpr index_t NumIssues = kNPerBlock / (LaneGroups * NumWarps);
+         static_assert(NumIssues == kNPerBlock * kKPerBlock / (kBlockSize * KVector));
+@@ -526,9 +526,9 @@ struct BlockFmhaPipelineQXKSVSCustomPolicy : BlockFmhaPipelineQXCustomPolicy<QLo
+                        number<NumWarps>{},   // n2
+                        number<LanesPerK>{},  // k0
+                        number<KVector>{}),   // k1
+-            make_tuple(number<NumWarps*(warpSize * KVector + kPad)>{},
++            make_tuple(number<NumWarps*(WarpSize * KVector + kPad)>{},
+                        number<kKPerBlock>{},
+-                       number<warpSize * KVector + kPad>{},
++                       number<WarpSize * KVector + kPad>{},
+                        number<KVector>{},
+                        number<1>{}),
+             number<IBuf * GetSingleSmemElementSpaceSize<Problem>()>{},
+@@ -559,15 +559,15 @@ struct BlockFmhaPipelineQXKSVSCustomPolicy : BlockFmhaPipelineQXCustomPolicy<QLo
+         constexpr index_t kKPerBlock = Problem::BlockFmhaShape::kK1;
+         constexpr index_t kBlockSize = Problem::kBlockSize;
+         constexpr index_t NumWarps   = Problem::BlockFmhaShape::NumWarps;
+-        constexpr index_t warpSize   = ck_tile::get_warp_size();
++        constexpr index_t WarpSize   = ck_tile::get_warp_size();
+ 
+         constexpr index_t KPack   = GetSmemKPackK<Problem>(); // this is for lds
+         constexpr index_t KVector = GetAlignmentK<Problem>(); // this is for global load
+         constexpr index_t kPad    = KPack; // for async-copy, this pad is between warps
+ 
+-        static_assert(warpSize * KVector >= kKPerBlock && warpSize * KVector % kKPerBlock == 0);
++        static_assert(WarpSize * KVector >= kKPerBlock && WarpSize * KVector % kKPerBlock == 0);
+         constexpr index_t LanesPerK  = kKPerBlock / KVector; // within a wave
+-        constexpr index_t LaneGroups = warpSize / LanesPerK; // within a wave
++        constexpr index_t LaneGroups = WarpSize / LanesPerK; // within a wave
+         constexpr index_t NumIssues  = kNPerBlock / (LaneGroups * NumWarps);
+         static_assert(NumIssues == kNPerBlock * kKPerBlock / (kBlockSize * KVector));
+ 
+@@ -577,8 +577,8 @@ struct BlockFmhaPipelineQXKSVSCustomPolicy : BlockFmhaPipelineQXCustomPolicy<QLo
+                        number<LaneGroups>{},         // n1
+                        number<kKPerBlock / KPack>{}, // k0
+                        number<KPack>{}),             // k1
+-            make_tuple(number<NumWarps*(warpSize * KVector + kPad)>{},
+-                       number<warpSize * KVector + kPad>{},
++            make_tuple(number<NumWarps*(WarpSize * KVector + kPad)>{},
++                       number<WarpSize * KVector + kPad>{},
+                        number<kKPerBlock>{},
+                        number<KPack>{},
+                        number<1>{}),
+@@ -606,18 +606,18 @@ struct BlockFmhaPipelineQXKSVSCustomPolicy : BlockFmhaPipelineQXCustomPolicy<QLo
+         constexpr index_t kKPerBlock = Problem::BlockFmhaShape::kK1;
+         constexpr index_t kBlockSize = Problem::kBlockSize;
+         constexpr index_t NumWarps   = Problem::BlockFmhaShape::NumWarps;
+-        constexpr index_t warpSize   = ck_tile::get_warp_size();
++        constexpr index_t WarpSize   = ck_tile::get_warp_size();
+ 
+         constexpr index_t KPack   = GetSmemKPackK<Problem>(); // this is for lds
+         constexpr index_t KVector = GetAlignmentK<Problem>(); // this is for global load
+         constexpr index_t kPad    = KPack; // for async-copy, this pad is between warps
+ 
+-        static_assert(warpSize * KVector >= kKPerBlock && warpSize * KVector % kKPerBlock == 0);
++        static_assert(WarpSize * KVector >= kKPerBlock && WarpSize * KVector % kKPerBlock == 0);
+         constexpr index_t LanesPerK  = kKPerBlock / KVector; // within a wave
+-        constexpr index_t LaneGroups = warpSize / LanesPerK; // within a wave
++        constexpr index_t LaneGroups = WarpSize / LanesPerK; // within a wave
+         constexpr index_t NumIssues  = kNPerBlock / (LaneGroups * NumWarps);
+         static_assert(NumIssues == kNPerBlock * kKPerBlock / (kBlockSize * KVector));
+-        // constexpr index_t SingleKSize = NumIssues * NumWarps * (warpSize * KVector + kPad);
++        // constexpr index_t SingleKSize = NumIssues * NumWarps * (WarpSize * KVector + kPad);
+         // constexpr index_t SingleVSize =
+         // MakeVLdsBlockDescriptor<Problem>().get_element_space_size();
+         constexpr index_t BufferSize =
+@@ -631,8 +631,8 @@ struct BlockFmhaPipelineQXKSVSCustomPolicy : BlockFmhaPipelineQXCustomPolicy<QLo
+                                                     number<kKPerBlock / KPack>{}, // k0
+                                                     number<KPack>{}),             // k1
+                                          make_tuple(number<BufferSize>{},
+-                                                    number<NumWarps*(warpSize * KVector + kPad)>{},
+-                                                    number<warpSize * KVector + kPad>{},
++                                                    number<NumWarps*(WarpSize * KVector + kPad)>{},
++                                                    number<WarpSize * KVector + kPad>{},
+                                                     number<kKPerBlock>{},
+                                                     number<KPack>{},
+                                                     number<1>{}),
+@@ -782,13 +782,13 @@ struct BlockFmhaPipelineQXKSVSCustomPolicy : BlockFmhaPipelineQXCustomPolicy<QLo
+             constexpr index_t kKPerBlock = Problem::BlockFmhaShape::kK1;
+             constexpr index_t kBlockSize = Problem::kBlockSize;
+             constexpr index_t NumWarps   = Problem::BlockFmhaShape::NumWarps;
+-            constexpr index_t warpSize   = ck_tile::get_warp_size();
++            constexpr index_t WarpSize   = ck_tile::get_warp_size();
+ 
+             constexpr index_t KVector = GetAlignmentK<Problem>(); // this is for global load
+ 
+-            static_assert(warpSize * KVector >= kKPerBlock && warpSize * KVector % kKPerBlock == 0);
++            static_assert(WarpSize * KVector >= kKPerBlock && WarpSize * KVector % kKPerBlock == 0);
+             constexpr index_t LanesPerK  = kKPerBlock / KVector; // within a wave
+-            constexpr index_t LaneGroups = warpSize / LanesPerK; // within a wave
++            constexpr index_t LaneGroups = WarpSize / LanesPerK; // within a wave
+             constexpr index_t NumIssues  = kNPerBlock / (LaneGroups * NumWarps);
+             static_assert(NumIssues == kNPerBlock * kKPerBlock / (kBlockSize * KVector));
+ 
+diff --git a/include/ck_tile/ops/fused_moe/kernel/fused_moegemm_shape.hpp b/include/ck_tile/ops/fused_moe/kernel/fused_moegemm_shape.hpp
+index 4f3f8bb7d..336bdc806 100644
+--- a/include/ck_tile/ops/fused_moe/kernel/fused_moegemm_shape.hpp
++++ b/include/ck_tile/ops/fused_moe/kernel/fused_moegemm_shape.hpp
+@@ -101,7 +101,7 @@ struct FusedMoeGemmShape
+     static constexpr index_t Repeat_N1 = Block_N1 / ThreadPerBlock_N1;
+     static constexpr index_t Repeat_K1 = Block_K1 / ThreadPerBlock_K1;
+ 
+-    static constexpr index_t BlockSize = warpSize * NumWarps;
++    static constexpr index_t BlockSize = WarpSize * NumWarps;
+ 
+     // some assert
+     static_assert(Block_M0 == Block_M1);
+diff --git a/include/ck_tile/ops/fused_moe/kernel/moe_sorting_kernel.hpp b/include/ck_tile/ops/fused_moe/kernel/moe_sorting_kernel.hpp
+index 340f6cb9e..96a4ddb68 100644
+--- a/include/ck_tile/ops/fused_moe/kernel/moe_sorting_kernel.hpp
++++ b/include/ck_tile/ops/fused_moe/kernel/moe_sorting_kernel.hpp
+@@ -384,7 +384,7 @@ struct MoeSortingKernel
+     }
+ 
+     // reduce single pixel within a wave
+-    template <typename T, typename F, index_t wave_size_ = warpSize>
++    template <typename T, typename F, index_t wave_size_ = WarpSize>
+     __device__ static constexpr T wave_reduce(T local, F reduce_f, number<wave_size_> = {})
+     {
+         // constexpr int wave_size = 64;
+@@ -621,7 +621,7 @@ struct MoeSortingKernel
+         {
+             const index_t prefill_token = topk_mdiv.div(numel);
+             // TODO: only support expert-tile like 8, 16, 32
+-            static constexpr index_t experts_per_wave = warpSize / Problem::ExpertTile;
++            static constexpr index_t experts_per_wave = WarpSize / Problem::ExpertTile;
+             {
+                 index_t eid           = tid / experts_per_wave;
+                 index_t expert_offset = cumsum[eid] +
+@@ -689,7 +689,7 @@ struct MoeSortingKernel
+                                    void* smem) const
+     {
+         const index_t tid            = static_cast<index_t>(threadIdx.x);
+-        const index_t wid            = __builtin_amdgcn_readfirstlane(tid / warpSize);
++        const index_t wid            = __builtin_amdgcn_readfirstlane(tid / WarpSize);
+         const index_t lid            = __lane_id();
+         constexpr index_t block_size = 256;           // blockDim.x;
+         const index_t sub_tokens     = smem_rows - 2; // sub_tokens_mdiv.divisor;
+@@ -794,7 +794,7 @@ struct MoeSortingKernel
+                 // NOTE: under this block can never use __syncthreads!
+                 int i_e_          = 0;
+                 int local_cumsum_ = 0;
+-                for(; i_e_ < num_experts; i_e_ += warpSize)
++                for(; i_e_ < num_experts; i_e_ += WarpSize)
+                 {
+                     int pre_cumsum_ = smem_cumsum(lid == 0 ? i_e_ : 0);
+                     int local_cnt   = smem_cumsum(i_e_ + lid + 1);
+@@ -839,7 +839,7 @@ struct MoeSortingKernel
+                                                   // cumsum padded in case local cumsum is zero, but
+                                                   // pre_sumsum has value, which will result int
+                                                   // zero local cumsum(but we want at least padded)
+-                    wave_cumsum<int, warpSize>(local_cumsum_);
++                    wave_cumsum<int, WarpSize>(local_cumsum_);
+ 
+                     if((i_e_ + lid) < num_experts)
+                         smem_cumsum(i_e_ + lid + 1) = local_cumsum_;
+@@ -847,7 +847,7 @@ struct MoeSortingKernel
+                     if constexpr(Problem::LocalExpertMasking)
+                     {
+                         local_masking += pre_cumsum_masking;
+-                        wave_cumsum<int, warpSize>(local_masking);
++                        wave_cumsum<int, WarpSize>(local_masking);
+                         if((i_e_ + lid) < num_experts)
+                             smem_cumdup(i_e_ + lid + 1) = local_masking;
+                     }
+@@ -857,7 +857,7 @@ struct MoeSortingKernel
+                     // than 0(which is not we want)
+                     __builtin_amdgcn_s_waitcnt(0xc07f);
+                 }
+-                if((lid + i_e_ - warpSize) == (num_experts - 1))
++                if((lid + i_e_ - WarpSize) == (num_experts - 1))
+                 {
+                     *p_total_tokens_post_pad = local_cumsum_;
+                 }
+diff --git a/include/ck_tile/ops/fused_moe/pipeline/fused_moegemm_pipeline_flatmm_policy.hpp b/include/ck_tile/ops/fused_moe/pipeline/fused_moegemm_pipeline_flatmm_policy.hpp
+index 629f0ee8f..0c8baaf19 100644
+--- a/include/ck_tile/ops/fused_moe/pipeline/fused_moegemm_pipeline_flatmm_policy.hpp
++++ b/include/ck_tile/ops/fused_moe/pipeline/fused_moegemm_pipeline_flatmm_policy.hpp
+@@ -303,7 +303,7 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+         constexpr index_t Block_M = Problem::BlockShape::Block_M0;
+         constexpr index_t Block_K = Problem::BlockShape::Block_K0;
+         // constexpr index_t BlockSize = Problem::BlockShape::BlockSize;
+-        constexpr index_t warpSize = ck_tile::get_warp_size();
++        constexpr index_t WarpSize = ck_tile::get_warp_size();
+         constexpr index_t NumWarps = Problem::BlockShape::NumWarps;
+ 
+         constexpr index_t KPack   = GetSmemKPack_A<Problem>(); // LDS
+@@ -312,11 +312,11 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+ 
+         static_assert(Block_K % KVector == 0);
+         constexpr index_t LanesPerK = Block_K / KVector; // how many thread loading K
+-        if constexpr(LanesPerK >= warpSize)
++        if constexpr(LanesPerK >= WarpSize)
+         {
+             // need multiple waves to load K
+-            static_assert(LanesPerK % warpSize == 0);
+-            constexpr index_t wavesPerK = LanesPerK / warpSize;
++            static_assert(LanesPerK % WarpSize == 0);
++            constexpr index_t wavesPerK = LanesPerK / WarpSize;
+             if constexpr(wavesPerK > NumWarps)
+             {
+                 // TODO: need multiple issues along K to load all data
+@@ -329,11 +329,11 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+                     make_tuple(number<NumIssues>{},                             // m0
+                                number<wavesPerM>{},                             // m1
+                                number<wavesPerK>{},                             // k0
+-                               number<warpSize>{},                              // k1
++                               number<WarpSize>{},                              // k1
+                                number<KVector>{}),                              // k2
+-                    make_tuple(number<NumWarps*(warpSize * KVector + KPad)>{},  // m0
+-                               number<wavesPerK*(warpSize * KVector + KPad)>{}, // m1
+-                               number<warpSize * KVector + KPad>{},             // k0
++                    make_tuple(number<NumWarps*(WarpSize * KVector + KPad)>{},  // m0
++                               number<wavesPerK*(WarpSize * KVector + KPad)>{}, // m1
++                               number<WarpSize * KVector + KPad>{},             // k0
+                                number<KVector>{},                               // k1
+                                number<1>{}),                                    // k2
+                     number<KVector>{}, // lds store vector(actually no explicit store)
+@@ -344,7 +344,7 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+                     make_tuple(
+                         make_pass_through_transform(number<NumIssues>{}),
+                         make_merge_transform(make_tuple(number<wavesPerM>{}, number<wavesPerK>{})),
+-                        make_merge_transform(make_tuple(number<warpSize>{}, number<KVector>{}))),
++                        make_merge_transform(make_tuple(number<WarpSize>{}, number<KVector>{}))),
+                     make_tuple(sequence<0>{}, sequence<1, 2>{}, sequence<3, 4>{}),
+                     make_tuple(sequence<0>{}, sequence<1>{}, sequence<2>{}));
+ 
+@@ -354,8 +354,8 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+         else
+         {
+             // lanes within a wave load different M but same K
+-            static_assert(warpSize % LanesPerK == 0);
+-            constexpr index_t LaneGroups = warpSize / LanesPerK; // along m
++            static_assert(WarpSize % LanesPerK == 0);
++            constexpr index_t LaneGroups = WarpSize / LanesPerK; // along m
+             constexpr index_t NumIssues  = Block_M / (LaneGroups * NumWarps);
+ 
+             constexpr auto lds_block_desc_0 = make_naive_tensor_descriptor(
+@@ -364,9 +364,9 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+                            number<NumWarps>{},                             // m2
+                            number<LanesPerK>{},                            // k0
+                            number<KVector>{}),                             // k1
+-                make_tuple(number<NumWarps*(warpSize * KVector + KPad)>{}, // m0
++                make_tuple(number<NumWarps*(WarpSize * KVector + KPad)>{}, // m0
+                            number<Block_K>{},                              // m1
+-                           number<warpSize * KVector + KPad>{},            // m2
++                           number<WarpSize * KVector + KPad>{},            // m2
+                            number<KVector>{},                              // k0
+                            number<1>{}),                                   // k1
+                 number<KVector>{}, // lds store vector(actually no explicit store)
+@@ -398,7 +398,7 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+         constexpr index_t Block_M = Problem::BlockShape::Block_M0;
+         constexpr index_t Block_K = Problem::BlockShape::Block_K0;
+         // constexpr index_t BlockSize = Problem::BlockShape::BlockSize;
+-        constexpr index_t warpSize = ck_tile::get_warp_size();
++        constexpr index_t WarpSize = ck_tile::get_warp_size();
+         constexpr index_t NumWarps = Problem::BlockShape::NumWarps;
+ 
+         constexpr index_t KPack   = GetSmemKPack_A<Problem>(); // LDS
+@@ -407,11 +407,11 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+ 
+         static_assert(Block_K % KVector == 0);
+         constexpr index_t LanesPerK = Block_K / KVector; // how many thread loading K
+-        if constexpr(LanesPerK >= warpSize)
++        if constexpr(LanesPerK >= WarpSize)
+         {
+             // need multiple waves to load K
+-            static_assert(LanesPerK % warpSize == 0);
+-            constexpr index_t wavesPerK = LanesPerK / warpSize;
++            static_assert(LanesPerK % WarpSize == 0);
++            constexpr index_t wavesPerK = LanesPerK / WarpSize;
+             if constexpr(wavesPerK >= NumWarps)
+             {
+                 // TODO: need multiple issues along K to load all data
+@@ -424,11 +424,11 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+                     make_tuple(number<NumIssues>{},                             // m0
+                                number<wavesPerM>{},                             // m1
+                                number<wavesPerK>{},                             // k0
+-                               number<warpSize>{},                              // k1
++                               number<WarpSize>{},                              // k1
+                                number<KVector>{}),                              // k2
+-                    make_tuple(number<NumWarps*(warpSize * KVector + KPad)>{},  // m0
+-                               number<wavesPerK*(warpSize * KVector + KPad)>{}, // m1
+-                               number<warpSize * KVector + KPad>{},             // k0
++                    make_tuple(number<NumWarps*(WarpSize * KVector + KPad)>{},  // m0
++                               number<wavesPerK*(WarpSize * KVector + KPad)>{}, // m1
++                               number<WarpSize * KVector + KPad>{},             // k0
+                                number<KVector>{},                               // k1
+                                number<1>{}),                                    // k2
+                     number<KPack>{},                                            // lds load vector
+@@ -439,7 +439,7 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+                     make_tuple(
+                         make_merge_transform(make_tuple(number<NumIssues>{}, number<wavesPerM>{})),
+                         make_merge_transform(make_tuple(
+-                            number<wavesPerK>{}, number<warpSize>{}, number<KVector>{}))),
++                            number<wavesPerK>{}, number<WarpSize>{}, number<KVector>{}))),
+                     make_tuple(sequence<0, 1>{}, sequence<2, 3, 4>{}),
+                     make_tuple(sequence<0>{}, sequence<1>{}));
+ 
+@@ -449,8 +449,8 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+         else
+         {
+             // lanes within a wave load different M but same K
+-            static_assert(warpSize % LanesPerK == 0);
+-            constexpr index_t LaneGroups = warpSize / LanesPerK; // along m
++            static_assert(WarpSize % LanesPerK == 0);
++            constexpr index_t LaneGroups = WarpSize / LanesPerK; // along m
+             constexpr index_t NumIssues  = Block_M / (LaneGroups * NumWarps);
+ 
+             constexpr auto lds_block_desc_0 = make_naive_tensor_descriptor(
+@@ -459,9 +459,9 @@ struct FusedMoeGemmPipelineFlatmmPolicy
+                            number<NumWarps>{},                             // m2
+                            number<LanesPerK>{},                            // k0
+                            number<KVector>{}),                             // k1
+-                make_tuple(number<NumWarps*(warpSize * KVector + KPad)>{}, // m0
++                make_tuple(number<NumWarps*(WarpSize * KVector + KPad)>{}, // m0
+                            number<Block_K>{},                              // m1
+-                           number<warpSize * KVector + KPad>{},            // m2
++                           number<WarpSize * KVector + KPad>{},            // m2
+                            number<KVector>{},                              // k0
+                            number<1>{}),                                   // k1
+                 number<KPack>{},                                           // lds load vector
+diff --git a/include/ck_tile/ops/image_to_column/pipeline/tile_image_to_column_shape.hpp b/include/ck_tile/ops/image_to_column/pipeline/tile_image_to_column_shape.hpp
+index b038472fc..ad513dbd1 100644
+--- a/include/ck_tile/ops/image_to_column/pipeline/tile_image_to_column_shape.hpp
++++ b/include/ck_tile/ops/image_to_column/pipeline/tile_image_to_column_shape.hpp
+@@ -26,7 +26,7 @@ struct TileImageToColumnShape
+     static constexpr index_t kMWarpPerBlock = kMPerBlock / kMPerWarp;
+     static constexpr index_t kKWarpPerBlock = kKPerBlock / kKPerWarp;
+ 
+-    static constexpr index_t kBlockSize = warpSize * kMWarpPerBlock * kKWarpPerBlock;
++    static constexpr index_t kBlockSize = get_warp_size() * kMWarpPerBlock * kKWarpPerBlock;
+ };
+ 
+ } // namespace ck_tile
+diff --git a/include/ck_tile/ops/norm_reduce/block/block_norm_reduce.hpp b/include/ck_tile/ops/norm_reduce/block/block_norm_reduce.hpp
+index 15ac02163..26437c712 100644
+--- a/include/ck_tile/ops/norm_reduce/block/block_norm_reduce.hpp
++++ b/include/ck_tile/ops/norm_reduce/block/block_norm_reduce.hpp
+@@ -250,7 +250,7 @@ struct BlockNormReduceCrossWarpSync
+         //    | w0 | w1 | w2 | w3 |   ----->  | w0123 |
+         //
+         //   -> also store data from every wave into LDS
+-        constexpr index_t num_warps = BlockShape::BlockSize / warpSize;
++        constexpr index_t num_warps = BlockShape::BlockSize / WarpSize;
+         return num_warps * 4 * thread_buf_size * sizeof(float);
+     }
+ 
+@@ -276,7 +276,7 @@ struct BlockNormReduceCrossWarpSync
+         const index_t lane_id           = get_lane_id();
+         const index_t warp_id           = get_warp_id();
+         constexpr auto num_reduce_warps = GetReduceWarps<MeanDistributedTensor_>();
+-        constexpr index_t num_warps     = BlockShape::BlockSize / warpSize;
++        constexpr index_t num_warps     = BlockShape::BlockSize / WarpSize;
+         const index_t smem_offset       = warp_id;
+ 
+         // skip if nonthing to do
+diff --git a/include/ck_tile/ops/reduce/block/block_reduce2d.hpp b/include/ck_tile/ops/reduce/block/block_reduce2d.hpp
+index d6ca98e7b..6a1f926a9 100644
+--- a/include/ck_tile/ops/reduce/block/block_reduce2d.hpp
++++ b/include/ck_tile/ops/reduce/block/block_reduce2d.hpp
+@@ -210,7 +210,7 @@ struct BlockReduce2dCrossWarpSync
+         //    | w0 | w1 | w2 | w3 |   ----->  | w0123 |
+         //
+         //   -> also store data from every wave into LDS
+-        constexpr index_t num_warps = BlockShape::BlockSize / warpSize;
++        constexpr index_t num_warps = BlockShape::BlockSize / get_warp_size();
+         return num_warps * thread_buf_size * sizeof(DataType);
+     }
+ 
+@@ -226,7 +226,7 @@ struct BlockReduce2dCrossWarpSync
+         const index_t lane_id           = get_lane_id();
+         const index_t warp_id           = get_warp_id();
+         constexpr auto num_reduce_warps = GetReduceWarps<YDistributedTensor_>();
+-        constexpr index_t num_warps     = BlockShape::BlockSize / warpSize;
++        constexpr index_t num_warps     = BlockShape::BlockSize / get_warp_size();
+         const index_t smem_offset       = warp_id;
+ 
+         // skip if nonthing to do
+-- 
+2.43.0
+
