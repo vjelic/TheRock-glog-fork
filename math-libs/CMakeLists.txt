@@ -226,7 +226,6 @@ if(THEROCK_ENABLE_FFT)
       amd-hip
     BUILD_DEPS
       rocm-cmake
-      therock-googletest
       therock-boost
     RUNTIME_DEPS
       hip-clr
@@ -258,7 +257,6 @@ if(THEROCK_ENABLE_FFT)
       amd-hip
     BUILD_DEPS
       rocm-cmake
-      therock-googletest
       therock-boost
     RUNTIME_DEPS
       hip-clr
