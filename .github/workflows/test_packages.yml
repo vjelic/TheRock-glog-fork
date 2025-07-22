@@ -92,6 +92,10 @@ jobs:
         if: ${{ inputs.platform == 'linux' && (matrix.components.job_name == 'rocblas' || matrix.components.job_name == 'hipblaslt') }}
         run: sudo apt install libgfortran5 -y
 
+      - name: Install additional packages
+        if: ${{ inputs.platform == 'linux' && (matrix.components.job_name == 'rocblas' || matrix.components.job_name == 'hipblaslt') }}
+        run: sudo apt install libfftw3-dev -y
+
       - name: Test
         timeout-minutes: ${{ matrix.components.timeout_minutes }}
         run: |
