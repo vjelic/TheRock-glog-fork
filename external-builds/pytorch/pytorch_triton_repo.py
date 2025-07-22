@@ -47,7 +47,10 @@ def do_checkout(args: argparse.Namespace):
         else:
             # Derive the commit pin base on ci commit.
             args.repo_hashtag = get_triton_pin(torch_dir)
-            build_env["TRITON_WHEEL_VERSION_SUFFIX"] = f"+git{args.repo_hashtag[:8]}"
+            # Latest triton calculates its own git hash and TRITON_WHEEL_VERSION_SUFFIX
+            # goes after the "+". Older versions must supply their own "+". We just
+            # leave it out entirely to avoid version errors.
+            build_env["TRITON_WHEEL_VERSION_SUFFIX"] = ""
             print(f"Triton CI commit pin: {args.repo_hashtag}")
 
     def _do_hipify(args: argparse.Namespace):
@@ -76,7 +79,15 @@ def main(cl_args: list[str]):
             "--repo-name",
             type=Path,
             default=THIS_MAIN_REPO_NAME,
-            help="Git repository patch path",
+            help="Subdirectory name in which to checkout repo",
+        )
+        command_parser.add_argument(
+            "--repo-hashtag",
+            help="Git repository ref/tag to checkout",
+        )
+        command_parser.add_argument(
+            "--patchset",
+            help="patch dir subdirectory (defaults to mangled --repo-hashtag)",
         )
 
     p = argparse.ArgumentParser("pytorch_triton_repo.py")
@@ -92,10 +103,6 @@ def main(cl_args: list[str]):
         "--gitrepo-origin",
         default="https://github.com/ROCm/triton.git",
         help="git repository url",
-    )
-    checkout_p.add_argument(
-        "--repo-hashtag",
-        help="Git repository ref/tag to checkout",
     )
     checkout_p.add_argument(
         "--release",
@@ -123,11 +130,6 @@ def main(cl_args: list[str]):
         "save-patches", help="Save local commits as patch files for later application"
     )
     add_common(save_patches_p)
-    save_patches_p.add_argument(
-        "--repo-hashtag",
-        required=True,
-        help="Git repository ref/tag to checkout",
-    )
     save_patches_p.set_defaults(func=repo_management.do_save_patches)
 
     args = p.parse_args(cl_args)
