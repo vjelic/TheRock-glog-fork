@@ -88,12 +88,12 @@ jobs:
           FETCH_ARTIFACT_ARGS: ${{ matrix.components.fetch_artifact_args }}
           PLATFORM: ${{ inputs.platform }}
 
-      - name: Install additional packages
+      - name: Install additional libgfortran packages
         if: ${{ inputs.platform == 'linux' && (matrix.components.job_name == 'rocblas' || matrix.components.job_name == 'hipblaslt') }}
         run: sudo apt install libgfortran5 -y
 
-      - name: Install additional packages
-        if: ${{ inputs.platform == 'linux' && (matrix.components.job_name == 'rocblas' || matrix.components.job_name == 'hipblaslt') }}
+      - name: Install additional fftw packages
+        if: ${{ inputs.platform == 'linux' && (matrix.components.job_name == 'hipfft' || matrix.components.job_name == 'rocfft') }}
         run: sudo apt install libfftw3-dev -y
 
       - name: Test
