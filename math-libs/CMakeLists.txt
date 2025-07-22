@@ -193,15 +193,12 @@ if(THEROCK_ENABLE_FFT)
       -DUSE_HIPRAND=ON
       -DROCFFT_KERNEL_CACHE_ENABLE=${_fft_kernel_cache_enable}
       -DBUILD_CLIENTS_TESTS=${THEROCK_BUILD_TESTING}
-      -DFFTW_INCLUDE_DIRS=
-      -DFFTW_LIBRARIES=
     COMPILER_TOOLCHAIN
       amd-hip
     BUILD_DEPS
       rocm-cmake
       therock-googletest
       therock-boost
-      therock-fftw
     RUNTIME_DEPS
       hip-clr
       hipRAND
@@ -229,15 +226,12 @@ if(THEROCK_ENABLE_FFT)
       -DROCM_DIR=
       -DBUILD_SHARED_LIBS=ON
       -DBUILD_CLIENTS_TESTS=${THEROCK_BUILD_TESTING}
-      -DFFTW_INCLUDE_DIRS=
-      -DFFTW_LIBRARIES=
     COMPILER_TOOLCHAIN
       amd-hip
     BUILD_DEPS
       rocm-cmake
       therock-googletest
       therock-boost
-      therock-fftw
     RUNTIME_DEPS
       hip-clr
       rocFFT
