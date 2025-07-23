@@ -91,7 +91,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Install additional fftw packages
-        run: apt install libfftw3-dev -y
+        run: yum install libfftw3-dev -y
 
       - name: Configure Projects
         env:
