@@ -15,7 +15,7 @@ on:
         description: CloudFront URL pointing to Python index
         required: true
         type: string
-        default: "d2awnip2yjpvqn.cloudfront.net/v2"
+        default: "https://d2awnip2yjpvqn.cloudfront.net/v2"
       python_version:
         required: true
         type: string
@@ -49,9 +49,11 @@ jobs:
   test_wheels:
     name: Test PyTorch Wheels | ${{ inputs.amdgpu_family }}
     runs-on: ${{ inputs.test_runs_on }}
+    defaults:
+      run:
+        shell: bash
     env:
-      VENV_DIR: ${{ github.workspace }}/venv
-      INDEX_URL: https://${{ inputs.cloudfront_url }}/${{ inputs.amdgpu_family }}/
+      VENV_DIR: ${{ github.workspace }}/.venv
       TORCH_VERSION: ${{ inputs.torch_version }}
 
     steps:
@@ -63,19 +65,38 @@ jobs:
         with:
           python-version: ${{ inputs.python_version }}
 
-      - name: Set up virtual environment and install dependencies
-        working-directory: ${{ github.workspace }}
-        run: |
-          bash external-builds/pytorch/setup_venv.sh "$VENV_DIR"
-          source "$VENV_DIR/bin/activate"
-
+      # Here we checkout the same version of PyTorch that wheels were built from
+      # so we have the right set of test source files. We _probably_ don't need
+      # to run HIPIFY or apply any patches, so we skip those steps to save time.
+      # TODO(scotttodd): Windows will need to checkout to a shorter path.
+      #                  When Windows runs full tests, fix that and re-enable.
       - name: Checkout PyTorch repository
-        working-directory: ${{ github.workspace }}
+        if: "contains(inputs.test_runs_on, 'linux')"
         run: |
           python external-builds/pytorch/pytorch_torch_repo.py checkout --no-hipify --no-patch
 
-      - name: Run PyTorch tests
-        working-directory: ${{ github.workspace }}
+      - name: Set up virtual environment
         run: |
-          source "$VENV_DIR/bin/activate"
+          python build_tools/setup_venv.py ${VENV_DIR} \
+            --packages torch==${TORCH_VERSION} \
+            --index-url ${{ inputs.cloudfront_url }} \
+            --index-subdir ${{ inputs.amdgpu_family }} \
+            --activate-in-future-github-actions-steps
+
+      - name: Install test requirements
+        run: |
+          python -m pip install -r external-builds/pytorch/requirements-test.txt
+          pip freeze
+
+      - name: Run rocm-sdk sanity tests
+        run: |
+          rocm-sdk test
+
+      - name: Run PyTorch smoketests
+        run: |
+          pytest -v external-builds/pytorch/smoke-tests
+
+      - name: Run PyTorch tests
+        if: "contains(inputs.test_runs_on, 'linux')"
+        run: |
           bash external-builds/pytorch/run_linux_pytorch_tests.sh
