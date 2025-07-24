@@ -18,12 +18,12 @@ patches locally until they can be upstreamed. See the
 
 ## Feature support status
 
-| Feature                  | Linux support | Windows support |
-| ------------------------ | ------------- | --------------- |
-| PyTorch                  | ✅ Supported  | ✅ Supported    |
-| torchvision              | ✅ Supported  | ⚪ Unknown      |
-| torchaudio               | ✅ Supported  | ⚪ Unknown      |
-| Flash attention (Triton) | ✅ Supported  | 🟡 In progress  |
+| Feature                  | Linux support | Windows support                                                       |
+| ------------------------ | ------------- | --------------------------------------------------------------------- |
+| PyTorch                  | ✅ Supported  | ✅ Supported                                                          |
+| torchaudio               | ✅ Supported  | ✅ Supported                                                          |
+| torchvision              | ✅ Supported  | 🟡 In progress ([#910](https://github.com/ROCm/TheRock/issues/910))   |
+| Flash attention (Triton) | ✅ Supported  | 🟡 In progress ([#1040](https://github.com/ROCm/TheRock/issues/1040)) |
 
 ## Build instructions
 
@@ -76,6 +76,7 @@ Now checkout repositories:
   ```bash
   # TODO(#910): Support torchvision and torchaudio on Windows
   python pytorch_torch_repo.py checkout --repo C:/b/pytorch
+  python pytorch_audio_repo.py checkout --repo C:/b/audio
   ```
 
 Now note the gfx target you want to build for and then...
@@ -102,6 +103,7 @@ mix/match build steps.
   python build_prod_wheels.py build \
     --install-rocm --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx110X-dgpu/ \
     --pytorch-dir C:/b/pytorch \
+    --pytorch-audio-dir C:/b/audio \
     --output-dir %HOME%/tmp/pyout
   ```
 
@@ -216,5 +218,38 @@ python pytorch_torch_repo.py checkout --repo-hashtag nightly
 python pytorch_audio_repo.py checkout --repo-hashtag nightly
 python pytorch_vision_repo.py checkout --repo-hashtag nightly
 # Note that triton will be checked out at the PyTorch pin.
+python pytorch_triton_repo.py checkout
+```
+
+### ROCm PyTorch Release Branches
+
+Because upstream PyTorch freezes at release but AMD needs to keep updating
+stable versions for a longer period of time, backport branches are maintained.
+In order to check out and build one of these, use the following instructions:
+
+In general, we regularly build PyTorch nightly from upstream sources and the
+most recent stable backport. Generally, backports are only supported on Linux
+at present.
+
+Backport branches have `related_commits` files that point to specific
+sub-project commits, so the main torch repo must be checked out first to
+have proper defaults.
+
+You are welcome to maintain your own branches that extend one of AMD's.
+Change origins and tags as appropriate.
+
+### v2.7.x
+
+NOTE: Presently broken at runtime on a HIP major version incompatibility in the
+pre-built aotriton (#1025). Must build with
+`USE_FLASH_ATTENTION=0 USE_MEM_EFF_ATTENTION=0` until fixed.
+
+```
+python pytorch_torch_repo.py checkout \
+  --gitrepo-origin https://github.com/ROCm/pytorch.git \
+  --repo-hashtag release/2.7 \
+  --patchset rocm_2.7
+python pytorch_audio_repo.py checkout --require-related-commit
+python pytorch_vision_repo.py checkout --require-related-commit
 python pytorch_triton_repo.py checkout
 ```
