@@ -1,0 +1,30 @@
+From 34bc80b500702a23353cb4abdca2eefd46a5ec93 Mon Sep 17 00:00:00 2001
+From: geomin12 <geomin12@amd.com>
+Date: Thu, 24 Jul 2025 14:42:07 -0700
+Subject: [PATCH] Updating gtest to 1.16.0
+
+---
+ clients/cmake/build-gtest.cmake | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/clients/cmake/build-gtest.cmake b/clients/cmake/build-gtest.cmake
+index 441eca65..a5a2b83e 100644
+--- a/clients/cmake/build-gtest.cmake
++++ b/clients/cmake/build-gtest.cmake
+@@ -23,7 +23,7 @@ include( ExternalProject )
+ option( BUILD_GTEST "Download and build GoogleTest" OFF )
+ 
+ if( NOT BUILD_GTEST )
+-    find_package( GTest 1.11.0 )
++    find_package( GTest 1.16.0 )
+ endif()
+ 
+ if( (BUILD_GTEST OR NOT GTEST_FOUND) AND (NOT TARGET gtest) )
+@@ -45,4 +45,3 @@ if( (BUILD_GTEST OR NOT GTEST_FOUND) AND (NOT TARGET gtest) )
+                       BUILD_BYPRODUCTS ${GTEST_LIBRARIES})
+   ExternalProject_Get_Property( gtest source_dir binary_dir )  
+ endif()
+-
+-- 
+2.47.1.windows.2
+
