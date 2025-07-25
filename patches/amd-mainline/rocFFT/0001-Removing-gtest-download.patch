@@ -1,22 +1,23 @@
-From 6f2b70121a898c38924936e1ae3109fb58980816 Mon Sep 17 00:00:00 2001
+From 2055176fa1b6e6a8fa703b7bec0c8126930fa347 Mon Sep 17 00:00:00 2001
 From: geomin12 <geomin12@amd.com>
-Date: Thu, 24 Jul 2025 16:58:26 -0700
+Date: Thu, 24 Jul 2025 17:08:31 -0700
 Subject: [PATCH] Removing gtest download
 
 ---
- clients/cmake/build-gtest.cmake | 22 +---------------------
- 1 file changed, 1 insertion(+), 21 deletions(-)
+ clients/cmake/build-gtest.cmake | 23 +----------------------
+ 1 file changed, 1 insertion(+), 22 deletions(-)
 
 diff --git a/clients/cmake/build-gtest.cmake b/clients/cmake/build-gtest.cmake
-index a5a2b83e..bac800ac 100644
+index 441eca65..bac800ac 100644
 --- a/clients/cmake/build-gtest.cmake
 +++ b/clients/cmake/build-gtest.cmake
-@@ -23,25 +23,5 @@ include( ExternalProject )
+@@ -23,26 +23,5 @@ include( ExternalProject )
  option( BUILD_GTEST "Download and build GoogleTest" OFF )
  
  if( NOT BUILD_GTEST )
--    find_package( GTest 1.16.0 )
--endif()
+-    find_package( GTest 1.11.0 )
++    find_package( GTest )
+ endif()
 -
 -if( (BUILD_GTEST OR NOT GTEST_FOUND) AND (NOT TARGET gtest) )
 -  set(GTEST_INCLUDE_DIRS
@@ -36,8 +37,8 @@ index a5a2b83e..bac800ac 100644
 -                      INSTALL_COMMAND ""
 -                      BUILD_BYPRODUCTS ${GTEST_LIBRARIES})
 -  ExternalProject_Get_Property( gtest source_dir binary_dir )  
-+    find_package( GTest )
- endif()
+-endif()
+-
 -- 
 2.47.1.windows.2
 
