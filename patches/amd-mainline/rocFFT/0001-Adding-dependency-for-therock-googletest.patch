@@ -1,12 +1,12 @@
-From e4e18759ba44a2b7f107b39d115736a3c58eec23 Mon Sep 17 00:00:00 2001
+From cb52391f8dc73c4219b91eadda6b6fd307eba56e Mon Sep 17 00:00:00 2001
 From: geomin12 <geomin12@amd.com>
-Date: Mon, 28 Jul 2025 10:29:55 -0700
-Subject: [PATCH] Removing direct gtest dependency
+Date: Mon, 28 Jul 2025 10:51:04 -0700
+Subject: [PATCH] Adding dependency for therock-googletest
 
 ---
  clients/cmake/build-gtest.cmake | 48 ---------------------------------
- clients/tests/CMakeLists.txt    |  2 --
- 2 files changed, 50 deletions(-)
+ clients/tests/CMakeLists.txt    |  4 +--
+ 2 files changed, 2 insertions(+), 50 deletions(-)
  delete mode 100644 clients/cmake/build-gtest.cmake
 
 diff --git a/clients/cmake/build-gtest.cmake b/clients/cmake/build-gtest.cmake
@@ -64,18 +64,22 @@ index 441eca65..00000000
 -endif()
 -
 diff --git a/clients/tests/CMakeLists.txt b/clients/tests/CMakeLists.txt
-index cfec9a28..b4a4ac89 100644
+index cfec9a28..dffd6144 100644
 --- a/clients/tests/CMakeLists.txt
 +++ b/clients/tests/CMakeLists.txt
-@@ -189,8 +189,6 @@ set( rocfft-test_link_libs
+@@ -189,10 +189,10 @@ set( rocfft-test_link_libs
    ${FFTW_LIBRARIES} OpenMP::OpenMP_CXX
    )
  
 -include( ../cmake/build-gtest.cmake )
--
++find_package(GTest REQUIRED)
+ 
  if( BUILD_GTEST OR NOT GTEST_FOUND )
-   add_dependencies( rocfft-test gtest )
+-  add_dependencies( rocfft-test gtest )
++  add_dependencies( rocfft-test GTest )
    list( APPEND rocfft-test_include_dirs ${GTEST_INCLUDE_DIRS} )
+   list( APPEND rocfft-test_link_libs ${GTEST_LIBRARIES} )
+ else()  
 -- 
 2.47.1.windows.2
 
