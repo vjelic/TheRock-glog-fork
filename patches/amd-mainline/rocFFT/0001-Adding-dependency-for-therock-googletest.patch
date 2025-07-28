@@ -1,12 +1,12 @@
-From cb52391f8dc73c4219b91eadda6b6fd307eba56e Mon Sep 17 00:00:00 2001
+From ad4a23644e3fad77c7cc13992bf3ff84fcb7ddef Mon Sep 17 00:00:00 2001
 From: geomin12 <geomin12@amd.com>
-Date: Mon, 28 Jul 2025 10:51:04 -0700
+Date: Mon, 28 Jul 2025 11:50:14 -0700
 Subject: [PATCH] Adding dependency for therock-googletest
 
 ---
  clients/cmake/build-gtest.cmake | 48 ---------------------------------
- clients/tests/CMakeLists.txt    |  4 +--
- 2 files changed, 2 insertions(+), 50 deletions(-)
+ clients/tests/CMakeLists.txt    | 14 +++-------
+ 2 files changed, 4 insertions(+), 58 deletions(-)
  delete mode 100644 clients/cmake/build-gtest.cmake
 
 diff --git a/clients/cmake/build-gtest.cmake b/clients/cmake/build-gtest.cmake
@@ -64,22 +64,30 @@ index 441eca65..00000000
 -endif()
 -
 diff --git a/clients/tests/CMakeLists.txt b/clients/tests/CMakeLists.txt
-index cfec9a28..dffd6144 100644
+index cfec9a28..78ac423f 100644
 --- a/clients/tests/CMakeLists.txt
 +++ b/clients/tests/CMakeLists.txt
-@@ -189,10 +189,10 @@ set( rocfft-test_link_libs
+@@ -189,16 +189,10 @@ set( rocfft-test_link_libs
    ${FFTW_LIBRARIES} OpenMP::OpenMP_CXX
    )
  
 -include( ../cmake/build-gtest.cmake )
-+find_package(GTest REQUIRED)
- 
- if( BUILD_GTEST OR NOT GTEST_FOUND )
+-
+-if( BUILD_GTEST OR NOT GTEST_FOUND )
 -  add_dependencies( rocfft-test gtest )
-+  add_dependencies( rocfft-test GTest )
-   list( APPEND rocfft-test_include_dirs ${GTEST_INCLUDE_DIRS} )
-   list( APPEND rocfft-test_link_libs ${GTEST_LIBRARIES} )
- else()  
+-  list( APPEND rocfft-test_include_dirs ${GTEST_INCLUDE_DIRS} )
+-  list( APPEND rocfft-test_link_libs ${GTEST_LIBRARIES} )
+-else()  
+-  list( APPEND rocfft-test_include_dirs $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}> )
+-  list( APPEND rocfft-test_link_libs ${GTEST_LIBRARIES} )
+-endif()
++find_package(GTest REQUIRED)
++
++list( APPEND rocfft-test_include_dirs $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}> )
++list( APPEND rocfft-test_link_libs ${GTEST_LIBRARIES} )
+ 
+ target_compile_options( rocfft-test PRIVATE ${WARNING_FLAGS} -Wno-cpp )
+ 
 -- 
 2.47.1.windows.2
 
