@@ -162,22 +162,22 @@ PackageEntry(
 # TODO(#703,#1057): Use patterns for version suffixes and platform differences too?
 
 # Public libraries.
-LibraryEntry("amdhip64", "core", "libamdhip64.so", "amdhip64*.dll")
+LibraryEntry("amdhip64", "core", "libamdhip64.so*", "amdhip64*.dll")
 # The DLL glob here uses '0' from the version to avoid matching 'hiprtc-builtins'.
 # If DLLs with no version suffix are later added we will need a different pattern.
-LibraryEntry("hiprtc", "core", "libhiprtc.so", "hiprtc0*.dll")
-LibraryEntry("roctx64", "core", "libroctx64.so", "")
-LibraryEntry("rocprofiler-sdk-roctx", "core", "librocprofiler-sdk-roctx.so", "")
+LibraryEntry("hiprtc", "core", "libhiprtc.so*", "hiprtc0*.dll")
+LibraryEntry("roctx64", "core", "libroctx64.so*", "")
+LibraryEntry("rocprofiler-sdk-roctx", "core", "librocprofiler-sdk-roctx.so*", "")
 
-LibraryEntry("amd_comgr", "core", "libamd_comgr.so", "amd_comgr*.dll")
-LibraryEntry("hipblas", "libraries", "libhipblas.so", "libhipblas*.dll")
-LibraryEntry("hipfft", "libraries", "libhipfft.so", "hipfft*.dll")
-LibraryEntry("hiprand", "libraries", "libhiprand.so", "hiprand*.dll")
-LibraryEntry("hipsparse", "libraries", "libhipsparse.so", "hipsparse*.dll")
-LibraryEntry("hipsolver", "libraries", "libhipsolver.so", "hipsolver*.dll")
-LibraryEntry("rccl", "libraries", "librccl.so", "")
-LibraryEntry("hipblaslt", "libraries", "libhipblaslt.so", "hipblaslt*.dll")
-LibraryEntry("miopen", "libraries", "libMIOpen.so", "MIOpen*.dll")
+LibraryEntry("amd_comgr", "core", "libamd_comgr.so*", "amd_comgr*.dll")
+LibraryEntry("hipblas", "libraries", "libhipblas.so*", "libhipblas*.dll")
+LibraryEntry("hipfft", "libraries", "libhipfft.so*", "hipfft*.dll")
+LibraryEntry("hiprand", "libraries", "libhiprand.so*", "hiprand*.dll")
+LibraryEntry("hipsparse", "libraries", "libhipsparse.so*", "hipsparse*.dll")
+LibraryEntry("hipsolver", "libraries", "libhipsolver.so*", "hipsolver*.dll")
+LibraryEntry("rccl", "libraries", "librccl.so*", "")
+LibraryEntry("hipblaslt", "libraries", "libhipblaslt.so*", "hipblaslt*.dll")
+LibraryEntry("miopen", "libraries", "libMIOpen.so*", "MIOpen*.dll")
 
 # Others we may want:
 # hiprtc-builtins

@@ -61,12 +61,13 @@ def find_libraries(*shortnames: str) -> list[Path]:
             raise FileNotFoundError(
                 f"Could not find rocm library '{shortname}' at path '{relpath},' no match for pattern '{entry_pattern}'"
             )
-        elif len(matching_paths) != 1:
-            raise FileNotFoundError(
-                f"Ambiguous detection for rocm library '{shortname}' at path '{relpath},' multiple matches for '{entry_pattern}': {matching_paths}"
-            )
 
+        # If there are multiple paths matching the pattern, they are likely
+        # versioned symlinks. For example:
+        #   ['libhipblaslt.so', 'libhipblaslt.so.1', 'libhipblaslt.so.1.0']
+        # Take whichever sorted first.
         path = matching_paths[0]
+
         paths.append(path)
 
     if missing_extras:
