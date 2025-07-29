@@ -1,6 +1,6 @@
-From bff7cc5ff00cec3266a8a9ef01e75feb961b9b0a Mon Sep 17 00:00:00 2001
+From 7f32cf1c36f6e49ddc53ef920a3f22b1534d212d Mon Sep 17 00:00:00 2001
 From: geomin12 <geomin12@amd.com>
-Date: Mon, 28 Jul 2025 17:00:59 -0700
+Date: Tue, 29 Jul 2025 09:13:38 -0700
 Subject: [PATCH] Adding gtest target link for rocFFT
 
 ---
@@ -64,7 +64,7 @@ index 441eca65..00000000
 -endif()
 -
 diff --git a/clients/tests/CMakeLists.txt b/clients/tests/CMakeLists.txt
-index cfec9a28..8919ee8b 100644
+index cfec9a28..81173afb 100644
 --- a/clients/tests/CMakeLists.txt
 +++ b/clients/tests/CMakeLists.txt
 @@ -189,16 +189,8 @@ set( rocfft-test_link_libs
@@ -82,7 +82,7 @@ index cfec9a28..8919ee8b 100644
 -  list( APPEND rocfft-test_link_libs ${GTEST_LIBRARIES} )
 -endif()
 +find_package( GTest REQUIRED)
-+target_link_libraries( rocfft-test GTest::gtest)
++target_link_libraries( rocfft-test PRIVATE GTest::gtest)
  
  target_compile_options( rocfft-test PRIVATE ${WARNING_FLAGS} -Wno-cpp )
  
