@@ -117,6 +117,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import shlex
 import subprocess
@@ -333,13 +334,13 @@ def do_build(args: argparse.Namespace):
     rocm_sdk_version = get_rocm_sdk_version()
     cmake_prefix = get_rocm_path("cmake")
     bin_dir = get_rocm_path("bin")
-    root_dir = get_rocm_path("root")
+    rocm_dir = get_rocm_path("root")
 
     print(f"rocm version {rocm_sdk_version}:")
     print(f"  PYTHON VERSION: {sys.version}")
     print(f"  CMAKE_PREFIX_PATH = {cmake_prefix}")
     print(f"  BIN = {bin_dir}")
-    print(f"  ROCM_HOME = {root_dir}")
+    print(f"  ROCM_HOME = {rocm_dir}")
 
     system_path = str(bin_dir) + os.path.pathsep + os.environ.get("PATH", "")
     print(f"  PATH = {system_path}")
@@ -361,11 +362,10 @@ def do_build(args: argparse.Namespace):
 
     env: dict[str, str] = {
         "CMAKE_PREFIX_PATH": str(cmake_prefix),
-        "ROCM_HOME": str(root_dir),
-        "ROCM_PATH": str(root_dir),
+        "ROCM_HOME": str(rocm_dir),
+        "ROCM_PATH": str(rocm_dir),
         "PYTORCH_ROCM_ARCH": pytorch_rocm_arch,
-        # TODO: Fix source dep on rocprofiler and enable.
-        "USE_KINETO": "OFF",
+        "USE_KINETO": os.environ.get("USE_KINETO", "ON" if not is_windows else "OFF"),
     }
 
     # GLOO enabled for only Linux
@@ -383,7 +383,7 @@ def do_build(args: argparse.Namespace):
             env.update(addl_triton_env)
 
     if is_windows:
-        llvm_dir = root_dir / "lib" / "llvm" / "bin"
+        llvm_dir = rocm_dir / "lib" / "llvm" / "bin"
         env.update(
             {
                 "HIP_CLANG_PATH": str(llvm_dir.resolve().as_posix()),
@@ -396,7 +396,7 @@ def do_build(args: argparse.Namespace):
             {
                 # Workaround GCC12 compiler flags.
                 "CXXFLAGS": " -Wno-error=maybe-uninitialized -Wno-error=uninitialized -Wno-error=restrict",
-                "CPPFLAGS": "  -Wno-error=maybe-uninitialized -Wno-error=uninitialized -Wno-error=restrict",
+                "CPPFLAGS": " -Wno-error=maybe-uninitialized -Wno-error=uninitialized -Wno-error=restrict",
             }
         )
 
@@ -462,6 +462,26 @@ def do_build(args: argparse.Namespace):
 def do_build_triton(
     args: argparse.Namespace, triton_dir: Path, env: dict[str, str]
 ) -> str:
+    # TODO: Latest upstream triton calculates its own git hash and
+    # TRITON_WHEEL_VERSION_SUFFIX goes after the "+". Older versions
+    # as well as `ROCm/triton`, which does not call
+    # `get_git_version_suffix()`, must supply their own "+".
+    # The below only works for the latter and a better fix is needed.
+    version_suffix = env.get("TRITON_WHEEL_VERSION_SUFFIX", "")
+
+    # Append the version suffix passed via `arg.version_suffix` to
+    # TRITON_WHEEL_VERSION_SUFFIX. If the latter was set before,
+    # replace any "+" in `args.version_suffix` with a "-" as multiple
+    # "+" characters result in an invalid version.
+    # If TRITON_WHEEL_VERSION_SUFFIX is not set, the version for a build
+    # based on ROCm 7.0.0rc20250728 will be `3.3.1+rocm7.0.0rc20250728`
+    # insteaf of `3.3.1`.
+    if re.search(r"\+", version_suffix):
+        version_suffix += str(args.version_suffix).replace("+", "-")
+    else:
+        version_suffix += str(args.version_suffix)
+    env["TRITON_WHEEL_VERSION_SUFFIX"] = version_suffix
+
     triton_wheel_name = env.get("TRITON_WHEEL_NAME", "triton")
     print(f"+++ Uninstall {triton_wheel_name}")
     exec(
@@ -560,9 +580,14 @@ def do_build_pytorch(
         # TODO: include/rocm_smi/kfd_ioctl.h is included without its advertised
         # transitive includes. This triggers a compilation error for a missing
         # libdrm/drm.h.
-        sysdeps_dir = get_rocm_path("root") / "lib" / "rocm_sysdeps"
+        rocm_dir = get_rocm_path("root")
+        sysdeps_dir = rocm_dir / "lib" / "rocm_sysdeps"
         assert sysdeps_dir.exists(), f"No sysdeps directory found: {sysdeps_dir}"
         add_env_compiler_flags(env, "CXXFLAGS", f"-I{sysdeps_dir / 'include'}")
+        # Add correct include path for roctracer.h (for Kineto)
+        add_env_compiler_flags(
+            env, "CXXFLAGS", f"-I{rocm_dir / 'include' / 'roctracer'}"
+        )
         add_env_compiler_flags(env, "LDFLAGS", f"-L{sysdeps_dir / 'lib'}")
 
     print("+++ Uninstalling pytorch:")
@@ -732,7 +757,7 @@ def main(argv: list[str]):
         "--pytorch-audio-dir",
         default=directory_if_exists(script_dir / "pytorch_audio"),
         type=Path,
-        help="pytorch_audo source directory",
+        help="pytorch_audio source directory",
     )
     build_p.add_argument(
         "--pytorch-vision-dir",

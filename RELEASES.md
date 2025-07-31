@@ -43,10 +43,10 @@ We currently support Python 3.11, 3.12, and 3.13.
 >
 > ⚠️ Windows packages are new and may be unstable! ⚠️
 
-| Platform |                                                                                                                                                                                                                                         ROCm Python packages |                                                                                                                                                                                                                                   PyTorch Python packages |
-| -------- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| Linux    | [![Release portable Linux packages](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_packages.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_packages.yml?query=branch%3Amain) |       [![Release Linux PyTorch Wheels](https://github.com/ROCm/TheRock/actions/workflows/release_linux_pytorch_wheels.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_linux_pytorch_wheels.yml?query=branch%3Amain) |
-| Windows  |                      [![Release Windows packages](https://github.com/ROCm/TheRock/actions/workflows/release_windows_packages.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_windows_packages.yml?query=branch%3Amain) | [![Release Windows PyTorch Wheels](https://github.com/ROCm/TheRock/actions/workflows/release_windows_pytorch_wheels.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_windows_pytorch_wheels.yml?query=branch%3Amain) |
+| Platform |                                                                                                                                                                                                                                         ROCm Python packages |                                                                                                                                                                                                                                               PyTorch Python packages |
+| -------- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Linux    | [![Release portable Linux packages](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_packages.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_packages.yml?query=branch%3Amain) | [![Release Linux PyTorch Wheels](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_pytorch_wheels.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_pytorch_wheels.yml?query=branch%3Amain) |
+| Windows  |                      [![Release Windows packages](https://github.com/ROCm/TheRock/actions/workflows/release_windows_packages.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_windows_packages.yml?query=branch%3Amain) |             [![Release Windows PyTorch Wheels](https://github.com/ROCm/TheRock/actions/workflows/release_windows_pytorch_wheels.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_windows_pytorch_wheels.yml?query=branch%3Amain) |
 
 ### Installing ROCm Python packages
 
@@ -189,22 +189,46 @@ framework.
 > This is under **active** development.
 
 Using the index pages listed above, you can install `torch` instead of
-`rocm[libraries,devel]`.
+`rocm[libraries,devel]`:
 
-For example, with gfx110X-dgpu:
+#### gfx94X-dcgpu
+
+```bash
+python -m pip install \
+  --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx94X-dcgpu/ \
+  torch
+```
+
+#### gfx950-dcgpu
+
+```bash
+python -m pip install \
+  --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx950-dcgpu/ \
+  torch
+```
+
+#### gfx110X-dgpu
 
 ```bash
 python -m pip install \
   --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx110X-dgpu/ \
   torch
+```
 
-pip freeze
-# ...
-# rocm==7.0.0rc20250615
-# rocm-sdk-core==7.0.0rc20250615
-# rocm-sdk-libraries-gfx110X-dgpu==7.0.0rc20250615
-# ...
-# torch==2.7.0a0+rocmsdk20250616
+#### gfx1151
+
+```bash
+python -m pip install \
+  --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx1151/ \
+  torch
+```
+
+#### gfx120X-all
+
+```bash
+python -m pip install \
+  --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx120X-all/ \
+  torch
 ```
 
 ### Using PyTorch Python packages
@@ -355,19 +379,3 @@ ls install
 
 You may also want to add the install directory to your `PATH` or set other
 environment variables like `ROCM_HOME`.
-
-## Using Dockerfiles
-
-We publish [Dockerfiles](https://www.docker.com/) with packages preinstalled
-for your convenience. See
-https://github.com/orgs/ROCm/packages?repo_name=TheRock for the full list.
-
-| Package                                                                                                                               | Description                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [`therock_build_manylinux_x86_64`](https://github.com/ROCm/TheRock/pkgs/container/therock_build_manylinux_x86_64)                     | Container for our CI/CD pipelines<br>(This does _not_ include ROCm or PyTorch but can be used to build them) |
-| [`therock_pytorch_dev_ubuntu_24_04_gfx942`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx942)   | Ubuntu with PyTorch for ROCm gfx942                                                                          |
-| [`therock_pytorch_dev_ubuntu_24_04_gfx1100`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1100) | Ubuntu with PyTorch for ROCm gfx1100                                                                         |
-| [`therock_pytorch_dev_ubuntu_24_04_gfx1151`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1151) | Ubuntu with PyTorch for ROCm gfx1151                                                                         |
-| [`therock_pytorch_dev_ubuntu_24_04_gfx1201`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1201) | Ubuntu with PyTorch for ROCm gfx1201                                                                         |
-
-<!-- TODO: how-to's for using the dockerfiles -->
