@@ -224,16 +224,7 @@ jobs:
   upload_pytorch_wheels:
     name: Upload PyTorch Wheels to S3
     needs: [build_pytorch_wheels, generate_target_to_run, test_pytorch_wheels]
-    if: >
-      github.repository_owner == 'ROCm' && (
-        needs.generate_target_to_run.outputs.test_runs_on == '' ||
-        (
-          needs.generate_target_to_run.outputs.test_runs_on != '' && (
-            needs.test_pytorch_wheels.result == 'success' ||
-            needs.test_pytorch_wheels.result == 'skipped'
-          )
-        )
-      )
+    if: always()
     runs-on: ubuntu-24.04
     env:
       S3_BUCKET_PY: "therock-${{ inputs.release_type }}-python"
@@ -253,6 +244,14 @@ jobs:
         with:
           aws-region: us-east-2
           role-to-assume: arn:aws:iam::692859939525:role/therock-${{ inputs.release_type }}-releases
+
+      - name: Check test result gating
+        id: check-gate
+        run: |
+          if [[ "${{ needs.generate_target_to_run.outputs.test_runs_on }}" != "" && "${{ needs.test_pytorch_wheels.result }}" == "failure" ]]; then
+            echo "::error::Tests failed. Skipping upload."
+            exit 0
+          fi
 
       - name: Copy tested PyTorch wheels from staging to release S3
         run: |
