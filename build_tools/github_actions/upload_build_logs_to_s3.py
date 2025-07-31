@@ -56,7 +56,7 @@ def upload_logs_to_s3(run_id: str, amdgpu_family: str, build_dir: Path):
     # Upload .log files
     log_files = list(log_dir.glob("*.log")) + list(log_dir.glob("*.tar.gz"))
     if not log_files:
-        log("[WARN] No .log or .tar.gz files found or. Skipping log upload.")
+        log("[WARN] No .log or .tar.gz files found. Skipping log upload.")
     else:
         run_aws_cp(log_dir, s3_base_path, content_type="text/plain")
 
