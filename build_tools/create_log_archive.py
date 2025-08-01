@@ -13,6 +13,7 @@ def log(*args):
     print(*args)
     sys.stdout.flush()
 
+
 def create_ninja_log_archive(build_dir: Path):
     log_dir = build_dir / "logs"
 
@@ -25,11 +26,11 @@ def create_ninja_log_archive(build_dir: Path):
     found_files = list(build_dir.glob(glob_pattern_ninja))
 
     files_to_archive = found_files
-    archive_name = log_dir / 'ninja_logs.tar.gz'
+    archive_name = log_dir / "ninja_logs.tar.gz"
     if archive_name.exists():
         print(f"NOTE: Archive exists: {archive_name}", file=sys.stderr)
     added_count = 0
-    with tarfile.open(archive_name, 'w:gz') as tar:
+    with tarfile.open(archive_name, "w:gz") as tar:
         log(f"[+] Create archive: {archive_name}")
         for file_path in files_to_archive:
             tar.add(file_path)
