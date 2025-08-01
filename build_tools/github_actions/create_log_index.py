@@ -34,7 +34,6 @@ def index_log_files(build_dir: Path, amdgpu_family: str):
     #       *  r   .   g   z   (matches `*.ta(r.gz)` with `*r.gz`)
     indexer_path = THEROCK_DIR / "third-party" / "indexer" / "indexer.py"
 
-
     if log_dir.is_dir():
         log(
             f"[INFO] Found '{log_dir}' directory. Indexing '*.log' and '*.tar.gz' files..."
