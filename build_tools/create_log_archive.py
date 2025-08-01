@@ -14,6 +14,14 @@ def log(*args):
     sys.stdout.flush()
 
 
+def is_windows():
+    return platform.system().lower() == "windows"
+
+
+def normalize_path(p: Path) -> str:
+    return str(p).replace("\\", "/") if is_windows() else str(p)
+
+
 def create_ninja_log_archive(build_dir: Path):
     log_dir = build_dir / "logs"
 
