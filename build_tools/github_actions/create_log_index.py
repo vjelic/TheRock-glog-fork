@@ -27,16 +27,19 @@ def index_log_files(build_dir: Path, amdgpu_family: str):
     log_dir = build_dir / "logs"
     index_file = log_dir / "index.html"
 
-    indexer_path = THEROCK_DIR / "third-party" / "indexer" / "indexer.py"
+    # Workaround limited pattern matching in pathlib's glob used by third party indexer.
+    # To match `.log` and `.tar.gz`, use last 4 char in each file ext per character class
+    #       * .   l   o   g
     glob = "*[.r][l.][og][gz]"
+    #       *  r   .   g   z   (matches `*.ta(r.gz)` with `*r.gz`)
+    indexer_path = THEROCK_DIR / "third-party" / "indexer" / "indexer.py"
+
 
     if log_dir.is_dir():
         log(
             f"[INFO] Found '{log_dir}' directory. Indexing '*.log' and '*.tar.gz' files..."
         )
         subprocess.run(
-            # Workaround limited pattern matching in pathlib's glob used by third party indexer.
-            # To match `.log` and `.tar.gz`, use last 4 char in each file ext per character class
             ["python", str(indexer_path), "-f", glob, normalize_path(log_dir)],
             check=True,
         )
