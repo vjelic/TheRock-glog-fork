@@ -31,7 +31,9 @@ def index_log_files(build_dir: Path, amdgpu_family: str):
     glob = "*[.r][l.][og][gz]"
 
     if log_dir.is_dir():
-        log(f"[INFO] Found '{log_dir}' directory. Indexing '*.log' and '*.tar.gz' files...")
+        log(f
+            "[INFO] Found '{log_dir}' directory. Indexing '*.log' and '*.tar.gz' files..."
+        )
         subprocess.run(
             # Workaround limited pattern matching in pathlib's glob used by third party indexer.
             # To match `.log` and `.tar.gz`, use last 4 char in each file ext per character class
