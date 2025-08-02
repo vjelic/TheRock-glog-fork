@@ -411,11 +411,11 @@ Email josh dot brunty at marshall dot edu for additional help. """
     )
     # NOTE: preferably specify nargs at end, after path if unnamed arg
     parser.add_argument(
-        "--filter", 
-        "-f", 
+        "--filter",
+        "-f",
         nargs="*",
-        help="only include files matching glob", 
-        required=False, 
+        help="only include files matching glob",
+        required=False,
     )
 
     parser.add_argument(
