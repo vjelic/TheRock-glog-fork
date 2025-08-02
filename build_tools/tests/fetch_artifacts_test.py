@@ -26,9 +26,9 @@ def run_indexer_file(temp_dir):
         [
             sys.executable,
             REPO_DIR / "third-party" / "indexer" / "indexer.py",
+            temp_dir, #move unnamed arg for working dir in front of filters
             "-f",
             "*.tar.xz*",
-            temp_dir,
         ]
     )
 
