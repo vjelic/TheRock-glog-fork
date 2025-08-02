@@ -37,7 +37,7 @@ def index_log_files(build_dir: Path, amdgpu_family: str):
             [
                 "python",
                 str(indexer_path),
-                normalize_path(log_dir),# unnamed path arg in front of -f
+                normalize_path(log_dir), # unnamed path arg in front of -f
                 "-f",
                 "*.log",
                 "*.tar.gz",  # accepts nargs! Take care not to consume path
