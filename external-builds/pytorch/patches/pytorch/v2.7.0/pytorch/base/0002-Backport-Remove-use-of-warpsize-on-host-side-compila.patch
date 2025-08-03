@@ -1,7 +1,7 @@
-From 4ad1931afefb714d84c3b371c41bb6c19cb8d226 Mon Sep 17 00:00:00 2001
+From f545205b417b795d46fa489d0d05e8d7ad026384 Mon Sep 17 00:00:00 2001
 From: Scott Todd <scott.todd0@gmail.com>
 Date: Wed, 16 Jul 2025 12:09:14 -0700
-Subject: [PATCH 2/2] Backport "Remove use of warpsize on host-side
+Subject: [PATCH 2/8] Backport "Remove use of warpsize on host-side
  compilation".
 
 https://github.com/pytorch/pytorch/commit/04bd7e6850e8efec77994963ffee87549555b9c3
@@ -18,7 +18,7 @@ https://github.com/pytorch/pytorch/commit/04bd7e6850e8efec77994963ffee87549555b9
  9 files changed, 45 insertions(+), 16 deletions(-)
 
 diff --git a/aten/src/ATen/native/cuda/Embedding.cu b/aten/src/ATen/native/cuda/Embedding.cu
-index 5d19b95b32f..4b1e420d5da 100644
+index 5d19b95b32..4b1e420d5d 100644
 --- a/aten/src/ATen/native/cuda/Embedding.cu
 +++ b/aten/src/ATen/native/cuda/Embedding.cu
 @@ -369,7 +369,7 @@ Tensor & embedding_renorm_cuda_(Tensor & self, const Tensor & indices,
@@ -31,7 +31,7 @@ index 5d19b95b32f..4b1e420d5da 100644
      const int64_t *num_unique_indices_ptr = num_unique_indices.const_data_ptr<int64_t>();
      dim3 grid = unique_indices.numel();
 diff --git a/aten/src/ATen/native/cuda/MultinomialKernel.cu b/aten/src/ATen/native/cuda/MultinomialKernel.cu
-index 65770e40a8b..8132e7df57b 100644
+index 65770e40a8..8132e7df57 100644
 --- a/aten/src/ATen/native/cuda/MultinomialKernel.cu
 +++ b/aten/src/ATen/native/cuda/MultinomialKernel.cu
 @@ -86,7 +86,7 @@ void renormRows(Tensor& t) {
@@ -44,7 +44,7 @@ index 65770e40a8b..8132e7df57b 100644
    int warp_size = at::cuda::warp_size();
    dim3 grid(rows < numSM * 4 ? rows : numSM * 4);
 diff --git a/aten/src/ATen/native/cuda/SoftMax.cu b/aten/src/ATen/native/cuda/SoftMax.cu
-index 2062a14cdba..2946b19853c 100644
+index 2062a14cdb..2946b19853 100644
 --- a/aten/src/ATen/native/cuda/SoftMax.cu
 +++ b/aten/src/ATen/native/cuda/SoftMax.cu
 @@ -177,15 +177,16 @@ inline dim3 SoftMaxForward_getBlockSize(uint64_t dim_size) {
@@ -96,7 +96,7 @@ index 2062a14cdba..2946b19853c 100644
      smem_reduction_sz) / sizeof(output_t);
    bool can_use_smem = static_cast<size_t>(dim_size) < max_elements_per_smem;
 diff --git a/aten/src/ATen/native/cuda/TensorModeKernel.cu b/aten/src/ATen/native/cuda/TensorModeKernel.cu
-index 4764b078c05..0c97ab74210 100644
+index 4764b078c0..0c97ab7421 100644
 --- a/aten/src/ATen/native/cuda/TensorModeKernel.cu
 +++ b/aten/src/ATen/native/cuda/TensorModeKernel.cu
 @@ -207,7 +207,7 @@ void handle_fused_mode(
@@ -109,7 +109,7 @@ index 4764b078c05..0c97ab74210 100644
        (sizeof(scalar_t) * size) + (2 * size * sizeof(unsigned int));
    compute_mode<scalar_t, size>
 diff --git a/aten/src/ATen/native/cuda/TensorTopK.cu b/aten/src/ATen/native/cuda/TensorTopK.cu
-index 103b360bcb8..49086c42cd4 100644
+index 103b360bcb..49086c42cd 100644
 --- a/aten/src/ATen/native/cuda/TensorTopK.cu
 +++ b/aten/src/ATen/native/cuda/TensorTopK.cu
 @@ -439,8 +439,12 @@ __global__ void computeBlockwiseWithinKCounts(
@@ -126,7 +126,7 @@ index 103b360bcb8..49086c42cd4 100644
      return;
    }
 diff --git a/aten/src/ATen/native/cuda/block_reduce.cuh b/aten/src/ATen/native/cuda/block_reduce.cuh
-index 2a272d22c0c..1818987c6a5 100644
+index 2a272d22c0..1818987c6a 100644
 --- a/aten/src/ATen/native/cuda/block_reduce.cuh
 +++ b/aten/src/ATen/native/cuda/block_reduce.cuh
 @@ -12,7 +12,17 @@ constexpr int kCUDABlockReduceNumThreads = 512;
@@ -149,7 +149,7 @@ index 2a272d22c0c..1818987c6a5 100644
  // Sums `val` across all threads in a warp.
  //
 diff --git a/c10/macros/Macros.h b/c10/macros/Macros.h
-index 919eb6c8567..1c4e451df94 100644
+index 919eb6c856..1c4e451df9 100644
 --- a/c10/macros/Macros.h
 +++ b/c10/macros/Macros.h
 @@ -312,7 +312,21 @@ constexpr uint32_t CUDA_THREADS_PER_BLOCK_FALLBACK = 256;
@@ -176,7 +176,7 @@ index 919eb6c8567..1c4e451df94 100644
  #define C10_WARP_SIZE 32
  #endif
 diff --git a/torch/csrc/distributed/c10d/CUDASymmetricMemory.cu b/torch/csrc/distributed/c10d/CUDASymmetricMemory.cu
-index 172304479e9..ac77aba2e7b 100644
+index 172304479e..ac77aba2e7 100644
 --- a/torch/csrc/distributed/c10d/CUDASymmetricMemory.cu
 +++ b/torch/csrc/distributed/c10d/CUDASymmetricMemory.cu
 @@ -471,7 +471,7 @@ static __global__ void barrier_kernel(
@@ -207,7 +207,7 @@ index 172304479e9..ac77aba2e7b 100644
        src_rank,
        channel,
 diff --git a/torch/csrc/distributed/c10d/CUDASymmetricMemoryOps.cu b/torch/csrc/distributed/c10d/CUDASymmetricMemoryOps.cu
-index 438624f4bc0..9fe3146e399 100644
+index 438624f4bc..9fe3146e39 100644
 --- a/torch/csrc/distributed/c10d/CUDASymmetricMemoryOps.cu
 +++ b/torch/csrc/distributed/c10d/CUDASymmetricMemoryOps.cu
 @@ -104,7 +104,7 @@ void init_elementwise_launch_config(
@@ -220,5 +220,5 @@ index 438624f4bc0..9fe3146e399 100644
      num_blocks = std::min(
          at::ceil_div(numel_per_split, max_num_threads * numel_per_thread),
 -- 
-2.47.1.windows.2
+2.50.1.windows.1
 

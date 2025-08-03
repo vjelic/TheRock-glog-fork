@@ -1,8 +1,7 @@
-From 2a011ca904f19eacfe3dac7cb7d1efc24975b834 Mon Sep 17 00:00:00 2001
+From cfbb658f9a58ced0622056c62cdc210d638b74d7 Mon Sep 17 00:00:00 2001
 From: Xinya Zhang <Xinya.Zhang@amd.com>
 Date: Mon, 17 Mar 2025 16:41:15 +0000
-Subject: [PATCH] [ROCm] testing: enable MEFF/FA unittests for gfx1100
- (#148911)
+Subject: [PATCH 5/8] testing: enable MEFF/FA unittests for gfx1100 (#148911)
 
 Include gfx1100, and optionally enable gfx1201/gfx950 according to env var TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL
 
@@ -13,7 +12,7 @@ Approved by: https://github.com/jeffdaily
  1 file changed, 15 insertions(+), 13 deletions(-)
 
 diff --git a/torch/testing/_internal/common_cuda.py b/torch/testing/_internal/common_cuda.py
-index bc1cf4f2ed1..0963a45464b 100644
+index 70968991ef..ffa4a61ebf 100644
 --- a/torch/testing/_internal/common_cuda.py
 +++ b/torch/testing/_internal/common_cuda.py
 @@ -39,32 +39,34 @@ IS_THOR = LazyVal(lambda: torch.cuda.is_available() and torch.cuda.get_device_ca
@@ -65,5 +64,5 @@ index bc1cf4f2ed1..0963a45464b 100644
          return True
      return False
 -- 
-2.43.0
+2.50.1.windows.1
 

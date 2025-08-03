@@ -1,7 +1,7 @@
-From a86b4179b76611424a3f6f583c307ded06dfd8c2 Mon Sep 17 00:00:00 2001
+From ff8004621c9a46e4f1679ee9b0bc02e0671e4c85 Mon Sep 17 00:00:00 2001
 From: Mika Laitio <mika.laitio@amd.com>
 Date: Tue, 29 Apr 2025 01:28:14 -0700
-Subject: [PATCH 07/14] link correct version of hsa-runtime with c10_hip
+Subject: [PATCH 06/16] link correct version of hsa-runtime with c10_hip
 
 link the version of hsa-runtime64 that is searched
 by LoadHIP.cmake instead of relying to it to be linked
@@ -19,7 +19,7 @@ Co-authored-by: Aaryaman Vasishta <jem456.vasishta@gmail.com>
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/c10/hip/CMakeLists.txt b/c10/hip/CMakeLists.txt
-index f153030e793..b0510797f44 100644
+index f153030e79..b0510797f4 100644
 --- a/c10/hip/CMakeLists.txt
 +++ b/c10/hip/CMakeLists.txt
 @@ -48,7 +48,11 @@ if(NOT BUILD_LIBTORCHLESS)
@@ -36,5 +36,5 @@ index f153030e793..b0510797f44 100644
    target_include_directories(
        c10_hip PUBLIC
 -- 
-2.47.1.windows.2
+2.50.1.windows.1
 

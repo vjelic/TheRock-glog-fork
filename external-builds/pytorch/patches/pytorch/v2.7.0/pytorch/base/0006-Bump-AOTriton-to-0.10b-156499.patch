@@ -1,7 +1,7 @@
-From d9577df312d477e8fa5b9d7bc61fb1f2c07b8e48 Mon Sep 17 00:00:00 2001
+From 03504f55f49f0dd77846ebedd389b51d58272118 Mon Sep 17 00:00:00 2001
 From: Xinya Zhang <Xinya.Zhang@amd.com>
 Date: Wed, 25 Jun 2025 07:09:03 +0000
-Subject: [PATCH] [ROCm] Bump AOTriton to 0.10b (#156499)
+Subject: [PATCH 6/8] Bump AOTriton to 0.10b (#156499)
 
 Notable new features/optimizations for SDPA operators on AMD systems from AOTriton 0.10b:
 
@@ -38,10 +38,10 @@ Approved by: https://github.com/jeffdaily, https://github.com/jithunnair-amd
  7 files changed, 374 insertions(+), 241 deletions(-)
 
 diff --git a/aten/src/ATen/native/transformers/cuda/attention.cu b/aten/src/ATen/native/transformers/cuda/attention.cu
-index 125b95de7a3..80049aa9a83 100644
+index 248e3d2763..80caa47ad9 100644
 --- a/aten/src/ATen/native/transformers/cuda/attention.cu
 +++ b/aten/src/ATen/native/transformers/cuda/attention.cu
-@@ -1113,8 +1113,10 @@ _flash_attention_forward(
+@@ -1031,8 +1031,10 @@ _flash_attention_forward(
    std::optional<Tensor> alibi_slopes = _alibi_slopes;
    const float softcap = 0.0;
  
@@ -54,7 +54,7 @@ index 125b95de7a3..80049aa9a83 100644
  
    // We are going to have two paths:
    // 1. The standard MHA path for dense tensors
-@@ -1151,8 +1153,13 @@ _flash_attention_forward(
+@@ -1069,8 +1071,13 @@ _flash_attention_forward(
              softmax_scale,
              false /*zero_tensors*/,
              is_causal,
@@ -68,7 +68,7 @@ index 125b95de7a3..80049aa9a83 100644
              softcap,
              return_debug_mask,
              std::nullopt /*gen_*/);
-@@ -1175,8 +1182,13 @@ _flash_attention_forward(
+@@ -1093,8 +1100,13 @@ _flash_attention_forward(
              dropout_p,
              softmax_scale,
              is_causal,
@@ -83,10 +83,10 @@ index 125b95de7a3..80049aa9a83 100644
              return_debug_mask, /*return_softmax (this is used for testing)*/
              std::nullopt);
 diff --git a/aten/src/ATen/native/transformers/cuda/attention_backward.cu b/aten/src/ATen/native/transformers/cuda/attention_backward.cu
-index eeeef3a6f89..8940bea9a27 100644
+index f5dd4f6572..5c902a6613 100644
 --- a/aten/src/ATen/native/transformers/cuda/attention_backward.cu
 +++ b/aten/src/ATen/native/transformers/cuda/attention_backward.cu
-@@ -87,8 +87,10 @@ std::tuple<Tensor, Tensor, Tensor> _flash_attention_backward(
+@@ -83,8 +83,10 @@ std::tuple<Tensor, Tensor, Tensor> _flash_attention_backward(
    auto contiguous_grad_out = grad_out.contiguous();
    auto contiguous_out = out.contiguous();
  
@@ -97,7 +97,7 @@ index eeeef3a6f89..8940bea9a27 100644
  
    std::optional<at::Tensor> dq{std::nullopt};
    std::optional<at::Tensor> dk{std::nullopt};
-@@ -136,8 +138,13 @@ std::tuple<Tensor, Tensor, Tensor> _flash_attention_backward(
+@@ -132,8 +134,13 @@ std::tuple<Tensor, Tensor, Tensor> _flash_attention_backward(
          softmax_scale,
          false /*zero_tensors*/,
          is_causal,
@@ -111,7 +111,7 @@ index eeeef3a6f89..8940bea9a27 100644
          softcap,
          determinisitic,
          philox_seed,
-@@ -159,8 +166,13 @@ std::tuple<Tensor, Tensor, Tensor> _flash_attention_backward(
+@@ -155,8 +162,13 @@ std::tuple<Tensor, Tensor, Tensor> _flash_attention_backward(
          dropout_p,
          softmax_scale,
          is_causal,
@@ -126,7 +126,7 @@ index eeeef3a6f89..8940bea9a27 100644
          determinisitic,
          philox_seed,
 diff --git a/aten/src/ATen/native/transformers/hip/flash_attn/aot/mha_all_aot.hip b/aten/src/ATen/native/transformers/hip/flash_attn/aot/mha_all_aot.hip
-index 92a3dabbd7d..1908096e2f6 100644
+index 92a3dabbd7..1908096e2f 100644
 --- a/aten/src/ATen/native/transformers/hip/flash_attn/aot/mha_all_aot.hip
 +++ b/aten/src/ATen/native/transformers/hip/flash_attn/aot/mha_all_aot.hip
 @@ -64,8 +64,14 @@
@@ -655,10 +655,10 @@ index 92a3dabbd7d..1908096e2f6 100644
      // If seqlen_q == 0, then we have an empty tensor. We need to set the output to 0.
      dq.zero_();
 diff --git a/aten/src/ATen/native/transformers/hip/flash_attn/flash_api.h b/aten/src/ATen/native/transformers/hip/flash_attn/flash_api.h
-index ead742a1efd..17298aae948 100644
+index 4daaa66e8a..e6be7bad6d 100644
 --- a/aten/src/ATen/native/transformers/hip/flash_attn/flash_api.h
 +++ b/aten/src/ATen/native/transformers/hip/flash_attn/flash_api.h
-@@ -51,8 +51,8 @@ mha_fwd_aot(
+@@ -29,8 +29,8 @@ mha_fwd_aot(
      const float p_dropout,
      const float softmax_scale,
      bool is_causal,
@@ -669,7 +669,7 @@ index ead742a1efd..17298aae948 100644
      const bool return_softmax,
      const std::optional<at::Generator>& gen_);
  
-@@ -87,8 +87,8 @@ mha_varlen_fwd_aot(
+@@ -65,8 +65,8 @@ mha_varlen_fwd_aot(
      const float softmax_scale,
      const bool zero_tensors,
      bool is_causal,
@@ -680,7 +680,7 @@ index ead742a1efd..17298aae948 100644
      const bool return_softmax,
      const std::optional<at::Generator>& gen_);
  
-@@ -110,8 +110,8 @@ std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd_aot(
+@@ -88,8 +88,8 @@ std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd_aot(
      const float p_dropout, // probability to drop
      const float softmax_scale,
      const bool is_causal,
@@ -691,7 +691,7 @@ index ead742a1efd..17298aae948 100644
      const bool deterministic,
      const at::Tensor& philox_seed,
      const at::Tensor& philox_offset);
-@@ -141,8 +141,8 @@ std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd_aot(
+@@ -119,8 +119,8 @@ std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd_aot(
      const float softmax_scale,
      const bool zero_tensors,
      const bool is_causal,
@@ -702,7 +702,7 @@ index ead742a1efd..17298aae948 100644
      const bool deterministic,
      const at::Tensor& philox_seed,
      const at::Tensor& philox_offset);
-@@ -290,14 +290,16 @@ mha_fwd(
+@@ -268,14 +268,16 @@ mha_fwd(
      const float p_dropout,
      const float softmax_scale,
      bool is_causal,
@@ -721,7 +721,7 @@ index ead742a1efd..17298aae948 100644
      std::optional<at::Tensor> dummy_attn_bias = std::nullopt;
      return mha_fwd_ck(
          q,
-@@ -307,27 +309,13 @@ mha_fwd(
+@@ -285,27 +287,13 @@ mha_fwd(
          p_dropout,
          softmax_scale,
          is_causal,
@@ -752,7 +752,7 @@ index ead742a1efd..17298aae948 100644
    return mha_fwd_aot(
        q,
        k,
-@@ -341,7 +329,6 @@ mha_fwd(
+@@ -319,7 +307,6 @@ mha_fwd(
        window_size_right,
        return_softmax,
        gen_);
@@ -760,7 +760,7 @@ index ead742a1efd..17298aae948 100644
  }
  
  inline std::tuple<
-@@ -376,8 +363,8 @@ mha_varlen_fwd(
+@@ -354,8 +341,8 @@ mha_varlen_fwd(
      const float softmax_scale,
      const bool zero_tensors,
      bool is_causal,
@@ -771,7 +771,7 @@ index ead742a1efd..17298aae948 100644
      const float softcap,
      const bool return_softmax,
      std::optional<at::Generator> gen_) {
-@@ -385,6 +372,8 @@ mha_varlen_fwd(
+@@ -363,6 +350,8 @@ mha_varlen_fwd(
    if (at::globalContext().getROCmFAPreferredBackend() ==
        at::ROCmFABackend::Ck) {
      std::optional<at::Tensor> dummy_attn_bias = std::nullopt;
@@ -780,7 +780,7 @@ index ead742a1efd..17298aae948 100644
      return mha_varlen_fwd_ck(
          q,
          k,
-@@ -399,34 +388,13 @@ mha_varlen_fwd(
+@@ -377,34 +366,13 @@ mha_varlen_fwd(
          softmax_scale,
          zero_tensors,
          is_causal,
@@ -818,7 +818,7 @@ index ead742a1efd..17298aae948 100644
    return mha_varlen_fwd_aot(
        q,
        k,
-@@ -447,7 +415,6 @@ mha_varlen_fwd(
+@@ -425,7 +393,6 @@ mha_varlen_fwd(
        window_size_right,
        return_softmax,
        gen_);
@@ -826,7 +826,7 @@ index ead742a1efd..17298aae948 100644
  }
  
  inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd(
-@@ -468,16 +435,18 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd(
+@@ -446,16 +413,18 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd(
      const float p_dropout, // probability to drop
      const float softmax_scale,
      const bool is_causal,
@@ -848,7 +848,7 @@ index ead742a1efd..17298aae948 100644
      auto[dQuery,
           dKey,
           dValue,
-@@ -498,38 +467,16 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd(
+@@ -476,38 +445,16 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd(
                               p_dropout,
                               softmax_scale,
                               is_causal,
@@ -890,7 +890,7 @@ index ead742a1efd..17298aae948 100644
    }
    return mha_bwd_aot(
        dout,
-@@ -550,7 +497,6 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd(
+@@ -528,7 +475,6 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_bwd(
        deterministic,
        philox_seed,
        philox_offset);
@@ -898,7 +898,7 @@ index ead742a1efd..17298aae948 100644
  }
  
  inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd(
-@@ -578,8 +524,8 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd
+@@ -556,8 +502,8 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd
      const float softmax_scale,
      const bool zero_tensors,
      const bool is_causal,
@@ -909,7 +909,7 @@ index ead742a1efd..17298aae948 100644
      const float softcap,
      const bool deterministic,
      const at::Tensor philox_seed,
-@@ -588,6 +534,8 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd
+@@ -566,6 +512,8 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd
    if (at::globalContext().getROCmFAPreferredBackend() ==
        at::ROCmFABackend::Ck) {
      std::optional<at::Tensor> non_null_dbias = std::nullopt;
@@ -918,7 +918,7 @@ index ead742a1efd..17298aae948 100644
      auto[dQuery,
           dKey,
           dValue,
-@@ -613,40 +561,15 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd
+@@ -591,40 +539,15 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd
                                      softmax_scale,
                                      zero_tensors,
                                      is_causal,
@@ -962,7 +962,7 @@ index ead742a1efd..17298aae948 100644
    return mha_varlen_bwd_aot(
        dout,
        q,
-@@ -671,7 +594,6 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd
+@@ -649,7 +572,6 @@ inline std::tuple<at::Tensor, at::Tensor, at::Tensor, at::Tensor> mha_varlen_bwd
        deterministic,
        philox_seed,
        philox_offset);
@@ -971,7 +971,7 @@ index ead742a1efd..17298aae948 100644
  
  } // namespace pytorch_flash
 diff --git a/cmake/External/aotriton.cmake b/cmake/External/aotriton.cmake
-index 9c1862f6b44..8004b0f400a 100644
+index 2678cfde3c..1d02523560 100644
 --- a/cmake/External/aotriton.cmake
 +++ b/cmake/External/aotriton.cmake
 @@ -1,16 +1,3 @@
@@ -1041,19 +1041,10 @@ index 9c1862f6b44..8004b0f400a 100644
        -DAOTRITON_NO_PYTHON=ON
        -DAOTRITON_NO_SHARED=OFF
 diff --git a/test/test_transformers.py b/test/test_transformers.py
-index 788a918f5b2..5460f7466e0 100644
+index 798095e065..3dd009a3a1 100644
 --- a/test/test_transformers.py
 +++ b/test/test_transformers.py
-@@ -3329,7 +3329,7 @@ class TestSDPACudaOnly(NNTestCase):
-                 fudge_factors['grad_key'] = 70.0
-             if seq_len_k >= 2048:
-                 fudge_factors['grad_key'] = 160.0
--                fudge_factors['grad_query'] = 650.0
-+                fudge_factors['grad_query'] = 670.0
-             if dtype == torch.float32:
-                 fudge_factors['grad_key'] = 90.0
- 
-@@ -3450,7 +3450,7 @@ class TestSDPACudaOnly(NNTestCase):
+@@ -3191,7 +3191,7 @@ class TestSDPACudaOnly(NNTestCase):
                  fudge_factors['grad_key'] = 70.0
              if seq_len_k >= 2048:
                  fudge_factors['grad_key'] = 160.0
@@ -1062,11 +1053,20 @@ index 788a918f5b2..5460f7466e0 100644
              if dtype == torch.float32:
                  fudge_factors['grad_key'] = 90.0
  
+@@ -3312,7 +3312,7 @@ class TestSDPACudaOnly(NNTestCase):
+                 fudge_factors['grad_key'] = 70.0
+             if seq_len_k >= 2048:
+                 fudge_factors['grad_key'] = 160.0
+-                fudge_factors['grad_query'] = 650.0
++                fudge_factors['grad_query'] = 670.0
+             if dtype == torch.float32:
+                 fudge_factors['grad_key'] = 90.0
+ 
 diff --git a/torch/testing/_internal/common_cuda.py b/torch/testing/_internal/common_cuda.py
-index 82f486e97f6..a211851d671 100644
+index ffa4a61ebf..26559c6023 100644
 --- a/torch/testing/_internal/common_cuda.py
 +++ b/torch/testing/_internal/common_cuda.py
-@@ -57,9 +57,9 @@ def CDNA2OrLater():
+@@ -53,9 +53,9 @@ def CDNA2OrLater():
  
  def evaluate_platform_supports_flash_attention():
      if TEST_WITH_ROCM:
@@ -1078,7 +1078,7 @@ index 82f486e97f6..a211851d671 100644
          return evaluate_gfx_arch_within(arch_list)
      if TEST_CUDA:
          return not IS_WINDOWS and SM80OrLater
-@@ -67,9 +67,9 @@ def evaluate_platform_supports_flash_attention():
+@@ -63,9 +63,9 @@ def evaluate_platform_supports_flash_attention():
  
  def evaluate_platform_supports_efficient_attention():
      if TEST_WITH_ROCM:
@@ -1091,5 +1091,5 @@ index 82f486e97f6..a211851d671 100644
      if TEST_CUDA:
          return True
 -- 
-2.43.0
+2.50.1.windows.1
 

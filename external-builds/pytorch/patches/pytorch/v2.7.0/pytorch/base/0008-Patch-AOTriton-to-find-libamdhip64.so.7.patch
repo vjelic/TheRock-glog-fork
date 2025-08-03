@@ -1,7 +1,7 @@
-From 2c8cbcfc3f91255d886651a1cf57ee88b8fe945b Mon Sep 17 00:00:00 2001
+From c28d3cd0eb3d3bb16648aa3849a8305250d48d87 Mon Sep 17 00:00:00 2001
 From: Marius Brehler <marius.brehler@amd.com>
 Date: Mon, 21 Jul 2025 22:08:35 +0000
-Subject: [PATCH 7/7] Patch AOTriton to find `libamdhip64.so.7`
+Subject: [PATCH 8/8] Patch AOTriton to find `libamdhip64.so.7`
 
 Adopted from https://github.com/pytorch/pytorch/pull/158221.
 ---
@@ -22,5 +22,5 @@ index 7af994c9a8..12618652de 100644
      # Initialize __AOTRITON_ROCM to lowest version, in case all builds > system's ROCM
      string(SUBSTRING ${__AOTRITON_ROCM_DEFAULT_STR} 4 -1 __AOTRITON_ROCM)
 -- 
-2.43.0
+2.50.1.windows.1
 

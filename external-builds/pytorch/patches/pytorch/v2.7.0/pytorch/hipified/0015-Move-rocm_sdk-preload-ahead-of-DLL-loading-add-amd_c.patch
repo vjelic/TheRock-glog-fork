@@ -1,7 +1,7 @@
-From 07e9a462576394bd0ea707cfbadf879ac8c144f3 Mon Sep 17 00:00:00 2001
+From 206e3d687d31ba90dcc50eaa69b0172679653e4a Mon Sep 17 00:00:00 2001
 From: Scott Todd <scott.todd0@gmail.com>
 Date: Mon, 30 Jun 2025 11:38:17 -0700
-Subject: [PATCH 16/16] Move rocm_sdk preload ahead of DLL loading, add
+Subject: [PATCH 15/16] Move rocm_sdk preload ahead of DLL loading, add
  amd_comgr library.
 
 ---
@@ -78,5 +78,5 @@ index a14be9b00a..98aa21d414 100644
          return
  
 -- 
-2.47.1.windows.2
+2.50.1.windows.1
 
