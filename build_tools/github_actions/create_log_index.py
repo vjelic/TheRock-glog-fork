@@ -15,6 +15,14 @@ def log(*args):
     sys.stdout.flush()
 
 
+def is_windows():
+    return platform.system().lower() == "windows"
+
+
+def normalize_path(p: Path) -> str:
+    return str(p).replace("\\", "/") if is_windows() else str(p)
+
+
 def index_log_files(build_dir: Path, amdgpu_family: str):
     log_dir = build_dir / "logs"
     index_file = log_dir / "index.html"
