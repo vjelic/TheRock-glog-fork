@@ -168,6 +168,7 @@ LibraryEntry("amdhip64", "core", "libamdhip64.so*", "amdhip64*.dll")
 LibraryEntry("hiprtc", "core", "libhiprtc.so*", "hiprtc0*.dll")
 LibraryEntry("roctx64", "core", "libroctx64.so*", "")
 LibraryEntry("rocprofiler-sdk-roctx", "core", "librocprofiler-sdk-roctx.so*", "")
+LibraryEntry("roctracer64", "core", "libroctracer64.so*", "")
 
 LibraryEntry("amd_comgr", "core", "libamd_comgr.so*", "amd_comgr*.dll")
 LibraryEntry("hipblas", "libraries", "libhipblas.so*", "libhipblas*.dll")
