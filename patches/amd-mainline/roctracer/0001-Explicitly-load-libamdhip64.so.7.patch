@@ -1,0 +1,25 @@
+From c8fe556bb300207afbf00b98ee43c0f46d836e93 Mon Sep 17 00:00:00 2001
+From: Marius Brehler <marius.brehler@amd.com>
+Date: Wed, 6 Aug 2025 23:02:57 +0000
+Subject: [PATCH] Explicitly load `libamdhip64.so.7`
+
+---
+ src/roctracer/loader.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/roctracer/loader.h b/src/roctracer/loader.h
+index 656f2c1..badc087 100644
+--- a/src/roctracer/loader.h
++++ b/src/roctracer/loader.h
+@@ -133,7 +133,7 @@ class HipLoader {
+ class HipLoader : public BaseLoader<HipLoader> {
+  private:
+   friend HipLoader& BaseLoader::Instance();
+-  HipLoader() : BaseLoader("libamdhip64.so") {}
++  HipLoader() : BaseLoader("libamdhip64.so.7") {}
+ 
+  public:
+   int GetStreamDeviceId(hipStream_t stream) const {
+-- 
+2.43.0
+
