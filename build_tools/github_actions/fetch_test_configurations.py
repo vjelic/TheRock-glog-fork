@@ -118,6 +118,7 @@ test_matrix = {
 def run():
     platform = os.getenv("RUNNER_OS").lower()
     project_to_test = os.getenv("project_to_test", "*")
+    amdgpu_families = os.getenv("AMDGPU_FAMILIES")
 
     logging.info(f"Selecting projects: {project_to_test}")
 
