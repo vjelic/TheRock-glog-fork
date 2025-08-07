@@ -34,7 +34,7 @@ amdgpu_family_info_matrix_postsubmit = {
             "family": "gfx1151",
         },
         "windows": {
-            "test-runs-on": "windows-strix-halo-gpu-rocm",
+            "test-runs-on": "test-windows-strix-halo-gpu-rocm",
             "family": "gfx1151",
         },
     },
