@@ -20,9 +20,6 @@ def is_windows():
 
 def run_command(command, cwd=None):
     process = subprocess.run(command, capture_output=True, cwd=cwd, shell=is_windows())
-    logger.info(str(process))
-    logger.info(str(process.stdout))
-    logger.info(str(process.stderr))
     if process.returncode != 0:
         raise Exception(str(process.stderr))
     return process
