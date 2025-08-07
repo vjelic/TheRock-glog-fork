@@ -20,9 +20,6 @@ def is_windows():
 
 def run_command(command, cwd=None):
     process = subprocess.run(command, capture_output=True, cwd=cwd, shell=is_windows())
-    logger.info(process)
-    logger.info(process.stdout)
-    logger.info(process.stderr)
     if process.returncode != 0:
         raise Exception(str(process.stderr))
     return process
@@ -31,7 +28,7 @@ def run_command(command, cwd=None):
 @pytest.fixture(scope="session")
 def rocm_info_output():
     try:
-        return str(run_command([f"{THEROCK_BIN_DIR}/rocminfo"], cwd=str(THEROCK_BIN_DIR)).stdout)
+        return str(run_command([f"{THEROCK_BIN_DIR}/rocminfo"]).stdout)
     except Exception as e:
         logger.info(str(e))
         return None
@@ -90,7 +87,7 @@ class TestROCmSanity:
         reason="rocm_agent_enumerator is not supported on Windows",
     )
     def test_rocm_agent_enumerator(self):
-        process = run_command([f"{THEROCK_BIN_DIR}/rocm_agent_enumerator"], cwd=str(THEROCK_BIN_DIR))
+        process = run_command([f"{THEROCK_BIN_DIR}/rocm_agent_enumerator"])
         output = process.stdout
         return_code = process.returncode
         check.equal(return_code, 0)
