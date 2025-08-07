@@ -37,11 +37,9 @@ jobs:
     name: "Sanity ROCM Test"
     runs-on: ${{ inputs.test_runs_on }}
     container:
-      image: ${{ inputs.platform == 'linux' && 'ghcr.io/rocm/no_rocm_image_ubuntu24_04:main' || null }}
-      options: --ipc host
-        --group-add video
-        --device /dev/kfd
-        --device /dev/dri
+      image: ghcr.io/rocm/no_rocm_image_ubuntu24_04:main
+      # image: ${{ inputs.platform == 'linux' && 'ghcr.io/rocm/no_rocm_image_ubuntu24_04:main' || null }}
+      options: --ipc host --group-add video --device /dev/kfd --device /dev/dri
     # defaults:
     #   run:
     #     shell: bash
