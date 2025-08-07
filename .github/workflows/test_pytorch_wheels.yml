@@ -63,6 +63,7 @@ jobs:
         --group-add video
         --device /dev/kfd
         --device /dev/dri
+        --group-add 992
     defaults:
       run:
         shell: bash
