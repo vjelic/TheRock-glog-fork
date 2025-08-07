@@ -39,6 +39,7 @@ jobs:
     runs-on: ${{ inputs.test_runs_on }}
     outputs:
       components: ${{ steps.configure.outputs.components }}
+      platform: ${{ steps.configure.outputs.platform }}
     steps:
       - name: "Checking out repository"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
