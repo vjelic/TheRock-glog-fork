@@ -34,8 +34,16 @@ positive_filter.append("*/GPU_bn_infer*_*")
 positive_filter.append("CPU_*")  # tests without a suite
 positive_filter.append("*/CPU_*")  # tests with a suite
 
+# Different
+positive_filter.append("*/GPU_Cat_*")
+positive_filter.append("*/GPU_ConvBiasActiv*")
+
 # Convolutions
-# TBD
+positive_filter.append("*/GPU_Conv*")
+positive_filter.append("*/GPU_conv*")
+
+negative_filter.append("*DbSync*")
+negative_filter.append("*DeepBench*")
 
 gtest_final_filter_cmd = (
     "--gtest_filter=" + ":".join(positive_filter) + "-" + ":".join(negative_filter)
