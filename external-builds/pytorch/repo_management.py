@@ -192,12 +192,51 @@ def repo_hashtag_to_patches_dir_name(version_ref: str) -> str:
     return version_ref
 
 
-def do_checkout(args: argparse.Namespace):
+def get_patches_dir_name(args: argparse.Namespace) -> str | None:
+    patchset_name = args.patchset
+    if patchset_name is not None:
+        return patchset_name
+
+    hashtag = args.repo_hashtag
+    if hashtag is not None:
+        return hashtag
+    return None
+
+
+def do_hipify(args: argparse.Namespace):
+    repo_dir: Path = args.repo
+    print(f"Hipifying {repo_dir}")
+    build_amd_path = repo_dir / "tools" / "amd_build" / "build_amd.py"
+    if build_amd_path.exists():
+        exec([sys.executable, build_amd_path], cwd=repo_dir)
+
+
+def commit_hipify(args: argparse.Namespace):
+    repo_dir: Path = args.repo
+    # Iterate over the base repository and all submodules. Because we process
+    # the root repo first, it will not add submodule changes.
+    all_paths = get_all_repositories(repo_dir)
+    for module_path in all_paths:
+        status = list_status(module_path)
+        if not status:
+            continue
+        print(f"HIPIFY made changes to {module_path}: Committing")
+        exec(["git", "add", "-A"], cwd=module_path)
+        exec(
+            ["git", "commit", "-m", HIPIFY_COMMIT_MESSAGE, "--no-gpg-sign"],
+            cwd=module_path,
+        )
+        exec(["git", "tag", "-f", TAG_HIPIFY_DIFFBASE, "--no-sign"], cwd=module_path)
+
+
+def do_checkout(args: argparse.Namespace, custom_hipify=do_hipify):
     repo_dir: Path = args.repo
     repo_patch_dir_base = args.patch_dir
     check_git_dir = repo_dir / ".git"
+    patches_dir_name = get_patches_dir_name(args)
     if check_git_dir.exists():
         print(f"Not cloning repository ({check_git_dir} exists)")
+        exec(["git", "remote", "set-url", "origin", args.gitrepo_origin], cwd=repo_dir)
     else:
         print(f"Cloning repository at {args.repo_hashtag}")
         repo_dir.mkdir(parents=True, exist_ok=True)
@@ -236,57 +275,69 @@ def do_checkout(args: argparse.Namespace):
     git_config_ignore_submodules(repo_dir)
 
     # Base patches.
-    if args.patch:
+    if args.patch and patches_dir_name:
         apply_all_patches(
             repo_dir,
-            repo_patch_dir_base / repo_hashtag_to_patches_dir_name(args.repo_hashtag),
+            repo_patch_dir_base / patches_dir_name,
             args.repo_name,
             "base",
         )
 
     # Hipify.
     if args.hipify:
-        do_hipify(args)
+        custom_hipify(args)
+        commit_hipify(args)
 
     # Hipified patches.
-    if args.patch:
+    if args.hipify and args.patch and patches_dir_name:
         apply_all_patches(
             repo_dir,
-            repo_patch_dir_base / repo_hashtag_to_patches_dir_name(args.repo_hashtag),
+            repo_patch_dir_base / patches_dir_name,
             args.repo_name,
             "hipified",
         )
 
 
-def do_hipify(args: argparse.Namespace):
-    repo_dir: Path = args.repo
-    print(f"Hipifying {repo_dir}")
-    build_amd_path = repo_dir / "tools" / "amd_build" / "build_amd.py"
-    if os.path.exists(build_amd_path):
-        exec([sys.executable, build_amd_path], cwd=repo_dir)
-    # Iterate over the base repository and all submodules. Because we process
-    # the root repo first, it will not add submodule changes.
-    all_paths = get_all_repositories(repo_dir)
-    for module_path in all_paths:
-        status = list_status(module_path)
-        if not status:
-            continue
-        print(f"HIPIFY made changes to {module_path}: Committing")
-        exec(["git", "add", "-A"], cwd=module_path)
-        exec(
-            ["git", "commit", "-m", HIPIFY_COMMIT_MESSAGE, "--no-gpg-sign"],
-            cwd=module_path,
-        )
-        exec(["git", "tag", "-f", TAG_HIPIFY_DIFFBASE, "--no-sign"], cwd=module_path)
-
-
 def do_save_patches(args: argparse.Namespace):
     repo_name = args.repo_name
     repo_patch_dir_base = args.patch_dir
-    patches_dir = repo_patch_dir_base / repo_hashtag_to_patches_dir_name(
-        args.repo_hashtag
-    )
+    patches_dir_name = get_patches_dir_name(args)
+    patches_dir = repo_patch_dir_base / patches_dir_name
     save_repo_patches(args.repo, patches_dir / repo_name)
     relative_sm_paths = list_submodules(args.repo, relative=True)
     for relative_sm_path in relative_sm_paths:
         save_repo_patches(args.repo / relative_sm_path, patches_dir / relative_sm_path)
+
+
+# Reads the ROCm maintained "related_commits" file from the given pytorch dir.
+# If present, selects the given os and project, returning origin, hashtag and
+# "rocm-custom" patchset. Otherwise, returns the given defaults.
+def read_pytorch_rocm_pins(
+    pytorch_dir: Path,
+    os: str,
+    project: str,
+    *,
+    default_origin: str,
+    default_hashtag: str | None,
+    default_patchset: str | None,
+) -> tuple[str, str | None, str | None, bool]:
+    related_commits_file = pytorch_dir / "related_commits"
+    if related_commits_file.exists():
+        lines = related_commits_file.read_text().splitlines()
+        for line in lines:
+            try:
+                (
+                    rec_os,
+                    rec_source,
+                    rec_project,
+                    rec_branch,
+                    rec_commit,
+                    rec_origin,
+                ) = line.split("|")
+            except ValueError:
+                print(f"WARNING: Could not parse related_commits line: {line}")
+            if rec_os == os and rec_project == project:
+                return rec_origin, rec_commit, "rocm-custom", True
+
+    # Not found.
+    return default_origin, default_hashtag, default_patchset, False

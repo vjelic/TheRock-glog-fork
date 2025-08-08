@@ -1,7 +1,10 @@
 # Build PyTorch with ROCm support
 
-This directory provides tooling for building PyTorch compatible with TheRock's
-ROCm dist packages.
+This directory provides tooling for building PyTorch with ROCm Python wheels.
+
+> [!TIP]
+> If you want to install our prebuilt PyTorch packages instead of building them
+> from source, see [RELEASES.md](/RELEASES.md) instead.
 
 There is nothing special about these build procedures except that they are meant
 to run as part of the ROCm CI and development flow and thus leave less room for
@@ -18,33 +21,37 @@ patches locally until they can be upstreamed. See the
 
 ## Feature support status
 
-| Feature                  | Linux support | Windows support |
-| ------------------------ | ------------- | --------------- |
-| PyTorch                  | ✅ Supported  | ✅ Supported    |
-| torchvision              | ✅ Supported  | ⚪ Unknown      |
-| torchaudio               | ✅ Supported  | ⚪ Unknown      |
-| Flash attention (Triton) | ✅ Supported  | 🟡 In progress  |
+| Feature                  | Linux support | Windows support                                                       |
+| ------------------------ | ------------- | --------------------------------------------------------------------- |
+| PyTorch                  | ✅ Supported  | ✅ Supported                                                          |
+| torchaudio               | ✅ Supported  | ✅ Supported                                                          |
+| torchvision              | ✅ Supported  | ✅ Supported                                                          |
+| Flash attention (Triton) | ✅ Supported  | 🟡 In progress ([#1040](https://github.com/ROCm/TheRock/issues/1040)) |
 
 ## Build instructions
 
+See the comments in [`build_prod_wheels.py`](./build_prod_wheels.py) for
+detailed instructions. That information is summarized here.
+
 ### Prerequisites and setup
 
-You will need either a source build or binary distribution of the dist packages.
+You will need a supported Python version (3.11+) on a system which we build the
+`rocm[libraries,devel]` packages for. See the
+[`RELEASES.md`: Installing releases using pip](../../RELEASES.md#installing-releases-using-pip)
+and [Python Packaging](../../docs/packaging/python_packaging.md) documentation
+for more background on these `rocm` packages.
 
-- For binary distributions, see [RELEASES.md](../../RELEASES.md). Both tarballs
-  and Python packages should include the necessary files.
+> [!WARNING]
+> On Windows, prefer to install Python for the current user only and to a path
+> **without spaces** like
+> `C:\Users\<username>\AppData\Local\Programs\Python\Python312`.
+>
+> Several developers have reported issues building torchvision when using
+> "Install Python for all users" with a default path like
+> `C:\Program Files\Python312` (note the space in "Program Files"). See
+> https://github.com/pytorch/vision/issues/9165 for details.
 
-  - Note: Windows ROCm Python packages are not yet available.
-
-- For source builds:
-
-  1. Follow the [building from source](../../README.md#building-from-source)
-     instructions.
-  1. Build the `therock-dist` target:
-     ```bash
-     cmake --build build --target therock-dist
-     ```
-  1. Use the `build/dist/rocm` directory.
+### Quickstart
 
 It is highly recommended to use a virtual environment unless working within a
 throw-away container or CI environment.
@@ -63,81 +70,140 @@ throw-away container or CI environment.
   .venv\Scripts\activate.bat
   ```
 
-### Build PyTorch, PyTorch vision and PyTorch audio on Linux
+Now checkout repositories:
 
-```bash
-./checkout_and_build_all.sh
-```
-
-### Build PyTorch on Windows (or the old way on Linux)
-
-#### Step 1: Preparing sources
-
-```bash
-# Checks out the most recent stable release branch of PyTorch, hipifies and
-# applies patches.
-python pytorch_torch_repo.py checkout
-```
-
-#### Step 2: Install Deps
-
-Python deps:
-
-```bash
-pip install -r pytorch/requirements.txt
-pip install mkl-static mkl-include
-```
-
-#### Step 3: Setup and Build
-
-On Linux:
-
-```bash
-export CMAKE_PREFIX_PATH="$(realpath ../../build/dist/rocm)"
-(cd src && USE_KINETO=OFF python setup.py develop)
-```
-
-On Windows:
-
-```bash
-bash build_pytorch_windows.sh gfx1100
-```
-
-## Running/testing PyTorch
-
-### Windows DLL setup
-
-On Windows, PyTorch needs to be able to find DLL files from the `dist/rocm`
-directory. This can be achieved by either
-
-- Extending your `PATH` to include that directory:
+- On Linux, use default paths (nested under this folder) and default branches:
 
   ```bash
-  set PATH=..\..\build\dist\rocm\bin;%PATH%
+  python pytorch_torch_repo.py checkout
+  python pytorch_audio_repo.py checkout
+  python pytorch_vision_repo.py checkout
   ```
 
-- Creating a "fat wheel" that bundles the files together (see the next section).
+- On Windows, use shorter paths to avoid command length limits and `main` branches:
+
+  ```bash
+  python pytorch_torch_repo.py checkout --repo C:/b/pytorch --repo-hashtag main
+  python pytorch_audio_repo.py checkout --repo C:/b/audio --repo-hashtag main
+  python pytorch_vision_repo.py checkout --repo C:/b/vision --repo-hashtag main
+  ```
+
+Now note the gfx target you want to build for and then...
+
+1. Install `rocm` packages
+1. Build PyTorch wheels
+1. Install the built PyTorch wheels
+
+...all in one command. See the
+[advanced build instructions](#advanced-build-instructions) for ways to
+mix/match build steps.
+
+- On Linux:
+
+  ```bash
+  python build_prod_wheels.py build \
+    --install-rocm --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx110X-dgpu/ \
+    --output-dir $HOME/tmp/pyout
+  ```
+
+- On Windows:
+
+  ```bash
+  python build_prod_wheels.py build \
+    --install-rocm --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx110X-dgpu/ \
+    --pytorch-dir C:/b/pytorch \
+    --pytorch-audio-dir C:/b/audio \
+    --pytorch-vision-dir C:/b/vision \
+    --output-dir %HOME%/tmp/pyout
+  ```
+
+## Advanced build instructions
+
+### Other ways to install the rocm packages
+
+The `rocm[libraries,devel]` packages can be installed in multiple ways:
+
+- (As above) during the `build_prod_wheels.py build` subcommand
+
+- Using the more tightly scoped `build_prod_wheels.py install-rocm` subcommand:
+
+  ```bash
+  build_prod_wheels.py
+      --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx110X-dgpu/ \
+      install-rocm
+  ```
+
+- Manually installing from a release index:
+
+  ```bash
+  # From therock-nightly-python
+  python -m pip install \
+    --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx110X-dgpu/ \
+    rocm[libraries,devel]
+
+  # OR from therock-dev-python
+  python -m pip install \
+    --index-url https://d25kgig7rdsyks.cloudfront.net/v2/gfx110X-dgpu/ \
+    rocm[libraries,devel]
+  ```
+
+- Building the rocm Python packages from artifacts fetched from a CI run:
+
+  ```bash
+  # From the repository root
+  mkdir $HOME/.therock/15914707463
+  mkdir $HOME/.therock/15914707463/artifacts
+  python ./build_tools/fetch_artifacts.py \
+    --run-id=15914707463 \
+    --target=gfx110X-dgpu \
+    --output-dir=$HOME/.therock/15914707463/artifacts \
+    --all
+
+  python ./build_tools/build_python_packages.py \
+    --artifact-dir=$HOME/.therock/15914707463/artifacts \
+    --dest-dir=$HOME/.therock/15914707463/packages
+  ```
+
+- Building the rocm Python packages from artifacts built from source:
+
+  ```bash
+  # From the repository root
+  cmake --build build --target therock-archives
+
+  python ./build_tools/build_python_packages.py \
+    --artifact-dir=build/artifacts \
+    --dest-dir=build/packages
+  ```
 
 ### Bundling PyTorch and ROCm together into a "fat wheel"
 
 By default, Python wheels produced by the PyTorch build do not include ROCm
-binaries. Instead, they expect those binaries to be installed elsewhere on the
-system. A "fat wheel" bundles the ROCm binaries into the same wheel archive to
-produce a standalone install including both PyTorch and ROCm, with all necessary
-patches to shared library / DLL loading for out of the box operation.
+binaries. Instead, they expect those binaries to come from the
+`rocm[libraries,devel]` packages. A "fat wheel" bundles the ROCm binaries into
+the same wheel archive to produce a standalone install including both PyTorch
+and ROCm, with all necessary patches to shared library / DLL loading for out of
+the box operation.
 
 To produce such a fat wheel, see `windows_patch_fat_wheel.py` and a future
 equivalent script for Linux.
 
+## Running/testing PyTorch
+
 ### Running PyTorch smoketests
 
 We have some basic smoketests to check that the build succeeded and the
-environment setup is correct. See [smoketests](./smoke-tests/) for details, or
+environment setup is correct. See [smoke-tests](./smoke-tests/) for details, or
 just run:
 
 ```bash
-pytest -v smoketests
+pytest -v smoke-tests
 ```
+
+### Running full PyTorch tests
+
+See https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/3rd-party/pytorch-install.html#testing-the-pytorch-installation
+
+<!-- TODO(erman-gurses): update docs here -->
 
 ## Development instructions
 
@@ -145,3 +211,90 @@ To create patches
 
 1. Commit your change(s) within the relevant source folder(s)
 1. Run the `save-patches` subcommand of the relevant source management script(s)
+
+## Alternate Branches / Patch Sets
+
+We support several PyTorch branches with associated patch sets on Linux and
+Windows. The intent is to support the latest upstream PyTorch code (i.e. `main`
+or `nightly`) as well as recently published release branches which users depend
+on.
+
+> [!TIP]
+> Each branch combination below can also use specific commits by selecting a
+> patchset. For example, this will fetch PyTorch at
+> [pytorch/pytorch@3e2aa4b](https://github.com/pytorch/pytorch/commit/3e2aa4b0e3e971a81f665a9a6d803683452c022d)
+> using the patches from
+> [`patches/pytorch/main/pytorch/`](./patches/pytorch/main/pytorch/):
+>
+> ```bash
+> python pytorch_torch_repo.py checkout \
+>   --repo-hashtag 3e2aa4b0e3e971a81f665a9a6d803683452c022d \
+>   --patchset main
+> ```
+
+### PyTorch main
+
+This checks out the `main` branches from https://github.com/pytorch, tracking
+the latest (potentially unstable) code:
+
+- https://github.com/pytorch/pytorch/tree/main
+- https://github.com/pytorch/audio/tree/main
+- https://github.com/pytorch/vision/tree/main
+
+```bash
+python pytorch_torch_repo.py checkout --repo-hashtag main
+python pytorch_audio_repo.py checkout --repo-hashtag main
+python pytorch_vision_repo.py checkout --repo-hashtag main
+# Note that triton will be checked out at the PyTorch pin.
+python pytorch_triton_repo.py checkout
+```
+
+### PyTorch Nightly
+
+This checks out the `nightly` branches from https://github.com/pytorch,
+tracking the latest pytorch.org nightly release:
+
+- https://github.com/pytorch/pytorch/tree/nightly
+- https://github.com/pytorch/audio/tree/nightly
+- https://github.com/pytorch/vision/tree/nightly
+
+```bash
+python pytorch_torch_repo.py checkout --repo-hashtag nightly
+python pytorch_audio_repo.py checkout --repo-hashtag nightly
+python pytorch_vision_repo.py checkout --repo-hashtag nightly
+# Note that triton will be checked out at the PyTorch pin.
+python pytorch_triton_repo.py checkout
+```
+
+### ROCm PyTorch Release Branches
+
+Because upstream PyTorch freezes at release but AMD needs to keep updating
+stable versions for a longer period of time, backport branches are maintained.
+In order to check out and build one of these, use the following instructions:
+
+In general, we regularly build PyTorch nightly from upstream sources and the
+most recent stable backport. Generally, backports are only supported on Linux
+at present.
+
+Backport branches have `related_commits` files that point to specific
+sub-project commits, so the main torch repo must be checked out first to
+have proper defaults.
+
+You are welcome to maintain your own branches that extend one of AMD's.
+Change origins and tags as appropriate.
+
+### v2.7.x
+
+NOTE: Presently broken at runtime on a HIP major version incompatibility in the
+pre-built aotriton (#1025). Must build with
+`USE_FLASH_ATTENTION=0 USE_MEM_EFF_ATTENTION=0` until fixed.
+
+```bash
+python pytorch_torch_repo.py checkout \
+  --gitrepo-origin https://github.com/ROCm/pytorch.git \
+  --repo-hashtag release/2.7 \
+  --patchset rocm_2.7
+python pytorch_audio_repo.py checkout --require-related-commit
+python pytorch_vision_repo.py checkout --require-related-commit
+python pytorch_triton_repo.py checkout
+```

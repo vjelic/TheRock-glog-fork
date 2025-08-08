@@ -39,42 +39,43 @@ jobs:
     permissions:
       id-token: write
     container:
-      image: ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:044b113562629f4bd2ec5d2e64b32eee11562d48fb1a75d7493daec9dd8d8292
+      image: ghcr.io/rocm/therock_build_manylinux_x86_64@sha256:543ba2609de3571d2c64f3872e5f1af42fdfa90d074a7baccb1db120c9514be2
     strategy:
       fail-fast: true
     env:
       CACHE_DIR: ${{ github.workspace }}/.container-cache
-      CCACHE_DIR: "${{ github.workspace }}/.container-cache/ccache"
-      CCACHE_MAXSIZE: "700M"
+      # The ccache.conf will be written by setup_ccache.py before this gets used.
+      CCACHE_CONFIGPATH: ${{ github.workspace }}/.ccache/ccache.conf
       AMDGPU_FAMILIES: ${{ inputs.amdgpu_families }}
       TEATIME_FORCE_INTERACTIVE: 0
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      # TODO: We shouldn't be using a cache on actual release branches, but it
+      # really helps for iteration time.
       - name: Runner Health Settings
         run: |
-          echo "CCACHE_DIR=${CCACHE_DIR}"
+          ./build_tools/setup_ccache.py \
+            --config-preset "github-oss-presubmit" \
+            --dir "$(dirname $CCACHE_CONFIGPATH)" \
+            --local-path "$CACHE_DIR/ccache"
           df -h
+          echo "ccache version: $(ccache --version)"
+          echo "ccache config:"
+          echo "---"
+          cat "$CCACHE_CONFIGPATH"
+          echo "---"
           ccache -z
-          mkdir -p $CCACHE_DIR
-          cmake --version
+          ccache -s -v
+          echo cmake --version
           echo "Installed Python versions:"
           ls -d /opt/python
           echo "python: $(which python), python3: $(which python3)"
           echo "Git version: $(git --version)"
           git config --global --add safe.directory $PWD
           git config fetch.parallel 10
-
-      # TODO: We shouldn't be using a cache on actual release branches, but it
-      # really helps for iteration time.
-      - name: Enable cache
-        uses: actions/cache/restore@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
-        with:
-          path: ${{ env.CACHE_DIR }}
-          key: linux-build-packages-manylinux-v3-${{ inputs.amdgpu_families }}-${{ github.sha }}
-          restore-keys: |
-            linux-build-packages-manylinux-v3-${{ inputs.amdgpu_families }}-
 
       - name: Fetch sources
         run: |
@@ -118,14 +119,21 @@ jobs:
           du -h -d 1 build/artifacts
           echo "CCache Stats:"
           echo "-------------"
-          ccache -s
+          ccache -s -v
+          tail -v -n +1 .ccache/compiler_check_cache/* > build/logs/ccache_compiler_check_cache.log
 
       - name: Configure AWS Credentials
         if: always()
-        uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 # v4.1.0
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
         with:
           aws-region: us-east-2
           role-to-assume: arn:aws:iam::692859939525:role/therock-artifacts
+
+      - name: Create Log archive
+        if: always()
+        run: |
+          python3 build_tools/create_log_archive.py \
+            --build-dir=build
 
       - name: Create Logs index Files
         if: always()
@@ -158,9 +166,20 @@ jobs:
             --amdgpu-family ${{ inputs.amdgpu_families }} \
             --build-dir build
 
-      - name: Save cache
-        uses: actions/cache/save@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
-        if: always()
-        with:
-          path: ${{ env.CACHE_DIR }}
-          key: linux-build-packages-manylinux-v3-${{ inputs.amdgpu_families }}-${{ github.sha }}
+      - name: Upload job metrics to Redshift database
+        if: github.repository == 'ROCm/TheRock' && always()
+        env:
+          RUN_ID: ${{ github.run_id }}
+          ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          # Fetch job summary and store it
+          JOB_SUMMARY=$(python3 build_tools/github_actions/fetch_job_status.py)
+          # Populate Redshift Database tables
+          python3 build_tools/github_actions/populate_redshift_db.py \
+            --api-output "$JOB_SUMMARY" \
+            --redshift-cluster-endpoint "${{ secrets.THEROCK_REDSHIFT_CLUSTER_ENDPOINT }}" \
+            --redshift-username  "${{ secrets.THEROCK_REDSHIFT_CLUSTER_USERNAME }}"\
+            --dbname "${{ secrets.THEROCK_REDSHIFT_CLUSTER_DBNAME }}" \
+            --redshift-password "${{ secrets.THEROCK_REDSHIFT_CLUSTER_PASSWORD }}" \
+            --redshift-port "${{ secrets.THEROCK_REDSHIFT_CLUSTER_ACCESS_PORT }}" \
+            --run-id ${{ github.run_number }}

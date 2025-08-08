@@ -59,21 +59,23 @@ set(THEROCK_ARTIFACT_ARCHIVE_SUFFIX "" CACHE STRING "Suffix to add to artifact a
 option(THEROCK_BUNDLE_SYSDEPS "Builds bundled system deps for portable builds into lib/rocm_sysdeps" ON)
 
 # Source settings.
-# Source can be consumed from the https://github.com/ROCm/rocm-libraries monorepo,
+# Source can be consumed from the https://github.com/ROCm/rocm-libraries superrepo,
 # while the default is to consume the submodules defined in TheRock's `.gitmodules`.
-option(THEROCK_USE_EXTERNAL_ROCM_LIBRARIES "Use the `rocm-libraries` monorepo instead of submodules" OFF)
-if(THEROCK_USE_EXTERNAL_ROCM_LIBRARIES AND NOT THEROCK_ROCM_LIBRARIES_SOURCE_DIR)
-  message(FATAL_ERROR "If THEROCK_USE_EXTERNAL_ROCM_LIBRARIES is set, THEROCK_ROCM_LIBRARIES_SOURCE_DIR is required!")
-endif()
+option(THEROCK_USE_ROCM_LIBRARIES "Use the `rocm-libraries` superrepo" ON)
+set(THEROCK_ROCM_LIBRARIES_SOURCE_DIR_DEFAULT "${THEROCK_SOURCE_DIR}/rocm-libraries")
+set(THEROCK_ROCM_LIBRARIES_SOURCE_DIR "${THEROCK_ROCM_LIBRARIES_SOURCE_DIR_DEFAULT}" CACHE STRING "Path to rocm-libraries superrepo")
 
-if(THEROCK_ROCM_LIBRARIES_SOURCE_DIR)
-  cmake_path(ABSOLUTE_PATH THEROCK_ROCM_LIBRARIES_SOURCE_DIR NORMALIZE)
+cmake_path(ABSOLUTE_PATH THEROCK_ROCM_LIBRARIES_SOURCE_DIR NORMALIZE)
+if(NOT THEROCK_USE_ROCM_LIBRARIES)
+  message(FATAL_ERROR
+    "Building from indvidual submodules is deprecated. "
+    "Set THEROCK_USE_ROCM_LIBRARIES to `ON` and re-run `fetch_sources.py` "
+    "to clone and patch the rocm-libraries submodule."
+  )
 endif()
 
 # Overall build settings.
 option(THEROCK_VERBOSE "Enables verbose CMake statuses" OFF)
-
-set(THEROCK_AMDGPU_WINDOWS_INTEROP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../amdgpu-windows-interop" CACHE PATH "Directory containing the Windows AMDGPU/ROCm driver interop support files")
 
 # Initialize the install directory.
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -119,6 +121,7 @@ endblock()
 option(THEROCK_SPLIT_DEBUG_INFO "Enables splitting of debug info into dbg artifacts (and strips primary packages)" OFF)
 option(THEROCK_MINIMAL_DEBUG_INFO "Enables compiler-specific flags for minimal debug symbols suitable for shipping in packages" OFF)
 option(THEROCK_QUIET_INSTALL "Enable quiet install logging (install logs only go to the logfile)" ON)
+option(THEROCK_USE_SAFE_DEPENDENCY_PROVIDER "Enable the safe dependency provider, performing strict package checks" ON)
 
 ################################################################################
 # Feature selection
@@ -258,6 +261,7 @@ if(NOT WIN32)
     DESCRIPTION "Enables build of composable kernel, including minimal kernel library"
     REQUIRES COMPILER HIP_RUNTIME RAND
   )
+  cmake_dependent_option(THEROCK_MIOPEN_USE_COMPOSABLE_KERNEL "Enables composable kernel in MIOpen" ON ${THEROCK_ENABLE_COMPOSABLE_KERNEL} OFF)
 endif()
 
 # ML-Libs Features.

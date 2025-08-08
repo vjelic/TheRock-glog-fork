@@ -4,6 +4,7 @@
 # the CI uses to get to a clean state.
 
 import argparse
+import hashlib
 from pathlib import Path
 import platform
 import shlex
@@ -36,20 +37,8 @@ def enable_longpaths():
     exec(
         [
             "git",
-            "config",
-            "--local",
-            "core.longpaths",
-            "true",
-            "--recurse-submodules"
-        ],
-        cwd=THEROCK_DIR,
-    )
-    exec(
-        [
-            "git",
             "submodule",
             "foreach",
-            "--recursive",
             "'git config core.longpaths true'"
         ],
         cwd=THEROCK_DIR,
@@ -57,7 +46,13 @@ def enable_longpaths():
 
 
 def get_enabled_projects(args) -> list[str]:
-    projects = list(args.projects)
+    projects = []
+    if args.include_system_projects:
+        projects.extend(args.system_projects)
+    if args.include_compilers:
+        projects.extend(args.compiler_projects)
+    if args.include_rocm_libraries:
+        projects.extend(["rocm-libraries"])
     if args.include_math_libs:
         projects.extend(args.math_lib_projects)
     if args.include_ml_frameworks:
@@ -68,6 +63,7 @@ def get_enabled_projects(args) -> list[str]:
 def run(args):
     projects = get_enabled_projects(args)
     submodule_paths = [get_submodule_path(project) for project in projects]
+    # TODO(scotttodd): Check for git lfs?
     update_args = []
     if args.depth:
         update_args += ["--depth", str(args.depth)]
@@ -76,7 +72,6 @@ def run(args):
     if args.remote:
         update_args += ["--remote"]
     if args.update_submodules:
-        enable_longpaths()
         exec(
             ["git", "submodule", "update", "--init"]
             + update_args
@@ -84,6 +79,7 @@ def run(args):
             + submodule_paths,
             cwd=THEROCK_DIR,
         )
+        enable_longpaths()
 
     # Because we allow local patches, if a submodule is in a patched state,
     # we manually set it to skip-worktree since recording the commit is
@@ -96,8 +92,22 @@ def run(args):
     )
 
     populate_ancillary_sources(args)
+
+    # Remove any stale .smrev files.
+    remove_smrev_files(args, projects)
+
     if args.apply_patches:
         apply_patches(args, projects)
+
+
+def remove_smrev_files(args, projects):
+    for project in projects:
+        submodule_path = get_submodule_path(project)
+        project_dir = THEROCK_DIR / submodule_path
+        project_revision_file = project_dir.with_name(f".{project_dir.name}.smrev")
+        if project_revision_file.exists():
+            print(f"Remove stale project revision file: {project_revision_file}")
+            project_revision_file.unlink()
 
 
 def apply_patches(args, projects):
@@ -115,7 +125,11 @@ def apply_patches(args, projects):
             )
             continue
         submodule_path = get_submodule_path(patch_project_dir.name)
+        submodule_url = get_submodule_url(patch_project_dir.name)
+        submodule_revision = get_submodule_revision(submodule_path)
         project_dir = THEROCK_DIR / submodule_path
+        project_revision_file = project_dir.with_name(f".{project_dir.name}.smrev")
+
         if not project_dir.exists():
             log(f"WARNING: Source directory {project_dir} does not exist. Skipping.")
             continue
@@ -141,6 +155,26 @@ def apply_patches(args, projects):
             cwd=THEROCK_DIR,
         )
 
+        # Generate the .smrev patch state file.
+        # This file consists of two lines: The git origin and a summary of the
+        # state of the source tree that was checked out. This can be consumed
+        # by individual build steps in lieu of heuristics for asking git. If
+        # the tree is in a patched state, the commit hashes of HEAD may be
+        # different from checkout-to-checkout, but the .smrev file will have
+        # stable contents so long as the submodule pin and contents of the
+        # hashes are the same.
+        # Note that this does not track the dirty state of the tree. If full
+        # fidelity hashes of the tree state are needed for development/dirty
+        # trees, then another mechanism must be used.
+        patches_hash = hashlib.sha1()
+        for patch_file in patch_files:
+            patch_contents = Path(patch_file).read_bytes()
+            patches_hash.update(patch_contents)
+        patches_digest = patches_hash.digest().hex()
+        project_revision_file.write_text(
+            f"{submodule_url}\n{submodule_revision}+PATCHED:{patches_digest}\n"
+        )
+
 
 # Gets the the relative path to a submodule given its name.
 # Raises an exception on failure.
@@ -161,6 +195,40 @@ def get_submodule_path(name: str) -> str:
         .strip()
     )
     return relpath
+
+
+# Gets the the relative path to a submodule given its name.
+# Raises an exception on failure.
+def get_submodule_url(name: str) -> str:
+    relpath = (
+        subprocess.check_output(
+            [
+                "git",
+                "config",
+                "--file",
+                ".gitmodules",
+                "--get",
+                f"submodule.{name}.url",
+            ],
+            cwd=str(THEROCK_DIR),
+        )
+        .decode()
+        .strip()
+    )
+    return relpath
+
+
+def get_submodule_revision(submodule_path: str) -> str:
+    # Generates a line like:
+    #   160000 5e2093d23f7d34c372a788a6f2b7df8bc1c97947 0       compiler/amd-llvm
+    ls_line = (
+        subprocess.check_output(
+            ["git", "ls-files", "--stage", submodule_path], cwd=str(THEROCK_DIR)
+        )
+        .decode()
+        .strip()
+    )
+    return ls_line.split()[1]
 
 
 def populate_ancillary_sources(args):
@@ -231,6 +299,24 @@ def main(argv):
         default=None,
     )
     parser.add_argument(
+        "--include-system-projects",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Include systems projects",
+    )
+    parser.add_argument(
+        "--include-compilers",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Include compilers",
+    )
+    parser.add_argument(
+        "--include-rocm-libraries",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Include supported rocm-libraries projhects",
+    )
+    parser.add_argument(
         "--include-math-libs",
         default=True,
         action=argparse.BooleanOptionalAction,
@@ -243,7 +329,7 @@ def main(argv):
         help="Include machine learning frameworks that are part of ROCM",
     )
     parser.add_argument(
-        "--projects",
+        "--system-projects",
         nargs="+",
         type=str,
         default=[
@@ -251,8 +337,6 @@ def main(argv):
             "clr",
             "half",
             "HIP",
-            "HIPIFY",
-            "llvm-project",
             "rccl",
             "rccl-tests",
             "rocm_smi_lib",
@@ -263,10 +347,27 @@ def main(argv):
             # TODO: Re-enable when used.
             # "rocprofiler-compute",
             "rocprofiler-sdk",
+            "rocprof-trace-decoder",
             # TODO: Re-enable when used.
             # "rocprofiler-systems",
             "roctracer",
             "ROCR-Runtime",
+        ]
+        + (
+            [
+                "amdgpu-windows-interop",
+            ]
+            if is_windows()
+            else []
+        ),
+    )
+    parser.add_argument(
+        "--compiler-projects",
+        nargs="+",
+        type=str,
+        default=[
+            "HIPIFY",
+            "llvm-project",
         ],
     )
     parser.add_argument(
@@ -274,34 +375,15 @@ def main(argv):
         nargs="+",
         type=str,
         default=[
-            "hipBLAS-common",
-            "hipBLAS",
-            "hipBLASLt",
-            "hipCUB",
-            "hipFFT",
-            "hipRAND",
             "hipSOLVER",
-            "hipSPARSE",
-            "mxDataGenerator",
-            "Tensile",
-            "rocBLAS",
-            "rocFFT",
-            "rocPRIM",
-            "rocRAND",
-            "rocRoller",
             "rocSOLVER",
-            "rocSPARSE",
-            "rocThrust",
         ],
     )
     parser.add_argument(
         "--ml-framework-projects",
         nargs="+",
         type=str,
-        default=[
-            "MIOpen",
-        ]
-        + (
+        default=(
             []
             if is_windows()
             else [

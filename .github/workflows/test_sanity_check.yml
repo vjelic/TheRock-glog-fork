@@ -11,8 +11,6 @@ on:
         default: ""
       test_runs_on:
         type: string
-      platform:
-        type: string
   workflow_call:
     inputs:
       artifact_run_id:
@@ -22,8 +20,6 @@ on:
         type: string
         default: ""
       test_runs_on:
-        type: string
-      platform:
         type: string
   push:
     branches:
@@ -50,6 +46,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: "ROCm/TheRock"
 
       - name: Run setup test environment workflow
         uses: './.github/actions/setup_test_environment'
@@ -59,14 +57,12 @@ jobs:
           OUTPUT_ARTIFACTS_DIR: ${{ env.OUTPUT_ARTIFACTS_DIR }}
           VENV_DIR: ${{ env.VENV_DIR }}
           FETCH_ARTIFACT_ARGS: "--base-only"
-          PLATFORM: ${{ inputs.platform }}
 
       - name: Set HIP_CLANG_PATH for windows
-        if: ${{ inputs.platform == 'windows' }}
+        if: ${{ runner.os == 'Windows' }}
         run: echo "HIP_CLANG_PATH=${OUTPUT_ARTIFACTS_DIR}\lib\llvm\bin" >> $GITHUB_ENV
 
       - name: Run ROCm Sanity Tests
         timeout-minutes: 5
         run: |
-          if [ "${{ inputs.PLATFORM }}" == "linux" ]; then source ${VENV_DIR}/bin/activate ; else . ${VENV_DIR}/Scripts/activate ; fi
           pytest tests/ --log-cli-level=info --timeout=60

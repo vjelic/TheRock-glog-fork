@@ -13,8 +13,13 @@ sources/
 .vscode/
 *.venv
 __pycache__
+/.ccache
+
+# Patch control files.
+.*.smrev
 
 # Output directories.
 /build/
 /install/
 /output-*/
+/out/

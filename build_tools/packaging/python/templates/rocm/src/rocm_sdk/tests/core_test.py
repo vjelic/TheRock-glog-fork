@@ -1,6 +1,7 @@
 """Installation package tests for the core package."""
 
 import importlib
+import locale
 from pathlib import Path
 import platform
 import subprocess
@@ -22,6 +23,13 @@ utils.assert_is_physical_package(core_mod)
 so_paths = utils.get_module_shared_libraries(core_mod)
 is_windows = platform.system() == "Windows"
 
+LINUX_CONSOLE_SCRIPT_TESTS = [
+    # These currently only have unprefixed names (e.g. 'clang') on Windows.
+    # These tools are only available on Linux.
+    ("rocm_agent_enumerator", [], "", True),
+    ("rocminfo", [], "", True),
+    ("rocm-smi", [], "Management", True),
+]
 
 CONSOLE_SCRIPT_TESTS = [
     ("amdclang", ["--help"], "clang LLVM compiler", True),
@@ -32,13 +40,7 @@ CONSOLE_SCRIPT_TESTS = [
     ("amdlld", ["-flavor", "ld.lld", "--help"], "USAGE:", True),
     ("hipcc", ["--help"], "clang LLVM compiler", True),
     ("hipconfig", [], "HIP version:", True),
-    # These tools are only available on Linux.
-    ("rocm_agent_enumerator", [], "", not is_windows),
-    ("rocminfo", [], "", not is_windows),
-    ("rocm-smi", [], "Management", not is_windows),
-]
-
-exe_suffix = ".exe" if is_windows else ""
+] + (LINUX_CONSOLE_SCRIPT_TESTS if not is_windows else [])
 
 
 class ROCmCoreTest(unittest.TestCase):
@@ -90,20 +92,20 @@ class ROCmCoreTest(unittest.TestCase):
                 )
 
     def testConsoleScripts(self):
-        scripts_path = Path(sysconfig.get_path("scripts"))
         for script_name, cl, expected_text, required in CONSOLE_SCRIPT_TESTS:
-            script_path = (scripts_path / script_name).with_suffix(exe_suffix)
-            if not required and not script_path.exists():
+            script_path = utils.find_console_script(script_name)
+            if not required and script_path is None:
                 continue
             with self.subTest(msg=f"Check console-script {script_name}"):
-                self.assertTrue(
-                    script_path.exists(),
+                self.assertIsNotNone(
+                    script_path,
                     msg=f"Console script {script_path} does not exist",
                 )
+                encoding = locale.getpreferredencoding()
                 output_text = subprocess.check_output(
                     [script_path] + cl,
                     stderr=subprocess.STDOUT,
-                ).decode()
+                ).decode(encoding)
                 if expected_text not in output_text:
                     self.fail(
                         f"Expected '{expected_text}' in console-script {script_name} outuput:\n"

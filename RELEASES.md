@@ -17,6 +17,7 @@ part of Continuous Delivery (CD) nightly releases. See also the
 Table of contents:
 
 - [Installing releases using pip](#installing-releases-using-pip)
+  - [Python packages release status](#python-packages-release-status)
   - [Installing ROCm Python packages](#installing-rocm-python-packages)
   - [Using ROCm Python packages](#using-rocm-python-packages)
   - [Installing PyTorch Python packages](#installing-pytorch-python-packages)
@@ -26,25 +27,26 @@ Table of contents:
   - [Installing per-commit CI build tarballs manually](#installing-per-commit-ci-build-tarballs-manually)
   - [Installing tarballs using `install_rocm_from_artifacts.py`](#installing-tarballs-using-install_rocm_from_artifactspy)
   - [Using installed tarballs](#using-installed-tarballs)
-- [Using Dockerfiles](#using-dockerfiles)
 
 ## Installing releases using pip
 
 We recommend installing ROCm and projects like PyTorch via `pip`, the
 [Python package installer](https://packaging.python.org/en/latest/guides/tool-recommendations/).
 
-We currently support Python 3.11 and 3.12, with 3.13 support coming soon.
+We currently support Python 3.11, 3.12, and 3.13.
 
-### Python packages support status
-
-|         | ROCm Python packages                                                | PyTorch Python packages                                             |
-| ------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Linux   | ✅ Supported                                                        | 🟡 In progress ([#703](https://github.com/ROCm/TheRock/issues/703)) |
-| Windows | 🟡 In Progress ([#827](https://github.com/ROCm/TheRock/issues/827)) | 🟡 In Progress ([#827](https://github.com/ROCm/TheRock/issues/827)) |
+### Python packages release status
 
 > [!IMPORTANT]
 > Known issues with the Python wheels are tracked at
 > https://github.com/ROCm/TheRock/issues/808.
+>
+> ⚠️ Windows packages are new and may be unstable! ⚠️
+
+| Platform |                                                                                                                                                                                                                                         ROCm Python packages |                                                                                                                                                                                                                                               PyTorch Python packages |
+| -------- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Linux    | [![Release portable Linux packages](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_packages.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_packages.yml?query=branch%3Amain) | [![Release Linux PyTorch Wheels](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_pytorch_wheels.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_portable_linux_pytorch_wheels.yml?query=branch%3Amain) |
+| Windows  |                      [![Release Windows packages](https://github.com/ROCm/TheRock/actions/workflows/release_windows_packages.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_windows_packages.yml?query=branch%3Amain) |             [![Release Windows PyTorch Wheels](https://github.com/ROCm/TheRock/actions/workflows/release_windows_pytorch_wheels.yml/badge.svg?branch=main)](https://github.com/ROCm/TheRock/actions/workflows/release_windows_pytorch_wheels.yml?query=branch%3Amain) |
 
 ### Installing ROCm Python packages
 
@@ -187,22 +189,46 @@ framework.
 > This is under **active** development.
 
 Using the index pages listed above, you can install `torch` instead of
-`rocm[libraries,devel]`.
+`rocm[libraries,devel]`:
 
-For example, with gfx110X-dgpu:
+#### gfx94X-dcgpu
+
+```bash
+python -m pip install \
+  --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx94X-dcgpu/ \
+  torch
+```
+
+#### gfx950-dcgpu
+
+```bash
+python -m pip install \
+  --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx950-dcgpu/ \
+  torch
+```
+
+#### gfx110X-dgpu
 
 ```bash
 python -m pip install \
   --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx110X-dgpu/ \
   torch
+```
 
-pip freeze
-# ...
-# rocm==7.0.0rc20250615
-# rocm-sdk-core==7.0.0rc20250615
-# rocm-sdk-libraries-gfx110X-dgpu==7.0.0rc20250615
-# ...
-# torch==2.7.0a0+rocmsdk20250616
+#### gfx1151
+
+```bash
+python -m pip install \
+  --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx1151/ \
+  torch
+```
+
+#### gfx120X-all
+
+```bash
+python -m pip install \
+  --index-url https://d2awnip2yjpvqn.cloudfront.net/v2/gfx120X-all/ \
+  torch
 ```
 
 ### Using PyTorch Python packages
@@ -232,21 +258,20 @@ wrapper Python wheels or utility scripts.
 
 ### Installing release tarballs
 
-Release tarballs are automatically uploaded to both
-[GitHub releases](https://github.com/ROCm/TheRock/releases) and AWS S3 buckets.
+Release tarballs are automatically uploaded to AWS S3 buckets.
 The S3 buckets do not yet have index pages.
 
-| Release page                                                                      | S3 bucket                                                                    | Description                                       |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------- |
-| [`nightly-tarball`](https://github.com/ROCm/TheRock/releases/tag/nightly-tarball) | [therock-nightly-tarball](https://therock-nightly-tarball.s3.amazonaws.com/) | Nightly builds from the `main` branch             |
-| [`dev-tarball`](https://github.com/ROCm/TheRock/releases/tag/dev-tarball)         | [therock-dev-tarball](https://therock-dev-tarball.s3.amazonaws.com/)         | ⚠️ Development builds from project maintainers ⚠️ |
+| S3 bucket                                                                    | Description                                       |
+| ---------------------------------------------------------------------------- | ------------------------------------------------- |
+| [therock-nightly-tarball](https://therock-nightly-tarball.s3.amazonaws.com/) | Nightly builds from the `main` branch             |
+| [therock-dev-tarball](https://therock-dev-tarball.s3.amazonaws.com/)         | ⚠️ Development builds from project maintainers ⚠️ |
 
 After downloading, simply extract the release tarball into place:
 
 ```bash
 mkdir therock-tarball && cd therock-tarball
 # For example...
-wget https://github.com/ROCm/TheRock/releases/download/nightly-tarball/therock-dist-linux-gfx110X-dgpu-6.5.0rc20250610.tar.gz
+wget https://therock-nightly-tarball.s3.us-east-2.amazonaws.com/therock-dist-linux-gfx110X-dgpu-6.5.0rc20250610.tar.gz
 
 mkdir install
 tar -xf *.tar.gz -C install
@@ -312,7 +337,7 @@ them from the expanded artifacts down to a ROCm SDK "dist folder" using the
 
 <!-- TODO: move this above the manual `tar -xf` commands? -->
 
-This script installs ROCm community builds produced by TheRock from either a developer/nightly tarball, a specific CI runner build or an already existing installation of TheRock. This script is used by CI and can be used locally.
+This script installs ROCm community builds produced by TheRock from either a developer/nightly tarball, a specific CI runner build or an already existing installation of TheRock. This script is used by CI and can be used locally. Please run `pip install boto3` to get the necessary library.
 
 Examples:
 
@@ -354,19 +379,3 @@ ls install
 
 You may also want to add the install directory to your `PATH` or set other
 environment variables like `ROCM_HOME`.
-
-## Using Dockerfiles
-
-We publish [Dockerfiles](https://www.docker.com/) with packages preinstalled
-for your convenience. See
-https://github.com/orgs/ROCm/packages?repo_name=TheRock for the full list.
-
-| Package                                                                                                                               | Description                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [`therock_build_manylinux_x86_64`](https://github.com/ROCm/TheRock/pkgs/container/therock_build_manylinux_x86_64)                     | Container for our CI/CD pipelines<br>(This does _not_ include ROCm or PyTorch but can be used to build them) |
-| [`therock_pytorch_dev_ubuntu_24_04_gfx942`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx942)   | Ubuntu with PyTorch for ROCm gfx942                                                                          |
-| [`therock_pytorch_dev_ubuntu_24_04_gfx1100`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1100) | Ubuntu with PyTorch for ROCm gfx1100                                                                         |
-| [`therock_pytorch_dev_ubuntu_24_04_gfx1151`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1151) | Ubuntu with PyTorch for ROCm gfx1151                                                                         |
-| [`therock_pytorch_dev_ubuntu_24_04_gfx1201`](https://github.com/ROCm/TheRock/pkgs/container/therock_pytorch_dev_ubuntu_24_04_gfx1201) | Ubuntu with PyTorch for ROCm gfx1201                                                                         |
-
-<!-- TODO: how-to's for using the dockerfiles -->

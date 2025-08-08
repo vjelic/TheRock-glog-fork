@@ -43,45 +43,15 @@ import json
 import os
 import subprocess
 import sys
-from typing import Iterable, List, Mapping, Optional
+from typing import Iterable, List, Optional
 import string
 from amdgpu_family_matrix import (
-    amdgpu_family_info_matrix,
-    DEFAULT_LINUX_CONFIGURATIONS,
-    DEFAULT_WINDOWS_CONFIGURATIONS,
+    amdgpu_family_info_matrix_presubmit,
+    amdgpu_family_info_matrix_postsubmit,
+    amdgpu_family_matrix_xfail,
 )
-from amdgpu_family_matrix_xfail import amdgpu_family_matrix_xfail
 
-# --------------------------------------------------------------------------- #
-# General utilities
-# --------------------------------------------------------------------------- #
-
-
-def set_github_output(d: Mapping[str, str]):
-    """Sets GITHUB_OUTPUT values.
-    See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/passing-information-between-jobs
-    """
-    print(f"Setting github output:\n{d}")
-    step_output_file = os.environ.get("GITHUB_OUTPUT", "")
-    if not step_output_file:
-        print("Warning: GITHUB_OUTPUT env var not set, can't set github outputs")
-        return
-    with open(step_output_file, "a") as f:
-        f.writelines(f"{k}={v}" + "\n" for k, v in d.items())
-
-
-def write_job_summary(summary: str):
-    """Appends a string to the GitHub Actions job summary.
-    See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary
-    """
-    print(f"Writing job summary:\n{summary}")
-    step_summary_file = os.environ.get("GITHUB_STEP_SUMMARY", "")
-    if not step_summary_file:
-        print("Warning: GITHUB_STEP_SUMMARY env var not set, can't write job summary")
-        return
-    with open(step_summary_file, "a") as f:
-        # Use double newlines to split sections in markdown.
-        f.write(summary + "\n\n")
+from github_actions_utils import *
 
 
 # --------------------------------------------------------------------------- #
@@ -239,14 +209,14 @@ def matrix_generator(
 ):
     """Parses and generates build matrix with build requirements"""
     targets = []
-    matrix = amdgpu_family_info_matrix
+    matrix = amdgpu_family_info_matrix_presubmit | amdgpu_family_info_matrix_postsubmit
 
     # For the specific event trigger, parse linux and windows target information
     # if the trigger is a workflow_dispatch, parse through the inputs and retrieve the list
     if is_workflow_dispatch:
         print(f"[WORKFLOW_DISPATCH] Generating build matrix with {str(base_args)}")
         # For workflow dispatch, user can select an "expect_failure" family or regular family
-        matrix = amdgpu_family_info_matrix | amdgpu_family_matrix_xfail
+        matrix = matrix | amdgpu_family_matrix_xfail
 
         input_gpu_targets = families.get("amdgpu_families")
 
@@ -268,24 +238,20 @@ def matrix_generator(
                 potential_targets.append(target)
         targets.extend(discover_targets(potential_targets, matrix))
 
-        # Add the linux and windows default labels to the potential target lists
-        if platform == "linux":
-            for target in DEFAULT_LINUX_CONFIGURATIONS:
-                targets.append(target)
-        else:
-            for target in DEFAULT_WINDOWS_CONFIGURATIONS:
-                targets.append(target)
+        # Add the presubmit targets
+        for target in amdgpu_family_info_matrix_presubmit:
+            targets.append(target)
 
     if is_push and base_args.get("branch_name") == "main":
         print(f"[PUSH - MAIN] Generating build matrix with {str(base_args)}")
         # Add all options except for families that allow failures
-        for key in amdgpu_family_info_matrix:
+        for key in matrix:
             targets.append(key)
 
     if is_schedule:
         print(f"[SCHEDULE] Generating build matrix with {str(base_args)}")
         # For schedule runs, we will run build and tests for only expect_failure families
-        matrix = amdgpu_family_matrix_xfail
+        matrix = matrix | amdgpu_family_matrix_xfail
 
         # Add all options that allow failures
         for key in amdgpu_family_matrix_xfail:
@@ -356,7 +322,7 @@ def main(base_args, linux_families, windows_families):
         #     * workflow_dispatch or workflow_call with inputs controlling enabled jobs?
         enable_build_jobs = should_ci_run_given_modified_paths(modified_paths)
 
-    write_job_summary(
+    gha_append_step_summary(
         f"""## Workflow configure results
 
 * `linux_amdgpu_families`: {str([item.get("family") for item in linux_target_output])}
@@ -372,7 +338,7 @@ def main(base_args, linux_families, windows_families):
         "windows_amdgpu_families": json.dumps(windows_target_output),
         "enable_build_jobs": json.dumps(enable_build_jobs),
     }
-    set_github_output(output)
+    gha_set_output(output)
 
 
 if __name__ == "__main__":
