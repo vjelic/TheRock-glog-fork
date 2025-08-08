@@ -42,8 +42,12 @@ positive_filter.append("*/GPU_ConvBiasActiv*")
 positive_filter.append("*/GPU_Conv*")
 positive_filter.append("*/GPU_conv*")
 
-negative_filter.append("*DbSync*")
+# Solvers
+positive_filter.append("*/GPU_UnitTestConv*")
+
+negative_filter.append("*DBSync*")
 negative_filter.append("*DeepBench*")
+negative_filter.append("*MIOpenTestConv*")
 
 gtest_final_filter_cmd = (
     "--gtest_filter=" + ":".join(positive_filter) + "-" + ":".join(negative_filter)
