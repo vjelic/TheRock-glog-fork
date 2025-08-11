@@ -81,4 +81,4 @@
 [submodule "rocm-libraries"]
 	path = rocm-libraries
 	url = https://github.com/ROCm/rocm-libraries
-	branch = develop
+	branch = users/ellosel/hipblaslt-next-cmake-refactor
