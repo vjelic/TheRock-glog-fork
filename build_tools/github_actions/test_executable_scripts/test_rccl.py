@@ -4,6 +4,7 @@ import shlex
 import subprocess
 from pathlib import Path
 import pytest
+from test_hipblaslt import is_windows
 
 THEROCK_BIN_DIR = os.getenv("THEROCK_BIN_DIR")
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -20,6 +21,7 @@ class TestRCCL:
             cmd,
             cwd=THEROCK_DIR,
             check=False,
+            shell=is_windows()
         )
         assert result.returncode == 0
 
@@ -47,5 +49,6 @@ class TestRCCL:
             cmd,
             cwd=THEROCK_DIR,
             check=False,
+            shell=is_windows()
         )
         assert result.returncode == 0

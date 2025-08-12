@@ -3,6 +3,7 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
+from test_hipblaslt import is_windows
 
 THEROCK_BIN_DIR = os.getenv("THEROCK_BIN_DIR")
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -30,4 +31,5 @@ subprocess.run(
     cmd,
     cwd=THEROCK_DIR,
     check=True,
+    shell=is_windows()
 )
