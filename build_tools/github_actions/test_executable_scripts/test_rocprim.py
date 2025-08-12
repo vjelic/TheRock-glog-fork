@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 from test_hipblaslt import is_windows
 
-THEROCK_BIN_DIR = os.getenv("THEROCK_BIN_DIR")
+THEROCK_BIN_DIR = Path(os.getenv("THEROCK_BIN_DIR")).resolve()
 SCRIPT_DIR = Path(__file__).resolve().parent
 THEROCK_DIR = SCRIPT_DIR.parent.parent.parent
 
