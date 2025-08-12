@@ -3,7 +3,10 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
-from test_hipblaslt import is_windows
+import platform
+
+def is_windows():
+    return "windows" == platform.system().lower()
 
 THEROCK_BIN_DIR = Path(os.getenv("THEROCK_BIN_DIR")).resolve()
 SCRIPT_DIR = Path(__file__).resolve().parent
