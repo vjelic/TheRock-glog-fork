@@ -1,0 +1,10 @@
+pyyaml
+pytest
+pytest-rerunfailures
+pytest-repeat
+paramiko
+dill
+requests
+pymsteams
+tabulate
+lxml
