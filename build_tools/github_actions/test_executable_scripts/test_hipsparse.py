@@ -3,7 +3,6 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
-from test_hipblaslt import is_windows
 
 THEROCK_BIN_DIR = Path(os.getenv("THEROCK_BIN_DIR")).resolve()
 OUTPUT_ARTIFACTS_DIR = os.getenv("OUTPUT_ARTIFACTS_DIR")
@@ -19,5 +18,4 @@ subprocess.run(
     cwd=THEROCK_DIR,
     check=True,
     env={"HIPSPARSE_CLIENTS_MATRICES_DIR": f"{OUTPUT_ARTIFACTS_DIR}/clients/matrices/"},
-    shell=is_windows()
 )
