@@ -65,6 +65,8 @@ jobs:
         --device /dev/kfd
         --device /dev/dri
         --group-add 992
+        --security-opt seccomp=unconfined
+        --ulimit memlock=-1
     needs: [test_sanity_check, configure_test_matrix]
     # skip tests if no test matrix to run
     if: ${{ needs.configure_test_matrix.outputs.components != '[]' }}
