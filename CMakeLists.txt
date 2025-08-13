@@ -77,12 +77,9 @@ endif()
 
 # Allow to specify alternative source locations instead of using
 # repositories tracked in TheRock's `.gitmodules`.
-option(THEROCK_USE_EXTERNAL_RCCL "Use external rccl source locations" OFF)
-option(THEROCK_USE_EXTERNAL_RCCL_TESTS "Use external rccl-test source locations" OFF)
-option(THEROCK_USE_EXTERNAL_COMPOSABLE_KERNEL "Use external composable-kernel source location" OFF)
-therock_enable_external_source("rccl" "${THEROCK_SOURCE_DIR}/comm-libs/rccl")
-therock_enable_external_source("rccl-tests" "${THEROCK_SOURCE_DIR}/comm-libs/rccl-tests")
-therock_enable_external_source("composable-kernel" "${THEROCK_SOURCE_DIR}/ml-libs/composable_kernel")
+therock_enable_external_source("rccl" "${THEROCK_SOURCE_DIR}/comm-libs/rccl" OFF)
+therock_enable_external_source("rccl-tests" "${THEROCK_SOURCE_DIR}/comm-libs/rccl-tests" OFF)
+therock_enable_external_source("composable-kernel" "${THEROCK_SOURCE_DIR}/ml-libs/composable_kernel" OFF)
 
 # Overall build settings.
 option(THEROCK_VERBOSE "Enables verbose CMake statuses" OFF)

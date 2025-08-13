@@ -1,7 +1,8 @@
 # Enables to build a subcomponent from a user provided source location.
-function(therock_enable_external_source package_name default_source_dir)
+function(therock_enable_external_source package_name default_source_dir option_default)
   string(TOUPPER ${package_name} _PACKAGE_UPPER)
   string(REPLACE "-" "_" _PACKAGE ${_PACKAGE_UPPER})
+  option(THEROCK_USE_EXTERNAL_${_PACKAGE} "Use external ${package_name} source location" ${option_default})
 
   if(THEROCK_USE_EXTERNAL_${_PACKAGE})
     # If the source should come from an external package, the source dir must be
