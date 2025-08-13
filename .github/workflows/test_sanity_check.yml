@@ -43,8 +43,7 @@ jobs:
         --device /dev/kfd
         --device /dev/dri
         --group-add 992
-        --security-opt seccomp=unconfined
-        --ulimit memlock=-1
+        --env ROCR_VISIBLE_DEVICES=0
     defaults:
       run:
         shell: bash
