@@ -27,9 +27,6 @@ positive_filter.append("*/GPU_BNInfer*_*")
 positive_filter.append("*/GPU_BNOCLInfer*_*")
 positive_filter.append("*/GPU_bn_infer*_*")
 
-# negative_filter.append("*/GPU_BN*Large*_*")
-# negative_filter.append("*/GPU_BN*SerialRun*_*")
-
 # CPU tests
 positive_filter.append("CPU_*")  # tests without a suite
 positive_filter.append("*/CPU_*")  # tests with a suite
