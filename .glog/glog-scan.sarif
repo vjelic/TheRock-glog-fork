@@ -12,30 +12,6 @@
           "informationUri": "https://www.glog.ai",
           "rules": [
             {
-              "id": "c870d312-2689-3c37-a6e4-3ddb842f2a20",
-              "name": "resources.rules.dlint-catastrophic-redos",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
-              },
-              "fullDescription": {
-                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
-              "help": {
-                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/](https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/)\n - [https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/](https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/)\n"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.dlint-catastrophic-redos"
-                ]
-              }
-            },
-            {
               "id": "515120d7-08ea-3d09-b439-fe022e5c765e",
               "name": "resources.rules.insecure-file-permissions",
               "shortDescription": {
@@ -56,6 +32,30 @@
                 "precision": "very-high",
                 "tags": [
                   "resources.rules.insecure-file-permissions"
+                ]
+              }
+            },
+            {
+              "id": "613b1881-b7be-398e-a2c2-49608dd5ce0f",
+              "name": "resources.rules.dlint-catastrophic-redos",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
+              },
+              "fullDescription": {
+                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "error"
+              },
+              "help": {
+                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/](https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/)\n - [https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/](https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.dlint-catastrophic-redos"
                 ]
               }
             },
@@ -84,7 +84,31 @@
               }
             },
             {
-              "id": "613b1881-b7be-398e-a2c2-49608dd5ce0f",
+              "id": "c870d312-2689-3c37-a6e4-3ddb842f2a20",
+              "name": "resources.rules.dlint-catastrophic-redos",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
+              },
+              "fullDescription": {
+                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "error"
+              },
+              "help": {
+                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/](https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/)\n - [https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/](https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.dlint-catastrophic-redos"
+                ]
+              }
+            },
+            {
+              "id": "c0ffb047-a008-348a-8c08-8b315d459629",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
@@ -181,7 +205,7 @@
               }
             },
             {
-              "id": "c0ffb047-a008-348a-8c08-8b315d459629",
+              "id": "b1e0baa9-69db-3723-8dcf-9b7c029bb4ac",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
@@ -229,26 +253,26 @@
               }
             },
             {
-              "id": "b1e0baa9-69db-3723-8dcf-9b7c029bb4ac",
-              "name": "resources.rules.dlint-catastrophic-redos",
+              "id": "8185de47-1737-3396-9216-3d3d08591269",
+              "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
+                "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
               },
               "fullDescription": {
-                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
               },
               "defaultConfiguration": {
                 "enabled": true,
-                "level": "error"
+                "level": "warning"
               },
               "help": {
-                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/](https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/)\n - [https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/](https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/)\n"
+                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess](https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess)\n - [https://docs.python.org/3/library/subprocess.html](https://docs.python.org/3/library/subprocess.html)\n - [https://docs.python.org/3/library/shlex.html](https://docs.python.org/3/library/shlex.html)\n"
               },
               "properties": {
                 "precision": "very-high",
                 "tags": [
-                  "resources.rules.dlint-catastrophic-redos"
+                  "resources.rules.dangerous-subprocess-use"
                 ]
               }
             },
@@ -277,31 +301,7 @@
               }
             },
             {
-              "id": "8185de47-1737-3396-9216-3d3d08591269",
-              "name": "resources.rules.dangerous-subprocess-use",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
-              },
-              "fullDescription": {
-                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess](https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess)\n - [https://docs.python.org/3/library/subprocess.html](https://docs.python.org/3/library/subprocess.html)\n - [https://docs.python.org/3/library/shlex.html](https://docs.python.org/3/library/shlex.html)\n"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.dangerous-subprocess-use"
-                ]
-              }
-            },
-            {
-              "id": "9e076613-e312-3ed6-a6b3-3017752f4814",
+              "id": "9cc7228e-adb1-3eca-a34c-21e67dcf7171",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
                 "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
@@ -326,7 +326,7 @@
               }
             },
             {
-              "id": "9cc7228e-adb1-3eca-a34c-21e67dcf7171",
+              "id": "9e076613-e312-3ed6-a6b3-3017752f4814",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
                 "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
@@ -401,31 +401,6 @@
               }
             },
             {
-              "id": "0096e39c-6de1-3832-9587-6d5fd2c69656",
-              "name": "python.lang.security.audit.exec-detected.exec-detected",
-              "shortDescription": {
-                "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
-              },
-              "fullDescription": {
-                "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "helpUri": "https://semgrep.dev/r/python.lang.security.audit.exec-detected.exec-detected",
-              "help": {
-                "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [Semgrep Rule](https://semgrep.dev/r/python.lang.security.audit.exec-detected.exec-detected)\n - [https://owasp.org/Top10/A03_2021-Injection](https://owasp.org/Top10/A03_2021-Injection)\n"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "python.lang.security.audit.exec-detected.exec-detected"
-                ]
-              }
-            },
-            {
               "id": "ed5b9920-6bfe-3615-99ad-4fa750243693",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
@@ -451,26 +426,27 @@
               }
             },
             {
-              "id": "e7678f25-0dc0-3404-8c18-bdb404f94111",
-              "name": "resources.rules.dangerous-subprocess-use",
+              "id": "0096e39c-6de1-3832-9587-6d5fd2c69656",
+              "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
+                "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
               },
               "fullDescription": {
-                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+                "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
               },
               "defaultConfiguration": {
                 "enabled": true,
                 "level": "warning"
               },
+              "helpUri": "https://semgrep.dev/r/python.lang.security.audit.exec-detected.exec-detected",
               "help": {
-                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess](https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess)\n - [https://docs.python.org/3/library/subprocess.html](https://docs.python.org/3/library/subprocess.html)\n - [https://docs.python.org/3/library/shlex.html](https://docs.python.org/3/library/shlex.html)\n"
+                "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [Semgrep Rule](https://semgrep.dev/r/python.lang.security.audit.exec-detected.exec-detected)\n - [https://owasp.org/Top10/A03_2021-Injection](https://owasp.org/Top10/A03_2021-Injection)\n"
               },
               "properties": {
                 "precision": "very-high",
                 "tags": [
-                  "resources.rules.dangerous-subprocess-use"
+                  "python.lang.security.audit.exec-detected.exec-detected"
                 ]
               }
             },
@@ -499,6 +475,30 @@
               }
             },
             {
+              "id": "e7678f25-0dc0-3404-8c18-bdb404f94111",
+              "name": "resources.rules.dangerous-subprocess-use",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
+              },
+              "fullDescription": {
+                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "warning"
+              },
+              "help": {
+                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess](https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess)\n - [https://docs.python.org/3/library/subprocess.html](https://docs.python.org/3/library/subprocess.html)\n - [https://docs.python.org/3/library/shlex.html](https://docs.python.org/3/library/shlex.html)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.dangerous-subprocess-use"
+                ]
+              }
+            },
+            {
               "id": "2d116d37-15d6-3b13-933a-af51bb1e71b7",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
@@ -523,7 +523,7 @@
               }
             },
             {
-              "id": "4ca50a92-8e74-3fb8-ac1a-71a2371efeee",
+              "id": "d5ca6982-ef17-37eb-8153-1cb169b140b5",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
@@ -547,7 +547,7 @@
               }
             },
             {
-              "id": "d5ca6982-ef17-37eb-8153-1cb169b140b5",
+              "id": "4ca50a92-8e74-3fb8-ac1a-71a2371efeee",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
@@ -1207,7 +1207,7 @@
               }
             },
             {
-              "id": "f8705877-18b8-3e16-9fe1-00650a5524dd",
+              "id": "260f0cda-3a3b-35b9-b032-16715b1c8be3",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
@@ -1231,7 +1231,7 @@
               }
             },
             {
-              "id": "260f0cda-3a3b-35b9-b032-16715b1c8be3",
+              "id": "f8705877-18b8-3e16-9fe1-00650a5524dd",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
@@ -1377,30 +1377,6 @@
               }
             },
             {
-              "id": "399436a0-75a1-3178-95b5-7034028a5459",
-              "name": "resources.rules.raise-not-base-exception",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.raise-not-base-exception"
-              },
-              "fullDescription": {
-                "text": "In Python3, a runtime `TypeError` will be thrown if you attempt to raise an object or class which does not inherit from `BaseException`"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
-              "help": {
-                "text": "In Python3, a runtime `TypeError` will be thrown if you attempt to raise an object or class which does not inherit from `BaseException`\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "In Python3, a runtime `TypeError` will be thrown if you attempt to raise an object or class which does not inherit from `BaseException`\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.raise-not-base-exception"
-                ]
-              }
-            },
-            {
               "id": "1739ec02-1de6-3586-9ff3-2846d9c483a5",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
@@ -1421,6 +1397,30 @@
                 "precision": "very-high",
                 "tags": [
                   "resources.rules.dangerous-subprocess-use"
+                ]
+              }
+            },
+            {
+              "id": "399436a0-75a1-3178-95b5-7034028a5459",
+              "name": "resources.rules.raise-not-base-exception",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.raise-not-base-exception"
+              },
+              "fullDescription": {
+                "text": "In Python3, a runtime `TypeError` will be thrown if you attempt to raise an object or class which does not inherit from `BaseException`"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "error"
+              },
+              "help": {
+                "text": "In Python3, a runtime `TypeError` will be thrown if you attempt to raise an object or class which does not inherit from `BaseException`\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "In Python3, a runtime `TypeError` will be thrown if you attempt to raise an object or class which does not inherit from `BaseException`\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.raise-not-base-exception"
                 ]
               }
             },
@@ -1521,7 +1521,7 @@
               }
             },
             {
-              "id": "0c51dc60-01da-3447-bd88-4928066a5577",
+              "id": "1e178bfb-d243-3af0-945d-4b856d74e5e4",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
@@ -1545,7 +1545,7 @@
               }
             },
             {
-              "id": "1e178bfb-d243-3af0-945d-4b856d74e5e4",
+              "id": "0c51dc60-01da-3447-bd88-4928066a5577",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
@@ -1593,30 +1593,6 @@
               }
             },
             {
-              "id": "dd398a0d-f5f1-33ef-8248-0d4e381cba55",
-              "name": "resources.rules.dlint-catastrophic-redos",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
-              },
-              "fullDescription": {
-                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
-              "help": {
-                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/](https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/)\n - [https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/](https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/)\n"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.dlint-catastrophic-redos"
-                ]
-              }
-            },
-            {
               "id": "681ca36c-02b9-3310-8011-f7867b8b2e0a",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
@@ -1641,7 +1617,7 @@
               }
             },
             {
-              "id": "1f214241-8719-30d0-954b-7c8bb13c2dfd",
+              "id": "dd398a0d-f5f1-33ef-8248-0d4e381cba55",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
@@ -1685,6 +1661,30 @@
                 "precision": "very-high",
                 "tags": [
                   "resources.rules.insecure-tarfile-use"
+                ]
+              }
+            },
+            {
+              "id": "1f214241-8719-30d0-954b-7c8bb13c2dfd",
+              "name": "resources.rules.dlint-catastrophic-redos",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
+              },
+              "fullDescription": {
+                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "error"
+              },
+              "help": {
+                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/](https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/)\n - [https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/](https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.dlint-catastrophic-redos"
                 ]
               }
             },
@@ -1737,7 +1737,7 @@
               }
             },
             {
-              "id": "3a3ad12f-fa5e-3706-a62e-aaba98273e85",
+              "id": "a9124860-7a32-3260-b075-d3309cb26ff6",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
@@ -1761,7 +1761,7 @@
               }
             },
             {
-              "id": "a9124860-7a32-3260-b075-d3309cb26ff6",
+              "id": "3a3ad12f-fa5e-3706-a62e-aaba98273e85",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
@@ -2006,7 +2006,7 @@
               }
             },
             {
-              "id": "f208e4f9-d8d5-31cd-ab06-1d6f24e51eab",
+              "id": "57c7cc3e-9f68-3288-bce3-42e7c7b11986",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
@@ -2079,30 +2079,6 @@
               }
             },
             {
-              "id": "57c7cc3e-9f68-3288-bce3-42e7c7b11986",
-              "name": "resources.rules.dlint-catastrophic-redos",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
-              },
-              "fullDescription": {
-                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
-              "help": {
-                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/](https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/)\n - [https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/](https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/)\n"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.dlint-catastrophic-redos"
-                ]
-              }
-            },
-            {
               "id": "8608088c-22c1-30bb-a229-082615bf4779",
               "name": "resources.rules.insecure-tarfile-use",
               "shortDescription": {
@@ -2127,7 +2103,7 @@
               }
             },
             {
-              "id": "1738d01b-6d71-3f4d-aa63-df91ea728432",
+              "id": "4d57df0e-0461-322f-8c4d-64903fc3b647",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
@@ -2151,7 +2127,7 @@
               }
             },
             {
-              "id": "4d57df0e-0461-322f-8c4d-64903fc3b647",
+              "id": "1738d01b-6d71-3f4d-aa63-df91ea728432",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
                 "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
@@ -2200,7 +2176,7 @@
               }
             },
             {
-              "id": "5fd8dfd2-908d-37fb-8b83-9b74be082221",
+              "id": "13383246-33d6-3760-a196-6d60f0e80130",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
                 "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
@@ -2225,7 +2201,31 @@
               }
             },
             {
-              "id": "13383246-33d6-3760-a196-6d60f0e80130",
+              "id": "87f851f1-8c48-39b9-8941-61f39842fa30",
+              "name": "resources.rules.dangerous-subprocess-use",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.dangerous-subprocess-use"
+              },
+              "fullDescription": {
+                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "warning"
+              },
+              "help": {
+                "text": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Detected subprocess function '$FUNC' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess](https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess)\n - [https://docs.python.org/3/library/subprocess.html](https://docs.python.org/3/library/subprocess.html)\n - [https://docs.python.org/3/library/shlex.html](https://docs.python.org/3/library/shlex.html)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.dangerous-subprocess-use"
+                ]
+              }
+            },
+            {
+              "id": "5fd8dfd2-908d-37fb-8b83-9b74be082221",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
                 "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
@@ -2300,6 +2300,30 @@
               }
             },
             {
+              "id": "251c9c06-a88a-3e09-a1e4-e837ca6b6440",
+              "name": "resources.rules.dlint-catastrophic-redos",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.dlint-catastrophic-redos"
+              },
+              "fullDescription": {
+                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "error"
+              },
+              "help": {
+                "text": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Regex `$X` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/](https://r2c.dev/blog/2020/finding-python-redos-bugs-at-scale-using-dlint-and-r2c/)\n - [https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/](https://r2c.dev/blog/2020/improving-redos-detection-with-dlint-and-r2c/)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.dlint-catastrophic-redos"
+                ]
+              }
+            },
+            {
               "id": "2621ccff-ff97-3db4-b499-2b44b3dd4582",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
@@ -2368,6 +2392,31 @@
                 "precision": "very-high",
                 "tags": [
                   "resources.rules.dangerous-subprocess-use"
+                ]
+              }
+            },
+            {
+              "id": "e2391726-cab7-3f99-905b-4c64dea4207f",
+              "name": "python.lang.security.audit.exec-detected.exec-detected",
+              "shortDescription": {
+                "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
+              },
+              "fullDescription": {
+                "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "warning"
+              },
+              "helpUri": "https://semgrep.dev/r/python.lang.security.audit.exec-detected.exec-detected",
+              "help": {
+                "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [Semgrep Rule](https://semgrep.dev/r/python.lang.security.audit.exec-detected.exec-detected)\n - [https://owasp.org/Top10/A03_2021-Injection](https://owasp.org/Top10/A03_2021-Injection)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "python.lang.security.audit.exec-detected.exec-detected"
                 ]
               }
             },
@@ -2446,30 +2495,6 @@
               }
             },
             {
-              "id": "98ee7643-5162-3971-909d-8054cfba2a7b",
-              "name": "resources.rules.open-never-closed",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.open-never-closed"
-              },
-              "fullDescription": {
-                "text": "file object opened without corresponding close"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
-              "help": {
-                "text": "file object opened without corresponding close\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "file object opened without corresponding close\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.open-never-closed"
-                ]
-              }
-            },
-            {
               "id": "dbc50612-4881-3339-ac3c-ddcf367cecc3",
               "name": "resources.rules.missing-image-version",
               "shortDescription": {
@@ -2490,6 +2515,30 @@
                 "precision": "very-high",
                 "tags": [
                   "resources.rules.missing-image-version"
+                ]
+              }
+            },
+            {
+              "id": "98ee7643-5162-3971-909d-8054cfba2a7b",
+              "name": "resources.rules.open-never-closed",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.open-never-closed"
+              },
+              "fullDescription": {
+                "text": "file object opened without corresponding close"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "error"
+              },
+              "help": {
+                "text": "file object opened without corresponding close\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "file object opened without corresponding close\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.open-never-closed"
                 ]
               }
             },
@@ -2614,6 +2663,30 @@
               }
             },
             {
+              "id": "53644bf7-7665-39ff-8bd5-69c5ba405d1d",
+              "name": "resources.rules.set-pipefail",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.set-pipefail"
+              },
+              "fullDescription": {
+                "text": "Only the exit code from the final command in this RUN instruction will be evaluated unless 'pipefail' is set.\nIf you want to fail the command at any stage in the pipe, set 'pipefail' by including 'SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"] before the command.\nIf you're using alpine and don't have bash installed, communicate this explicitly with `SHELL [\"/bin/ash\"]`.\n"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "warning"
+              },
+              "help": {
+                "text": "Only the exit code from the final command in this RUN instruction will be evaluated unless 'pipefail' is set.\nIf you want to fail the command at any stage in the pipe, set 'pipefail' by including 'SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"] before the command.\nIf you're using alpine and don't have bash installed, communicate this explicitly with `SHELL [\"/bin/ash\"]`.\n\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Only the exit code from the final command in this RUN instruction will be evaluated unless 'pipefail' is set.\nIf you want to fail the command at any stage in the pipe, set 'pipefail' by including 'SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"] before the command.\nIf you're using alpine and don't have bash installed, communicate this explicitly with `SHELL [\"/bin/ash\"]`.\n\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://github.com/hadolint/hadolint/wiki/DL4006](https://github.com/hadolint/hadolint/wiki/DL4006)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.set-pipefail"
+                ]
+              }
+            },
+            {
               "id": "a4625652-8d19-315c-a1a8-5601a0e470b5",
               "name": "resources.rules.prefer-apt-get",
               "shortDescription": {
@@ -2659,30 +2732,6 @@
                 "precision": "very-high",
                 "tags": [
                   "dockerfile.security.no-sudo-in-dockerfile.no-sudo-in-dockerfile"
-                ]
-              }
-            },
-            {
-              "id": "53644bf7-7665-39ff-8bd5-69c5ba405d1d",
-              "name": "resources.rules.set-pipefail",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.set-pipefail"
-              },
-              "fullDescription": {
-                "text": "Only the exit code from the final command in this RUN instruction will be evaluated unless 'pipefail' is set.\nIf you want to fail the command at any stage in the pipe, set 'pipefail' by including 'SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"] before the command.\nIf you're using alpine and don't have bash installed, communicate this explicitly with `SHELL [\"/bin/ash\"]`.\n"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "warning"
-              },
-              "help": {
-                "text": "Only the exit code from the final command in this RUN instruction will be evaluated unless 'pipefail' is set.\nIf you want to fail the command at any stage in the pipe, set 'pipefail' by including 'SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"] before the command.\nIf you're using alpine and don't have bash installed, communicate this explicitly with `SHELL [\"/bin/ash\"]`.\n\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "Only the exit code from the final command in this RUN instruction will be evaluated unless 'pipefail' is set.\nIf you want to fail the command at any stage in the pipe, set 'pipefail' by including 'SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"] before the command.\nIf you're using alpine and don't have bash installed, communicate this explicitly with `SHELL [\"/bin/ash\"]`.\n\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [https://github.com/hadolint/hadolint/wiki/DL4006](https://github.com/hadolint/hadolint/wiki/DL4006)\n"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.set-pipefail"
                 ]
               }
             },
@@ -2783,6 +2832,30 @@
               }
             },
             {
+              "id": "48bed010-638e-3cb6-b7d1-d8cc57e3fca0",
+              "name": "resources.rules.arbitrary-sleep",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.arbitrary-sleep"
+              },
+              "fullDescription": {
+                "text": "time.sleep() call; did you mean to leave this in?"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "error"
+              },
+              "help": {
+                "text": "time.sleep() call; did you mean to leave this in?\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "time.sleep() call; did you mean to leave this in?\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.arbitrary-sleep"
+                ]
+              }
+            },
+            {
               "id": "c3052a27-e086-33de-972c-4e2138fc850e",
               "name": "resources.rules.arbitrary-sleep",
               "shortDescription": {
@@ -2831,30 +2904,6 @@
               }
             },
             {
-              "id": "48bed010-638e-3cb6-b7d1-d8cc57e3fca0",
-              "name": "resources.rules.arbitrary-sleep",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.arbitrary-sleep"
-              },
-              "fullDescription": {
-                "text": "time.sleep() call; did you mean to leave this in?"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
-              "help": {
-                "text": "time.sleep() call; did you mean to leave this in?\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "time.sleep() call; did you mean to leave this in?\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.arbitrary-sleep"
-                ]
-              }
-            },
-            {
               "id": "a8e0210d-db49-349e-ad7c-cfa0b9717deb",
               "name": "resources.rules.dangerous-subprocess-use",
               "shortDescription": {
@@ -2879,7 +2928,7 @@
               }
             },
             {
-              "id": "2ef656ea-1a94-399b-9087-68526ae047ce",
+              "id": "6ef17ed1-f5a8-3ff6-9f99-ff3a9167260f",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
                 "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
@@ -2904,7 +2953,7 @@
               }
             },
             {
-              "id": "6ef17ed1-f5a8-3ff6-9f99-ff3a9167260f",
+              "id": "2ef656ea-1a94-399b-9087-68526ae047ce",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
                 "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
@@ -3079,7 +3128,7 @@
               }
             },
             {
-              "id": "e09e4b19-fa58-33f0-b38c-058572112e64",
+              "id": "e55630b7-cdf5-3220-8ea6-2cce7ad84c78",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
                 "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
@@ -3104,7 +3153,7 @@
               }
             },
             {
-              "id": "e55630b7-cdf5-3220-8ea6-2cce7ad84c78",
+              "id": "e09e4b19-fa58-33f0-b38c-058572112e64",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
                 "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
@@ -3427,6 +3476,31 @@
               }
             },
             {
+              "id": "01a9a380-998b-3af6-b073-d534df0d80ab",
+              "name": "python.lang.security.audit.exec-detected.exec-detected",
+              "shortDescription": {
+                "text": "Opengrep Finding: python.lang.security.audit.exec-detected.exec-detected"
+              },
+              "fullDescription": {
+                "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "warning"
+              },
+              "helpUri": "https://semgrep.dev/r/python.lang.security.audit.exec-detected.exec-detected",
+              "help": {
+                "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>\n\n<b>References:</b>\n - [Semgrep Rule](https://semgrep.dev/r/python.lang.security.audit.exec-detected.exec-detected)\n - [https://owasp.org/Top10/A03_2021-Injection](https://owasp.org/Top10/A03_2021-Injection)\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "python.lang.security.audit.exec-detected.exec-detected"
+                ]
+              }
+            },
+            {
               "id": "27df5807-5174-3f40-b70e-427e3c5491a7",
               "name": "python.lang.security.audit.exec-detected.exec-detected",
               "shortDescription": {
@@ -3677,30 +3751,6 @@
               }
             },
             {
-              "id": "decd9af5-96d4-3679-8203-c10a3632407d",
-              "name": "resources.rules.open-never-closed",
-              "shortDescription": {
-                "text": "Opengrep Finding: resources.rules.open-never-closed"
-              },
-              "fullDescription": {
-                "text": "file object opened without corresponding close"
-              },
-              "defaultConfiguration": {
-                "enabled": true,
-                "level": "error"
-              },
-              "help": {
-                "text": "file object opened without corresponding close\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
-                "markdown": "file object opened without corresponding close\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>"
-              },
-              "properties": {
-                "precision": "very-high",
-                "tags": [
-                  "resources.rules.open-never-closed"
-                ]
-              }
-            },
-            {
               "id": "cc26142e-4d1c-33ef-8976-4913d8335960",
               "name": "resources.rules.dlint-catastrophic-redos",
               "shortDescription": {
@@ -3721,6 +3771,30 @@
                 "precision": "very-high",
                 "tags": [
                   "resources.rules.dlint-catastrophic-redos"
+                ]
+              }
+            },
+            {
+              "id": "decd9af5-96d4-3679-8203-c10a3632407d",
+              "name": "resources.rules.open-never-closed",
+              "shortDescription": {
+                "text": "Opengrep Finding: resources.rules.open-never-closed"
+              },
+              "fullDescription": {
+                "text": "file object opened without corresponding close"
+              },
+              "defaultConfiguration": {
+                "enabled": true,
+                "level": "error"
+              },
+              "help": {
+                "text": "file object opened without corresponding close\n💎 Enable cross-file analysis and Pro rules for free at sg.run/pro",
+                "markdown": "file object opened without corresponding close\n\n#### 💎 Enable cross-file analysis and Pro rules for free at <a href='https://sg.run/pro'>sg.run/pro</a>"
+              },
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "resources.rules.open-never-closed"
                 ]
               }
             },
@@ -3760,37 +3834,6 @@
       "language": "en-US",
       "results": [
         {
-          "ruleId": "c870d312-2689-3c37-a6e4-3ddb842f2a20",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Regex `r\"^([^_]+)_([^_]+)_([^_]+)\\.tar.xz$\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/_therock_utils/artifacts.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 52,
-                  "startColumn": 13,
-                  "endLine": 52,
-                  "endColumn": 69,
-                  "snippet": {
-                    "text": "        m = re.match(r\"^([^_]+)_([^_]+)_([^_]+)\\.tar.xz$\", filename)"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "91b3ba5d9c798e38bab250a8605d0af71c42adfd1c166f59a1611b675c3681fe66cf1aa6600acb48c496a061420a15b0567cf6f6a61158cab4db5ef43c9301dc_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "515120d7-08ea-3d09-b439-fe022e5c765e",
           "kind": "fail",
           "level": "warning",
@@ -3818,6 +3861,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "ce85c457b6d3faf30e38be3a48cc2933e257db4196286cbf06b652a0927600b289783c20c1ca99d8611f59aabd6c992a2c7e3e0d51a284a1e45ec8ab8d707795_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "613b1881-b7be-398e-a2c2-49608dd5ce0f",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Regex `r\"^([^_]+)_([^_]+)_([^_]+)$\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/_therock_utils/artifacts.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 42,
+                  "startColumn": 17,
+                  "endLine": 42,
+                  "endColumn": 65,
+                  "snippet": {
+                    "text": "            m = re.match(r\"^([^_]+)_([^_]+)_([^_]+)$\", filename)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "74ffb8529f06d40159186fd852e6663bbbe80969cd13d00c977439dfb0da4d36ec480dd18af02b5fb4ef52273d6216f065451275b87274b4ce39fdb5b555eb63_0"
           },
           "properties": {}
         },
@@ -3853,11 +3927,11 @@
           "properties": {}
         },
         {
-          "ruleId": "613b1881-b7be-398e-a2c2-49608dd5ce0f",
+          "ruleId": "c870d312-2689-3c37-a6e4-3ddb842f2a20",
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Regex `r\"^([^_]+)_([^_]+)_([^_]+)$\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+            "text": "Regex `r\"^([^_]+)_([^_]+)_([^_]+)\\.tar.xz$\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
           },
           "locations": [
             {
@@ -3867,19 +3941,50 @@
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 42,
-                  "startColumn": 17,
-                  "endLine": 42,
-                  "endColumn": 65,
+                  "startLine": 52,
+                  "startColumn": 13,
+                  "endLine": 52,
+                  "endColumn": 69,
                   "snippet": {
-                    "text": "            m = re.match(r\"^([^_]+)_([^_]+)_([^_]+)$\", filename)"
+                    "text": "        m = re.match(r\"^([^_]+)_([^_]+)_([^_]+)\\.tar.xz$\", filename)"
                   }
                 }
               }
             }
           ],
           "fingerprints": {
-            "matchBasedId/v1": "74ffb8529f06d40159186fd852e6663bbbe80969cd13d00c977439dfb0da4d36ec480dd18af02b5fb4ef52273d6216f065451275b87274b4ce39fdb5b555eb63_0"
+            "matchBasedId/v1": "91b3ba5d9c798e38bab250a8605d0af71c42adfd1c166f59a1611b675c3681fe66cf1aa6600acb48c496a061420a15b0567cf6f6a61158cab4db5ef43c9301dc_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "c0ffb047-a008-348a-8c08-8b315d459629",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Regex `pattern` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/_therock_utils/pattern_match.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 24,
+                  "endLine": 24,
+                  "endColumn": 43,
+                  "snippet": {
+                    "text": "        self.pattern = re.compile(pattern)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "8106cda5124a1f5bb14b24c10daf218f3c9cb7203dd1b2c6199fcce7fe81c54e86c81871a4a703b2474877591b382a6f06e5043cb84d52a78bd5c5b8cabb6988_0"
           },
           "properties": {}
         },
@@ -3977,33 +4082,33 @@
           "properties": {}
         },
         {
-          "ruleId": "c0ffb047-a008-348a-8c08-8b315d459629",
+          "ruleId": "b1e0baa9-69db-3723-8dcf-9b7c029bb4ac",
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Regex `pattern` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+            "text": "Regex `\"ELF[^,]+executable,\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "build_tools/_therock_utils/pattern_match.py",
+                  "uri": "build_tools/_therock_utils/py_packaging.py",
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 24,
-                  "startColumn": 24,
-                  "endLine": 24,
-                  "endColumn": 43,
+                  "startLine": 507,
+                  "startColumn": 26,
+                  "endLine": 507,
+                  "endColumn": 59,
                   "snippet": {
-                    "text": "        self.pattern = re.compile(pattern)"
+                    "text": "MAGIC_EXECUTABLE_MATCH = re.compile(\"ELF[^,]+executable,\")"
                   }
                 }
               }
             }
           ],
           "fingerprints": {
-            "matchBasedId/v1": "8106cda5124a1f5bb14b24c10daf218f3c9cb7203dd1b2c6199fcce7fe81c54e86c81871a4a703b2474877591b382a6f06e5043cb84d52a78bd5c5b8cabb6988_0"
+            "matchBasedId/v1": "b572afe8a86d84ebbb9a320aa72b6c65c9c7dba28a8c5e30ce90cbda0719fc520abfb995ce16596ca83175092517051b0125e9071935cba725adae97c873375d_0"
           },
           "properties": {}
         },
@@ -4039,11 +4144,11 @@
           "properties": {}
         },
         {
-          "ruleId": "b1e0baa9-69db-3723-8dcf-9b7c029bb4ac",
+          "ruleId": "8185de47-1737-3396-9216-3d3d08591269",
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Regex `\"ELF[^,]+executable,\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+            "text": "Detected subprocess function 'check_call' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
           },
           "locations": [
             {
@@ -4053,19 +4158,19 @@
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 507,
-                  "startColumn": 26,
-                  "endLine": 507,
-                  "endColumn": 59,
+                  "startLine": 594,
+                  "startColumn": 9,
+                  "endLine": 594,
+                  "endColumn": 84,
                   "snippet": {
-                    "text": "MAGIC_EXECUTABLE_MATCH = re.compile(\"ELF[^,]+executable,\")"
+                    "text": "        subprocess.check_call(build_args, cwd=child_path, stderr=subprocess.STDOUT)"
                   }
                 }
               }
             }
           ],
           "fingerprints": {
-            "matchBasedId/v1": "b572afe8a86d84ebbb9a320aa72b6c65c9c7dba28a8c5e30ce90cbda0719fc520abfb995ce16596ca83175092517051b0125e9071935cba725adae97c873375d_0"
+            "matchBasedId/v1": "b2e9b9ce827c5826ee5fc5efabbde8fc16219a9bd02879cb6862fff8ab6ea980dd0f3d9700e20fc971043327f9f93c2324fb6fb7a355ea7c48008c8b1a342f7e_1"
           },
           "properties": {}
         },
@@ -4101,33 +4206,33 @@
           "properties": {}
         },
         {
-          "ruleId": "8185de47-1737-3396-9216-3d3d08591269",
+          "ruleId": "9cc7228e-adb1-3eca-a34c-21e67dcf7171",
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Detected subprocess function 'check_call' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "build_tools/_therock_utils/py_packaging.py",
+                  "uri": "build_tools/bump_submodules.py",
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 594,
+                  "startLine": 145,
                   "startColumn": 9,
-                  "endLine": 594,
-                  "endColumn": 84,
+                  "endLine": 148,
+                  "endColumn": 10,
                   "snippet": {
-                    "text": "        subprocess.check_call(build_args, cwd=child_path, stderr=subprocess.STDOUT)"
+                    "text": "        exec(\n            [\"git\", \"checkout\", \"-b\", args.branch_name],\n            cwd=THEROCK_DIR,\n        )"
                   }
                 }
               }
             }
           ],
           "fingerprints": {
-            "matchBasedId/v1": "b2e9b9ce827c5826ee5fc5efabbde8fc16219a9bd02879cb6862fff8ab6ea980dd0f3d9700e20fc971043327f9f93c2324fb6fb7a355ea7c48008c8b1a342f7e_1"
+            "matchBasedId/v1": "462f4420f28ac289329f5ac739f0b6681ad4d9a67ab92f213fee18c7331c40bd83a83065ab2362a1b7d08fff10889eb8bac0e70d9146d94b4f326eea49bd2cf5_1"
           },
           "properties": {}
         },
@@ -4159,37 +4264,6 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "462f4420f28ac289329f5ac739f0b6681ad4d9a67ab92f213fee18c7331c40bd83a83065ab2362a1b7d08fff10889eb8bac0e70d9146d94b4f326eea49bd2cf5_0"
-          },
-          "properties": {}
-        },
-        {
-          "ruleId": "9cc7228e-adb1-3eca-a34c-21e67dcf7171",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/bump_submodules.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 145,
-                  "startColumn": 9,
-                  "endLine": 148,
-                  "endColumn": 10,
-                  "snippet": {
-                    "text": "        exec(\n            [\"git\", \"checkout\", \"-b\", args.branch_name],\n            cwd=THEROCK_DIR,\n        )"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "462f4420f28ac289329f5ac739f0b6681ad4d9a67ab92f213fee18c7331c40bd83a83065ab2362a1b7d08fff10889eb8bac0e70d9146d94b4f326eea49bd2cf5_1"
           },
           "properties": {}
         },
@@ -4256,37 +4330,6 @@
           "properties": {}
         },
         {
-          "ruleId": "0096e39c-6de1-3832-9587-6d5fd2c69656",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/bump_submodules.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 176,
-                  "startColumn": 9,
-                  "endLine": 179,
-                  "endColumn": 10,
-                  "snippet": {
-                    "text": "        exec(\n            [sys.executable, \"./build_tools/fetch_sources.py\"],\n            cwd=THEROCK_DIR,\n        )"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "462f4420f28ac289329f5ac739f0b6681ad4d9a67ab92f213fee18c7331c40bd83a83065ab2362a1b7d08fff10889eb8bac0e70d9146d94b4f326eea49bd2cf5_4"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "ed5b9920-6bfe-3615-99ad-4fa750243693",
           "kind": "fail",
           "level": "warning",
@@ -4318,33 +4361,33 @@
           "properties": {}
         },
         {
-          "ruleId": "e7678f25-0dc0-3404-8c18-bdb404f94111",
+          "ruleId": "0096e39c-6de1-3832-9587-6d5fd2c69656",
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Detected subprocess function 'check_output' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "build_tools/export_source_archive.py",
+                  "uri": "build_tools/bump_submodules.py",
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 120,
-                  "startColumn": 13,
-                  "endLine": 120,
-                  "endColumn": 40,
+                  "startLine": 176,
+                  "startColumn": 9,
+                  "endLine": 179,
+                  "endColumn": 10,
                   "snippet": {
-                    "text": "    lines = subprocess.check_output(cl).decode()"
+                    "text": "        exec(\n            [sys.executable, \"./build_tools/fetch_sources.py\"],\n            cwd=THEROCK_DIR,\n        )"
                   }
                 }
               }
             }
           ],
           "fingerprints": {
-            "matchBasedId/v1": "62bfaa0e8e4631cefbb50bbfdb3461b99eeb60cd23f93c9e0102022771059ae6acd0798684048e95d97c5756e58a1432681134d80eff20e199d5eda1c893034b_0"
+            "matchBasedId/v1": "462f4420f28ac289329f5ac739f0b6681ad4d9a67ab92f213fee18c7331c40bd83a83065ab2362a1b7d08fff10889eb8bac0e70d9146d94b4f326eea49bd2cf5_4"
           },
           "properties": {}
         },
@@ -4380,6 +4423,37 @@
           "properties": {}
         },
         {
+          "ruleId": "e7678f25-0dc0-3404-8c18-bdb404f94111",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected subprocess function 'check_output' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/export_source_archive.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 120,
+                  "startColumn": 13,
+                  "endLine": 120,
+                  "endColumn": 40,
+                  "snippet": {
+                    "text": "    lines = subprocess.check_output(cl).decode()"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "62bfaa0e8e4631cefbb50bbfdb3461b99eeb60cd23f93c9e0102022771059ae6acd0798684048e95d97c5756e58a1432681134d80eff20e199d5eda1c893034b_0"
+          },
+          "properties": {}
+        },
+        {
           "ruleId": "2d116d37-15d6-3b13-933a-af51bb1e71b7",
           "kind": "fail",
           "level": "warning",
@@ -4411,37 +4485,6 @@
           "properties": {}
         },
         {
-          "ruleId": "4ca50a92-8e74-3fb8-ac1a-71a2371efeee",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected subprocess function 'check_output' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/export_source_archive.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 132,
-                  "startColumn": 16,
-                  "endLine": 132,
-                  "endColumn": 43,
-                  "snippet": {
-                    "text": "        return subprocess.check_output(cl).decode().strip()"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "62bfaa0e8e4631cefbb50bbfdb3461b99eeb60cd23f93c9e0102022771059ae6acd0798684048e95d97c5756e58a1432681134d80eff20e199d5eda1c893034b_2"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "d5ca6982-ef17-37eb-8153-1cb169b140b5",
           "kind": "fail",
           "level": "warning",
@@ -4469,6 +4512,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "db93bf3c7b20a69fec1a4ead49e04488c59c4fe33a05bb07de8c34d7ab54bcdf7feedf0aa6bbd1ccb4dcfe2494b14cfa7a585124ac97e83ddfe7f716f87bd419_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "4ca50a92-8e74-3fb8-ac1a-71a2371efeee",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected subprocess function 'check_output' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/export_source_archive.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 132,
+                  "startColumn": 16,
+                  "endLine": 132,
+                  "endColumn": 43,
+                  "snippet": {
+                    "text": "        return subprocess.check_output(cl).decode().strip()"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "62bfaa0e8e4631cefbb50bbfdb3461b99eeb60cd23f93c9e0102022771059ae6acd0798684048e95d97c5756e58a1432681134d80eff20e199d5eda1c893034b_2"
           },
           "properties": {}
         },
@@ -4628,37 +4702,6 @@
           "properties": {}
         },
         {
-          "ruleId": "269bf104-4e93-32f5-a63b-31defcf9ec99",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/fetch_sources.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 62,
-                  "startColumn": 9,
-                  "endLine": 68,
-                  "endColumn": 10,
-                  "snippet": {
-                    "text": "        exec(\n            [\"git\", \"submodule\", \"update\", \"--init\"]\n            + update_args\n            + [\"--\"]\n            + submodule_paths,\n            cwd=THEROCK_DIR,\n        )"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "d44fc85daa19e136aa67a7353331f3eaf30c95a4fecc86fc584b376f42d0ac54c721dea52b860dcbf36b4374e78518cc3de37e7d65d2e2b116c9bb5f8dca2d40_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "d991de88-2fb4-3eaa-83c1-c36a939ed3fc",
           "kind": "fail",
           "level": "warning",
@@ -4686,6 +4729,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "d57739f1e8bb298a2e3128b7ee450c4ead6adfced65e8d9700742ce59efe5f8e5e2817a6086906f1d14eb704f6c4357023ec4d4b25a1f242c017c4923c51e3bf_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "269bf104-4e93-32f5-a63b-31defcf9ec99",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/fetch_sources.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 62,
+                  "startColumn": 9,
+                  "endLine": 68,
+                  "endColumn": 10,
+                  "snippet": {
+                    "text": "        exec(\n            [\"git\", \"submodule\", \"update\", \"--init\"]\n            + update_args\n            + [\"--\"]\n            + submodule_paths,\n            cwd=THEROCK_DIR,\n        )"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "d44fc85daa19e136aa67a7353331f3eaf30c95a4fecc86fc584b376f42d0ac54c721dea52b860dcbf36b4374e78518cc3de37e7d65d2e2b116c9bb5f8dca2d40_0"
           },
           "properties": {}
         },
@@ -5279,37 +5353,6 @@
           "properties": {}
         },
         {
-          "ruleId": "f8705877-18b8-3e16-9fe1-00650a5524dd",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected subprocess function 'run' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/github_actions/test_executable_scripts/test_rocprim.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 31,
-                  "startColumn": 1,
-                  "endLine": 35,
-                  "endColumn": 2,
-                  "snippet": {
-                    "text": "subprocess.run(\n    cmd,\n    cwd=THEROCK_DIR,\n    check=True,\n)"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "54bbfba17bad87e5364e41792f1128f18b34d063f583805af188fe9d337bf960d66863d55d319b8a8bd2547283ec060276c06e866d71b5ae6b7cfc6eb4693910_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "260f0cda-3a3b-35b9-b032-16715b1c8be3",
           "kind": "fail",
           "level": "warning",
@@ -5337,6 +5380,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "e5a6cf70ac15041323e1785c7ac71c3f86818f7711b2e52c3e4d6124fc66f310f454e89831d2e60599615285ec36a42730480589979c6316ffe12bf4a57cf683_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "f8705877-18b8-3e16-9fe1-00650a5524dd",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected subprocess function 'run' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/github_actions/test_executable_scripts/test_rocprim.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 31,
+                  "startColumn": 1,
+                  "endLine": 35,
+                  "endColumn": 2,
+                  "snippet": {
+                    "text": "subprocess.run(\n    cmd,\n    cwd=THEROCK_DIR,\n    check=True,\n)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "54bbfba17bad87e5364e41792f1128f18b34d063f583805af188fe9d337bf960d66863d55d319b8a8bd2547283ec060276c06e866d71b5ae6b7cfc6eb4693910_0"
           },
           "properties": {}
         },
@@ -5496,37 +5570,6 @@
           "properties": {}
         },
         {
-          "ruleId": "399436a0-75a1-3178-95b5-7034028a5459",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "In Python3, a runtime `TypeError` will be thrown if you attempt to raise an object or class which does not inherit from `BaseException`"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/hack/build_env_diag.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 42,
-                  "startColumn": 21,
-                  "endLine": 42,
-                  "endColumn": 50,
-                  "snippet": {
-                    "text": "                    raise f\"WSL 1 not supported.\""
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "63e8ac85aa540e79fbadce28bd64f6c065ddc4ab903a75e97832c412a462f7d5ecc96e1188a15585d1297a178af509c588055910c94bf17dd37815a43bf7011c_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "1739ec02-1de6-3586-9ff3-2846d9c483a5",
           "kind": "fail",
           "level": "warning",
@@ -5554,6 +5597,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "da5378bf7742c0401d1649191a511ce949baaacecda5b598fc762c76e6223cd019396fae6d51d0a73af9f03cc52436be59da89301e69b973ceb0dd969e0e746f_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "399436a0-75a1-3178-95b5-7034028a5459",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "In Python3, a runtime `TypeError` will be thrown if you attempt to raise an object or class which does not inherit from `BaseException`"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/hack/build_env_diag.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 42,
+                  "startColumn": 21,
+                  "endLine": 42,
+                  "endColumn": 50,
+                  "snippet": {
+                    "text": "                    raise f\"WSL 1 not supported.\""
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "63e8ac85aa540e79fbadce28bd64f6c065ddc4ab903a75e97832c412a462f7d5ecc96e1188a15585d1297a178af509c588055910c94bf17dd37815a43bf7011c_0"
           },
           "properties": {}
         },
@@ -5682,37 +5756,6 @@
           "properties": {}
         },
         {
-          "ruleId": "0c51dc60-01da-3447-bd88-4928066a5577",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Regex `r\"Linux version (\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/hack/build_env_diag.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 230,
-                  "startColumn": 26,
-                  "endLine": 232,
-                  "endColumn": 6,
-                  "snippet": {
-                    "text": "    LINUX_KERNEL_VALUE = re.search(\n        r\"Linux version (\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\", LINUX_KERNEL_QUERY\n    )"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "69f44009ea22d27ebf5505955281cff8572c7ca13237476240fef4eca8de0679d6827b8fef8fb03f8dca6242337f973788067ad8793fbbec61b5d6553ae8b25d_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "1e178bfb-d243-3af0-945d-4b856d74e5e4",
           "kind": "fail",
           "level": "warning",
@@ -5740,6 +5783,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "80473a4bde503ca710a9a29732142dced1f08506caa0db35b3a1ffa8d9957a2fc165e79dc87b3f4cb4856ddbdd22f8b43ccbe26ec275b41b136e20532fddf143_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "0c51dc60-01da-3447-bd88-4928066a5577",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Regex `r\"Linux version (\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/hack/build_env_diag.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 230,
+                  "startColumn": 26,
+                  "endLine": 232,
+                  "endColumn": 6,
+                  "snippet": {
+                    "text": "    LINUX_KERNEL_VALUE = re.search(\n        r\"Linux version (\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\", LINUX_KERNEL_QUERY\n    )"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "69f44009ea22d27ebf5505955281cff8572c7ca13237476240fef4eca8de0679d6827b8fef8fb03f8dca6242337f973788067ad8793fbbec61b5d6553ae8b25d_0"
           },
           "properties": {}
         },
@@ -5775,37 +5849,6 @@
           "properties": {}
         },
         {
-          "ruleId": "dd398a0d-f5f1-33ef-8248-0d4e381cba55",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Regex `r\"^MemAvailable:\\s+(\\d+)\\s+kB\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/hack/build_env_diag.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 262,
-                  "startColumn": 9,
-                  "endLine": 262,
-                  "endColumn": 80,
-                  "snippet": {
-                    "text": "        re.search(r\"^MemAvailable:\\s+(\\d+)\\s+kB\", MEM_INFO_QUERY, re.MULTILINE)"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "86bcc229f501694b1ba3fdaa3fac1cfe71b2307a1d3d668398f963a0d4333b23f556b24d85053c0a16dfd35d4cacc739a502059bcb881765247a37918c7b5328_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "681ca36c-02b9-3310-8011-f7867b8b2e0a",
           "kind": "fail",
           "level": "warning",
@@ -5837,11 +5880,11 @@
           "properties": {}
         },
         {
-          "ruleId": "1f214241-8719-30d0-954b-7c8bb13c2dfd",
+          "ruleId": "dd398a0d-f5f1-33ef-8248-0d4e381cba55",
           "kind": "fail",
           "level": "warning",
           "message": {
-            "text": "Regex `r\"^SwapTotal:\\s+(\\d+)\\s+kB\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+            "text": "Regex `r\"^MemAvailable:\\s+(\\d+)\\s+kB\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
           },
           "locations": [
             {
@@ -5851,19 +5894,19 @@
                   "uriBaseId": "%SRCROOT%"
                 },
                 "region": {
-                  "startLine": 267,
+                  "startLine": 262,
                   "startColumn": 9,
-                  "endLine": 267,
-                  "endColumn": 77,
+                  "endLine": 262,
+                  "endColumn": 80,
                   "snippet": {
-                    "text": "        re.search(r\"^SwapTotal:\\s+(\\d+)\\s+kB\", MEM_INFO_QUERY, re.MULTILINE)"
+                    "text": "        re.search(r\"^MemAvailable:\\s+(\\d+)\\s+kB\", MEM_INFO_QUERY, re.MULTILINE)"
                   }
                 }
               }
             }
           ],
           "fingerprints": {
-            "matchBasedId/v1": "c10f787b4510666d49df95d221e29a82a49baa6e3e0307acea1e5f084d55c9f516036ed76bf1e6037ee31a4a04b0cbff992a19645a519ba5db48debf5079260c_0"
+            "matchBasedId/v1": "86bcc229f501694b1ba3fdaa3fac1cfe71b2307a1d3d668398f963a0d4333b23f556b24d85053c0a16dfd35d4cacc739a502059bcb881765247a37918c7b5328_0"
           },
           "properties": {}
         },
@@ -5895,6 +5938,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "de6e066171a07465791c13728ba691a907f643965c339d6b67b91ca2091f3c6056f8c4a193ed81b633eb02a57b469b6458de15c4e753c4b81ddae33d5ac712a2_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "1f214241-8719-30d0-954b-7c8bb13c2dfd",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Regex `r\"^SwapTotal:\\s+(\\d+)\\s+kB\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/hack/build_env_diag.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 267,
+                  "startColumn": 9,
+                  "endLine": 267,
+                  "endColumn": 77,
+                  "snippet": {
+                    "text": "        re.search(r\"^SwapTotal:\\s+(\\d+)\\s+kB\", MEM_INFO_QUERY, re.MULTILINE)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "c10f787b4510666d49df95d221e29a82a49baa6e3e0307acea1e5f084d55c9f516036ed76bf1e6037ee31a4a04b0cbff992a19645a519ba5db48debf5079260c_0"
           },
           "properties": {}
         },
@@ -5961,37 +6035,6 @@
           "properties": {}
         },
         {
-          "ruleId": "3a3ad12f-fa5e-3706-a62e-aaba98273e85",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected subprocess function 'run' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/install_rocm_from_artifacts.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 187,
-                  "startColumn": 9,
-                  "endLine": 187,
-                  "endColumn": 40,
-                  "snippet": {
-                    "text": "        subprocess.run(cmd, check=True)"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "8ad2d9ae4d265db0eaff3c9854f594b3017e71a1925c0613d81c1b9a604e9cb1cf908489879950b5ab0651463d7d455580c36dc0fa79016b1d4ee2121fa5ee36_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "a9124860-7a32-3260-b075-d3309cb26ff6",
           "kind": "fail",
           "level": "warning",
@@ -6019,6 +6062,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "4cd0ec5278d36cf6319a8e5e043318c62a910abef97d829153fea5a20377f60c81d3a35162024d55cbd76da56fb7269a301c85d677f5933b99f03ae04eb90302_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "3a3ad12f-fa5e-3706-a62e-aaba98273e85",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected subprocess function 'run' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/install_rocm_from_artifacts.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 187,
+                  "startColumn": 9,
+                  "endLine": 187,
+                  "endColumn": 40,
+                  "snippet": {
+                    "text": "        subprocess.run(cmd, check=True)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "8ad2d9ae4d265db0eaff3c9854f594b3017e71a1925c0613d81c1b9a604e9cb1cf908489879950b5ab0651463d7d455580c36dc0fa79016b1d4ee2121fa5ee36_0"
           },
           "properties": {}
         },
@@ -6271,37 +6345,6 @@
           "properties": {}
         },
         {
-          "ruleId": "e6b562c4-5ada-326d-8a5d-8de336fa4272",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Untrusted user input in `importlib.import_module()` function allows an attacker to load arbitrary code. Avoid dynamic values in `importlib.import_module()` or use a whitelist to prevent running untrusted code."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/packaging/python/templates/rocm/src/rocm_sdk/__init__.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 49,
-                  "startColumn": 25,
-                  "endLine": 49,
-                  "endColumn": 65,
-                  "snippet": {
-                    "text": "            py_module = importlib.import_module(py_package_name)"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "5dd17ba890270015bf450a89803dea3b4fd593f07e48e100a1d48b341168b92a2059f75c7bab9a6267b9667f3d29acf32d7d5314fc4c9e295675f374bb035504_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "f208e4f9-d8d5-31cd-ab06-1d6f24e51eab",
           "kind": "fail",
           "level": "warning",
@@ -6329,6 +6372,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "1f279bb28e8b2f538ade258e788b2eb9405894965cd022a1b81c884d8d3baf69dd1a826d2c379aac5aa4f121accf99bbc9fbad09e287efe75d817efd5c010b9d_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "57c7cc3e-9f68-3288-bce3-42e7c7b11986",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Regex `f\"^{pattern_str}$\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/packaging/python/templates/rocm/src/rocm_sdk/__init__.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 145,
+                  "startColumn": 29,
+                  "endLine": 145,
+                  "endColumn": 59,
+                  "snippet": {
+                    "text": "            check_version = re.compile(f\"^{pattern_str}$\")"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "64cbc3e4a9aa346352e9c14ba93f4b3055d0314fe6de1b9e4cfbe54b43c93b9879270f129e960e0e68247013cfd8644adeded9a34c4e64d1fdcfa9311b54729a_0"
           },
           "properties": {}
         },
@@ -6395,37 +6469,6 @@
           "properties": {}
         },
         {
-          "ruleId": "57c7cc3e-9f68-3288-bce3-42e7c7b11986",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Regex `f\"^{pattern_str}$\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/packaging/python/templates/rocm/src/rocm_sdk/__init__.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 145,
-                  "startColumn": 29,
-                  "endLine": 145,
-                  "endColumn": 59,
-                  "snippet": {
-                    "text": "            check_version = re.compile(f\"^{pattern_str}$\")"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "64cbc3e4a9aa346352e9c14ba93f4b3055d0314fe6de1b9e4cfbe54b43c93b9879270f129e960e0e68247013cfd8644adeded9a34c4e64d1fdcfa9311b54729a_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "8608088c-22c1-30bb-a229-082615bf4779",
           "kind": "fail",
           "level": "warning",
@@ -6453,37 +6496,6 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "caf3f275a7c83e988f3dafa31b3cdf3010dd0fdcae55fc9f7b79b61c1e37dadabfc89d38013d1ef19ae8ec77a7a6f971b6725c0025a1a27aeb61502787865f52_0"
-          },
-          "properties": {}
-        },
-        {
-          "ruleId": "1738d01b-6d71-3f4d-aa63-df91ea728432",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected subprocess function 'check_call' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/patch_linux_so.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 15,
-                  "startColumn": 5,
-                  "endLine": 15,
-                  "endColumn": 72,
-                  "snippet": {
-                    "text": "    subprocess.check_call(args, cwd=str(cwd), stdin=subprocess.DEVNULL)"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "c32b4c7ca85d6e6dac8a0174e0b96854bc9856baf8b8b1717575f50abbf2c04ccdd13e427c100e5de4657bc3d86cb764fdde66ef524bbc1e5137775c1dc92d3b_0"
           },
           "properties": {}
         },
@@ -6519,6 +6531,37 @@
           "properties": {}
         },
         {
+          "ruleId": "1738d01b-6d71-3f4d-aa63-df91ea728432",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected subprocess function 'check_call' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/patch_linux_so.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 5,
+                  "endLine": 15,
+                  "endColumn": 72,
+                  "snippet": {
+                    "text": "    subprocess.check_call(args, cwd=str(cwd), stdin=subprocess.DEVNULL)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "c32b4c7ca85d6e6dac8a0174e0b96854bc9856baf8b8b1717575f50abbf2c04ccdd13e427c100e5de4657bc3d86cb764fdde66ef524bbc1e5137775c1dc92d3b_0"
+          },
+          "properties": {}
+        },
+        {
           "ruleId": "1a751035-5897-35fb-8d8e-a1badce95690",
           "kind": "fail",
           "level": "warning",
@@ -6550,37 +6593,6 @@
           "properties": {}
         },
         {
-          "ruleId": "5fd8dfd2-908d-37fb-8b83-9b74be082221",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/patch_rocm_libraries.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 63,
-                  "startColumn": 5,
-                  "endLine": 66,
-                  "endColumn": 6,
-                  "snippet": {
-                    "text": "    exec(\n        [\"git\", \"update-index\", \"--skip-worktree\"],\n        cwd=args.repo,\n    )"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "42fc600afd127517c58b85d76b71cc091c1117bd602c9f6ec517f3c3b3103689cb8db2e06dead7ec09b31b3568ef2bf76719b27a4770f7e19502431b94982869_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "13383246-33d6-3760-a196-6d60f0e80130",
           "kind": "fail",
           "level": "warning",
@@ -6608,6 +6620,68 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "b2cc346087511442d6cd9837c11805d68a1cfb6e52924b823cfed119e9ff9808ec5e94ce2c65242169703b4303cc0db389c3952b58804ca0b7614e8dc8b7767e_1"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "87f851f1-8c48-39b9-8941-61f39842fa30",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected subprocess function 'check_call' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/patch_rocm_libraries.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 43,
+                  "startColumn": 5,
+                  "endLine": 43,
+                  "endColumn": 72,
+                  "snippet": {
+                    "text": "    subprocess.check_call(args, cwd=str(cwd), stdin=subprocess.DEVNULL)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "0912fd47a6fe36be64c3dbaccaacf176fef8d247eca58699a3094a6a869a878d8a844855d9b06f41da7f443c0223535233a1e5101fe056ab24909a1aafaed150_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "5fd8dfd2-908d-37fb-8b83-9b74be082221",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/patch_rocm_libraries.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 63,
+                  "startColumn": 5,
+                  "endLine": 66,
+                  "endColumn": 6,
+                  "snippet": {
+                    "text": "    exec(\n        [\"git\", \"update-index\", \"--skip-worktree\"],\n        cwd=args.repo,\n    )"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "42fc600afd127517c58b85d76b71cc091c1117bd602c9f6ec517f3c3b3103689cb8db2e06dead7ec09b31b3568ef2bf76719b27a4770f7e19502431b94982869_0"
           },
           "properties": {}
         },
@@ -6674,6 +6748,37 @@
           "properties": {}
         },
         {
+          "ruleId": "251c9c06-a88a-3e09-a1e4-e837ca6b6440",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Regex `r\"^(.+ => )?(.+) \\(.+\\)$\"` may be vulnerable to catastrophic backtracking, which may lead to denial of service attacks. (This rule only matches regex usage, not actual REDoS patterns. For full detection, use Semgrep Pro Engine.)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/posix_ccache_compiler_check.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 69,
+                  "startColumn": 19,
+                  "endLine": 69,
+                  "endColumn": 56,
+                  "snippet": {
+                    "text": "    ldd_pattern = re.compile(r\"^(.+ => )?(.+) \\(.+\\)$\")"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "b105717b37665d9a278f6aa2506d2b3a1c44bda97af1447be0e3dc496b9ab6a926c5dc525ae5c49ec352a990f457a4b3c6cab21c5068d96700e92915188b33a3_0"
+          },
+          "properties": {}
+        },
+        {
           "ruleId": "2621ccff-ff97-3db4-b499-2b44b3dd4582",
           "kind": "fail",
           "level": "warning",
@@ -6732,6 +6837,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "0a7b9868553c4c8d747cf3c452e3b596bca0c1fb8abf36094e6cff176ebea03ad1f58be1832e541b6ae745e92a7bf625a33dd8b9548fdc11ec456b645aaddac3_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "627781a0-f0f6-3ef5-8277-f9804f218334",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected subprocess function 'check_call' without a static string. If this data can be\ncontrolled by a malicious actor, it may be an instance of command injection.\nAudit the use of this call to ensure it is not controllable by an external resource.\nYou may consider using 'shlex.escape()'.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/setup_venv.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 61,
+                  "startColumn": 5,
+                  "endLine": 61,
+                  "endColumn": 72,
+                  "snippet": {
+                    "text": "    subprocess.check_call(args, cwd=str(cwd), stdin=subprocess.DEVNULL)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "bfdf72d8d28d0e57907a49a733b74fc0532e9dafb2ac60de9cebece877e81aebf7afb0619aa30933f0acbc25e043edbfac94ff6c8a20693dd7b1d3d1fb018a5d_0"
           },
           "properties": {}
         },
@@ -6860,37 +6996,6 @@
           "properties": {}
         },
         {
-          "ruleId": "98ee7643-5162-3971-909d-8054cfba2a7b",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "file object opened without corresponding close"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "build_tools/teatime.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 81,
-                  "startColumn": 13,
-                  "endLine": 81,
-                  "endColumn": 54,
-                  "snippet": {
-                    "text": "            self.log_file = open(self.log_path, \"wb\")"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "6d6657e83d2b37985b6defeedd4944d86915a1ba12952d52928848704bbb99906dcf614d1718058279a7ba2374cc96828f8a5c0fa40309336ad579488030c88f_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "dbc50612-4881-3339-ac3c-ddcf367cecc3",
           "kind": "fail",
           "level": "warning",
@@ -6918,6 +7023,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "4059b9ee63ac6f5070cf44dcb21bdafccec86fbb9e430738698323bff129306ed9b6848c4b620951f308948be054398a84b2b5220af3dfb55d1de65f20cdef0f_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "98ee7643-5162-3971-909d-8054cfba2a7b",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "file object opened without corresponding close"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build_tools/teatime.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 81,
+                  "startColumn": 13,
+                  "endLine": 81,
+                  "endColumn": 54,
+                  "snippet": {
+                    "text": "            self.log_file = open(self.log_path, \"wb\")"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "6d6657e83d2b37985b6defeedd4944d86915a1ba12952d52928848704bbb99906dcf614d1718058279a7ba2374cc96828f8a5c0fa40309336ad579488030c88f_0"
           },
           "properties": {}
         },
@@ -7077,6 +7213,37 @@
           "properties": {}
         },
         {
+          "ruleId": "53644bf7-7665-39ff-8bd5-69c5ba405d1d",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Only the exit code from the final command in this RUN instruction will be evaluated unless 'pipefail' is set.\nIf you want to fail the command at any stage in the pipe, set 'pipefail' by including 'SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"] before the command.\nIf you're using alpine and don't have bash installed, communicate this explicitly with `SHELL [\"/bin/ash\"]`.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "dockerfiles/build_manylinux_x86_64.Dockerfile",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 85,
+                  "startColumn": 1,
+                  "endLine": 87,
+                  "endColumn": 26,
+                  "snippet": {
+                    "text": "RUN which gcc && gcc --version && \\\n    which g++ && g++ --version && \\\n    which clang++ || true"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "ed094d8a6868019460e1fc7f976462d8392d58946955b8b1753c0dd0b994c666ad222aedcf2ce0e0f994e2bc38669f98cd860d80fd5ee5cdb9446a62e6fd72b6_0"
+          },
+          "properties": {}
+        },
+        {
           "ruleId": "a4625652-8d19-315c-a1a8-5601a0e470b5",
           "kind": "fail",
           "level": "warning",
@@ -7135,37 +7302,6 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "2f2c968d70505688e045961dd50048453f0b93c47bd14680c786dcbdfed88c73b5c99314bab559e696fd1f1fd3d0671603c7ecf2038e87c5d310584c00fc5c57_0"
-          },
-          "properties": {}
-        },
-        {
-          "ruleId": "53644bf7-7665-39ff-8bd5-69c5ba405d1d",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Only the exit code from the final command in this RUN instruction will be evaluated unless 'pipefail' is set.\nIf you want to fail the command at any stage in the pipe, set 'pipefail' by including 'SHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"] before the command.\nIf you're using alpine and don't have bash installed, communicate this explicitly with `SHELL [\"/bin/ash\"]`.\n"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "dockerfiles/build_manylinux_x86_64.Dockerfile",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 85,
-                  "startColumn": 1,
-                  "endLine": 87,
-                  "endColumn": 26,
-                  "snippet": {
-                    "text": "RUN which gcc && gcc --version && \\\n    which g++ && g++ --version && \\\n    which clang++ || true"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "ed094d8a6868019460e1fc7f976462d8392d58946955b8b1753c0dd0b994c666ad222aedcf2ce0e0f994e2bc38669f98cd860d80fd5ee5cdb9446a62e6fd72b6_0"
           },
           "properties": {}
         },
@@ -7294,6 +7430,37 @@
           "properties": {}
         },
         {
+          "ruleId": "48bed010-638e-3cb6-b7d1-d8cc57e3fca0",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "time.sleep() call; did you mean to leave this in?"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "experimental/rockbuilder/rockbuilder.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 476,
+                  "startColumn": 1,
+                  "endLine": 476,
+                  "endColumn": 14,
+                  "snippet": {
+                    "text": "time.sleep(1)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "bd4480005823af1e4842e3a4053404876ebdef3d6c6de4cb99cd13fe069f609cb83665672aadbf2e7cb6630885302efa98df2cde896abd3f799f9189dd59d3c9_1"
+          },
+          "properties": {}
+        },
+        {
           "ruleId": "c3052a27-e086-33de-972c-4e2138fc850e",
           "kind": "fail",
           "level": "warning",
@@ -7356,37 +7523,6 @@
           "properties": {}
         },
         {
-          "ruleId": "48bed010-638e-3cb6-b7d1-d8cc57e3fca0",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "time.sleep() call; did you mean to leave this in?"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "experimental/rockbuilder/rockbuilder.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 476,
-                  "startColumn": 1,
-                  "endLine": 476,
-                  "endColumn": 14,
-                  "snippet": {
-                    "text": "time.sleep(1)"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "bd4480005823af1e4842e3a4053404876ebdef3d6c6de4cb99cd13fe069f609cb83665672aadbf2e7cb6630885302efa98df2cde896abd3f799f9189dd59d3c9_1"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "a8e0210d-db49-349e-ad7c-cfa0b9717deb",
           "kind": "fail",
           "level": "warning",
@@ -7418,37 +7554,6 @@
           "properties": {}
         },
         {
-          "ruleId": "2ef656ea-1a94-399b-9087-68526ae047ce",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "external-builds/pytorch/build_prod_wheels.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 288,
-                  "startColumn": 5,
-                  "endLine": 291,
-                  "endColumn": 6,
-                  "snippet": {
-                    "text": "    exec(\n        [sys.executable, \"-m\", \"pip\", \"cache\", \"remove\", \"rocm_sdk\"] + cache_dir_args,\n        cwd=Path.cwd(),\n    )"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "1f4f2217c3f6df7037264c5ffb0609abf25cec467a2ccbab09d8c1454fbe9fc1f37e73e22f93a40930fdb3f8caf8931002ada97edef29a2eb0f79f6ba60fef3d_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "6ef17ed1-f5a8-3ff6-9f99-ff3a9167260f",
           "kind": "fail",
           "level": "warning",
@@ -7476,6 +7581,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "1f4f2217c3f6df7037264c5ffb0609abf25cec467a2ccbab09d8c1454fbe9fc1f37e73e22f93a40930fdb3f8caf8931002ada97edef29a2eb0f79f6ba60fef3d_1"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "2ef656ea-1a94-399b-9087-68526ae047ce",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "external-builds/pytorch/build_prod_wheels.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 288,
+                  "startColumn": 5,
+                  "endLine": 291,
+                  "endColumn": 6,
+                  "snippet": {
+                    "text": "    exec(\n        [sys.executable, \"-m\", \"pip\", \"cache\", \"remove\", \"rocm_sdk\"] + cache_dir_args,\n        cwd=Path.cwd(),\n    )"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "1f4f2217c3f6df7037264c5ffb0609abf25cec467a2ccbab09d8c1454fbe9fc1f37e73e22f93a40930fdb3f8caf8931002ada97edef29a2eb0f79f6ba60fef3d_0"
           },
           "properties": {}
         },
@@ -7666,37 +7802,6 @@
           "properties": {}
         },
         {
-          "ruleId": "e09e4b19-fa58-33f0-b38c-058572112e64",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "external-builds/pytorch/build_prod_wheels.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 650,
-                  "startColumn": 9,
-                  "endLine": 660,
-                  "endColumn": 10,
-                  "snippet": {
-                    "text": "        exec(\n            [\n                sys.executable,\n                \"-m\",\n                \"pip\",\n                \"uninstall\",\n                \"ninja\",\n                \"-y\",\n            ],\n            cwd=pytorch_dir,\n        )"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "1f4f2217c3f6df7037264c5ffb0609abf25cec467a2ccbab09d8c1454fbe9fc1f37e73e22f93a40930fdb3f8caf8931002ada97edef29a2eb0f79f6ba60fef3d_8"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "e55630b7-cdf5-3220-8ea6-2cce7ad84c78",
           "kind": "fail",
           "level": "warning",
@@ -7724,6 +7829,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "1f4f2217c3f6df7037264c5ffb0609abf25cec467a2ccbab09d8c1454fbe9fc1f37e73e22f93a40930fdb3f8caf8931002ada97edef29a2eb0f79f6ba60fef3d_9"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "e09e4b19-fa58-33f0-b38c-058572112e64",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "external-builds/pytorch/build_prod_wheels.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 650,
+                  "startColumn": 9,
+                  "endLine": 660,
+                  "endColumn": 10,
+                  "snippet": {
+                    "text": "        exec(\n            [\n                sys.executable,\n                \"-m\",\n                \"pip\",\n                \"uninstall\",\n                \"ninja\",\n                \"-y\",\n            ],\n            cwd=pytorch_dir,\n        )"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "1f4f2217c3f6df7037264c5ffb0609abf25cec467a2ccbab09d8c1454fbe9fc1f37e73e22f93a40930fdb3f8caf8931002ada97edef29a2eb0f79f6ba60fef3d_8"
           },
           "properties": {}
         },
@@ -8100,37 +8236,6 @@
           "properties": {}
         },
         {
-          "ruleId": "27df5807-5174-3f40-b70e-427e3c5491a7",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "external-builds/pytorch/repo_management.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 229,
-                  "startColumn": 9,
-                  "endLine": 229,
-                  "endColumn": 86,
-                  "snippet": {
-                    "text": "        exec([\"git\", \"tag\", \"-f\", TAG_HIPIFY_DIFFBASE, \"--no-sign\"], cwd=module_path)"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "5fc65f3a2a305811b42a031b679466caa60252676c693f20f05f1ebcfb7dd22317b5f2ee88559300abe2a24c67fb1ee35eaf6adce7fdcb029f1a38f7fdb4cdf2_8"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "01a9a380-998b-3af6-b073-d534df0d80ab",
           "kind": "fail",
           "level": "warning",
@@ -8158,6 +8263,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "5fc65f3a2a305811b42a031b679466caa60252676c693f20f05f1ebcfb7dd22317b5f2ee88559300abe2a24c67fb1ee35eaf6adce7fdcb029f1a38f7fdb4cdf2_7"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "27df5807-5174-3f40-b70e-427e3c5491a7",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected the use of exec(). exec() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "external-builds/pytorch/repo_management.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 229,
+                  "startColumn": 9,
+                  "endLine": 229,
+                  "endColumn": 86,
+                  "snippet": {
+                    "text": "        exec([\"git\", \"tag\", \"-f\", TAG_HIPIFY_DIFFBASE, \"--no-sign\"], cwd=module_path)"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "5fc65f3a2a305811b42a031b679466caa60252676c693f20f05f1ebcfb7dd22317b5f2ee88559300abe2a24c67fb1ee35eaf6adce7fdcb029f1a38f7fdb4cdf2_8"
           },
           "properties": {}
         },
@@ -8441,37 +8577,6 @@
           "properties": {}
         },
         {
-          "ruleId": "decd9af5-96d4-3679-8203-c10a3632407d",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "file object opened without corresponding close"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "third-party/indexer/indexer.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "startLine": 34,
-                  "startColumn": 9,
-                  "endLine": 34,
-                  "endColumn": 61,
-                  "snippet": {
-                    "text": "        index_file = open(index_path, \"w\", encoding=\"utf-8\")"
-                  }
-                }
-              }
-            }
-          ],
-          "fingerprints": {
-            "matchBasedId/v1": "82b9b67f5642c17cf8f0f00dc4680537d6f74b28d57dd43f6e72567d6d6d0f2cbdc706356c7f4b76bb9ad108467e39385504edbf613810d861212ae047b723e8_0"
-          },
-          "properties": {}
-        },
-        {
           "ruleId": "cc26142e-4d1c-33ef-8976-4913d8335960",
           "kind": "fail",
           "level": "warning",
@@ -8499,6 +8604,37 @@
           ],
           "fingerprints": {
             "matchBasedId/v1": "a466038b75badc396452ee4e35858547bb2b08b84470fd67b9f1d79519215953d5de853b6db15a94bd1ee6c17a6c9fa29795e011074c3a7f6e3e95c8701539e6_0"
+          },
+          "properties": {}
+        },
+        {
+          "ruleId": "decd9af5-96d4-3679-8203-c10a3632407d",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "file object opened without corresponding close"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "third-party/indexer/indexer.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 34,
+                  "startColumn": 9,
+                  "endLine": 34,
+                  "endColumn": 61,
+                  "snippet": {
+                    "text": "        index_file = open(index_path, \"w\", encoding=\"utf-8\")"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "matchBasedId/v1": "82b9b67f5642c17cf8f0f00dc4680537d6f74b28d57dd43f6e72567d6d6d0f2cbdc706356c7f4b76bb9ad108467e39385504edbf613810d861212ae047b723e8_0"
           },
           "properties": {}
         },
